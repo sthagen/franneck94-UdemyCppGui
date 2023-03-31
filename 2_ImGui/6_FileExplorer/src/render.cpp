@@ -16,7 +16,7 @@
 
 void FileExplorer::Draw(std::string_view label)
 {
-    static fs::path selectedEntry;
+    static auto selectedEntry = fs::path{};
 
     ImGui::Begin(label.data());
 
@@ -38,9 +38,9 @@ void FileExplorer::Draw(std::string_view label)
     {
         for (const auto &entry : fs::directory_iterator(currentPath))
         {
-            auto entryName = entry.path().filename().string();
             const auto isDirectory = entry.is_directory();
-            bool isSelected = entry.path() == selectedEntry;
+            const bool isSelected = entry.path() == selectedEntry;
+            auto entryName = entry.path().filename().string();
 
             if (isDirectory)
             {
@@ -145,7 +145,7 @@ void FileExplorer::Draw(std::string_view label)
 
 void FileExplorer::openFileWithDefaultEditor(const fs::path &filePath)
 {
-    std::string command;
+    auto command = std::string{};
 
 #ifdef _WIN32
     command = "start \"\" \"" + filePath.string() + "\"";

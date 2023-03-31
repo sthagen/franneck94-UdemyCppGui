@@ -42,7 +42,7 @@ void TextEditor::Draw(std::string_view title)
 
 void TextEditor::SaveToFile(std::string_view filename)
 {
-    std::ofstream outFile(filename.data());
+    auto outFile = std::ofstream(filename.data());
     if (outFile.is_open())
     {
         outFile << textBuffer;
@@ -56,10 +56,10 @@ void TextEditor::SaveToFile(std::string_view filename)
 
 void TextEditor::LoadFromFile(std::string_view filename)
 {
-    std::ifstream inFile(filename.data());
+    auto inFile = std::ifstream(filename.data());
     if (inFile.is_open())
     {
-        std::stringstream buffer;
+        auto buffer = std::stringstream{};
         buffer << inFile.rdbuf();
         textBuffer = buffer.str();
         inFile.close();

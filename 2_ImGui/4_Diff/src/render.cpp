@@ -30,7 +30,7 @@ void FileDiffTool::Draw(std::string_view title)
                       ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, -1.0f),
                       true);
     ImGui::Text("File 1:");
-    for (size_t i = 0; i < diffResult1.size(); ++i)
+    for (std::size_t i = 0; i < diffResult1.size(); ++i)
     {
         if (!diffResult1[i].empty() || !diffResult2[i].empty())
         {
@@ -52,7 +52,7 @@ void FileDiffTool::Draw(std::string_view title)
                       true);
     ImGui::Text("File 2:");
 
-    for (size_t i = 0; i < diffResult2.size(); ++i)
+    for (std::size_t i = 0; i < diffResult2.size(); ++i)
     {
         if (!diffResult1[i].empty() || !diffResult2[i].empty())
         {
@@ -75,12 +75,12 @@ void FileDiffTool::Draw(std::string_view title)
 std::vector<std::string> FileDiffTool::LoadFileContent(
     std::string_view filePath)
 {
-    std::vector<std::string> content;
-    std::ifstream file(filePath.data());
+    auto content = std::vector<std::string>{};
+    auto file = std::ifstream(filePath.data());
 
     if (file.is_open())
     {
-        std::string line;
+        auto line = std::string;
         while (std::getline(file, line))
         {
             content.push_back(line);
@@ -101,7 +101,7 @@ void FileDiffTool::CreateDiff()
     diffResult2.clear();
 
     const auto maxLines = std::max(file1Content.size(), file2Content.size());
-    for (size_t i = 0; i < maxLines; ++i)
+    for (std::size_t i = 0; i < maxLines; ++i)
     {
         const auto line1 = i < file1Content.size() ? file1Content[i] : "";
         const auto line2 = i < file2Content.size() ? file2Content[i] : "";

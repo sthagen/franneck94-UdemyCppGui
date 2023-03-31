@@ -22,19 +22,19 @@ void DrawingTool::Draw(std::string_view title)
     }
 
     ImGui::Text("Canvas:");
-    ImVec2 canvas_pos = ImGui::GetCursorScreenPos();
+    const auto canvas_pos = ImGui::GetCursorScreenPos();
     ImGui::InvisibleButton("canvas", canvas_size);
-    ImVec2 mouse_pos = ImGui::GetMousePos();
-    bool is_mouse_hovering = ImGui::IsItemHovered();
+    const auto mouse_pos = ImGui::GetMousePos();
+    const auto is_mouse_hovering = ImGui::IsItemHovered();
 
     if (is_mouse_hovering && ImGui::IsMouseDown(0))
     {
-        ImVec2 point =
+        const auto point =
             ImVec2(mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
         points.push_back(point);
     }
 
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+    const auto *draw_list = ImGui::GetWindowDrawList();
     for (const auto &point : points)
     {
         draw_list->AddCircleFilled(
@@ -83,7 +83,7 @@ void DrawingTool::AddPixel(const ImVec2 &pos, const ImColor &color)
 
 void DrawingTool::WriteBMP(std::string_view filename)
 {
-    std::ofstream file(filename.data(), std::ios::out | std::ios::binary);
+    auto file = std::ofstream(filename.data(), std::ios::out | std::ios::binary);
     if (!file)
     {
         std::cerr << "Error: Could not open the file for writing!\n";

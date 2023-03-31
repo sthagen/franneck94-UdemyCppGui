@@ -16,6 +16,9 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
+constexpr auto WINDOW_WIDTH = std::uint32_t{1280};
+constexpr auto WINDOW_HEIGHT = std::uint32_t{720};
+
 namespace fs = std::filesystem;
 
 static void glfw_error_callback(int error, const char *description);

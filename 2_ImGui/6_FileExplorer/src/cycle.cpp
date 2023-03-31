@@ -14,7 +14,7 @@ void start_cycle()
 
 void end_cycle(GLFWwindow *const window)
 {
-    ImVec4 clear_color =
+    const auto clear_color =
         ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);

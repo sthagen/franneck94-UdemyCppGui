@@ -26,8 +26,8 @@ void AdvancedCalc::Draw(std::string_view label)
     const auto num_points =
         static_cast<std::size_t>(((x_max - x_min) / step) + 1);
 
-    std::vector<double> xs(num_points, 0.0F);
-    std::vector<double> ys(num_points, 0.0F);
+    auto xs = std::vector<double>(num_points, 0.0F);
+    auto ys = std::vector<double>(num_points, 0.0F);
 
     std::size_t i = 0;
     for (double x = x_min; x < x_max; x += step)

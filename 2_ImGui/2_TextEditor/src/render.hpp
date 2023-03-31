@@ -3,13 +3,10 @@
 #include <cstdint>
 #include <string_view>
 
-constexpr auto WINDOW_WIDTH = std::uint32_t{1280};
-constexpr auto WINDOW_HEIGHT = std::uint32_t{720};
-
 class TextEditor
 {
 public:
-    const std::size_t BUFFER_SIZE = 1024;
+    static const std::size_t BUFFER_SIZE = 1024;
 
 public:
     TextEditor();
