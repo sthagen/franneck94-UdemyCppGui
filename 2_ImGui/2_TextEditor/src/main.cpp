@@ -11,12 +11,10 @@
 #include "cycle.hpp"
 #include "render.hpp"
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
+#if defined(_MSC_VER) && (_MSC_VER >= 1900) &&                                 \
+    !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
-
-constexpr auto WINDOW_WIDTH = std::uint32_t{1280};
-constexpr auto WINDOW_HEIGHT = std::uint32_t{720};
 
 namespace fs = std::filesystem;
 

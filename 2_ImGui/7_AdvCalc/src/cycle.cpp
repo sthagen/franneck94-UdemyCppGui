@@ -3,6 +3,8 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_opengl3_loader.h"
 
+#include <implot.h>
+
 #include "cycle.hpp"
 
 void start_cycle()
@@ -14,7 +16,8 @@ void start_cycle()
 
 void end_cycle(GLFWwindow *const window)
 {
-    ImVec4 clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
+    ImVec4 clear_color =
+        ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
@@ -29,12 +32,16 @@ void end_cycle(GLFWwindow *const window)
 
 void cycle_function(GLFWwindow *const window)
 {
+    AdvancedCalc adv_calc;
+
     while (!glfwWindowShouldClose(window))
     {
         start_cycle();
 
         ImGui::NewFrame();
-        render();
+        ImPlot::CreateContext();
+        render(adv_calc);
+        ImPlot::DestroyContext();
         ImGui::Render();
 
         end_cycle(window);

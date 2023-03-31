@@ -14,7 +14,8 @@ void start_cycle()
 
 void end_cycle(GLFWwindow *const window)
 {
-    ImVec4 clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
+    ImVec4 clear_color =
+        ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
@@ -29,12 +30,14 @@ void end_cycle(GLFWwindow *const window)
 
 void cycle_function(GLFWwindow *const window)
 {
+    FileExplorer file_explorer;
+
     while (!glfwWindowShouldClose(window))
     {
         start_cycle();
 
         ImGui::NewFrame();
-        render();
+        render(file_explorer);
         ImGui::Render();
 
         end_cycle(window);
