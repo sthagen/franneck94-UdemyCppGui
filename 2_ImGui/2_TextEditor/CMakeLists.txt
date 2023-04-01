@@ -30,6 +30,9 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(implot CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(Stb REQUIRED)
+find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
+find_package(ImGui-SFML CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
@@ -37,10 +40,11 @@ add_executable(${PROJECT_NAME}
     src/render.cpp
 )
 
+target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
+
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
-target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
+target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui sfml-graphics sfml-system sfml-window ImGui-SFML::ImGui-SFML)
 target_link_libraries(${PROJECT_NAME} PRIVATE implot::implot)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${OPENGL_LIBRARIES})
-target_include_directories(${PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIR})
-target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-main)
