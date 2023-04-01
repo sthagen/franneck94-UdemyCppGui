@@ -11,7 +11,9 @@ class DrawingTool
 public:
     DrawingTool()
         : canvas_size(800, 600),
-          image_buffer(canvas_size.x * canvas_size.y * 4, 0){};
+          image_buffer(static_cast<int>(canvas_size.x) *
+                           static_cast<int>(canvas_size.y) * 4,
+                       0){};
     void Draw(std::string_view title);
 
 private:
@@ -27,6 +29,10 @@ private:
     ImVec2 canvas_size;
     std::vector<ImVec2> points;
     std::vector<uint8_t> image_buffer;
+
+    bool open_save_popup = false;
+    bool open_load_popup = false;
+    char filename_buffer[128] = "test.bmp";
 };
 
 

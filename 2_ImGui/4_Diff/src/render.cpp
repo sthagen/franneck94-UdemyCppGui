@@ -80,7 +80,7 @@ std::vector<std::string> FileDiffTool::LoadFileContent(
 
     if (file.is_open())
     {
-        auto line = std::string;
+        auto line = std::string{};
         while (std::getline(file, line))
         {
             content.push_back(line);

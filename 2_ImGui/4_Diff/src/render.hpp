@@ -16,8 +16,8 @@ private:
     void CreateDiff();
 
 private:
-    std::string file1Path;
-    std::string file2Path;
+    std::string file1Path = "text1.txt";
+    std::string file2Path = "text2.txt";
     std::vector<std::string> file1Content;
     std::vector<std::string> file2Content;
     std::vector<std::string> diffResult1;

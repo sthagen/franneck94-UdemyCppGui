@@ -26,45 +26,70 @@ void DrawingTool::Draw(std::string_view title)
 
     if (ImGui::Button("Save"))
     {
-        SaveToImageFile("drawing.bmp");
+        open_save_popup = true;
     }
-
     ImGui::SameLine();
 
     if (ImGui::Button("Load"))
     {
-        LoadFromImageFile("drawing.bmp");
-
-        points.clear();
-
-        for (int32_t y = 0; y < canvas_size.y; ++y)
-        {
-            for (int32_t x = 0; x < canvas_size.x; ++x)
-            {
-                const auto offset =
-                    (static_cast<int32_t>(canvas_size.y) - y - 1) *
-                        static_cast<int32_t>(canvas_size.x) * 4 +
-                    x * 4;
-                const auto color = ImColor(image_buffer[offset],
-                                           image_buffer[offset + 1],
-                                           image_buffer[offset + 2],
-                                           image_buffer[offset + 3]);
-
-                if (color != ImColor(0, 0, 0, 0))
-                {
-                    const auto point =
-                        ImVec2(x - canvas_pos.x, y - canvas_pos.y);
-                    points.push_back(point);
-                }
-            }
-        }
+        open_load_popup = true;
     }
-
     ImGui::SameLine();
 
     if (ImGui::Button("Clear"))
     {
         ClearCanvas();
+    }
+
+    // Add the save and load popups
+    if (open_save_popup)
+    {
+        ImGui::OpenPopup("Save Image");
+    }
+    if (ImGui::BeginPopupModal("Save Image",
+                               nullptr,
+                               ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::InputText("Filename", filename_buffer, sizeof(filename_buffer));
+        if (ImGui::Button("Save"))
+        {
+            SaveToImageFile(filename_buffer);
+            open_save_popup = false;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+        {
+            open_save_popup = false;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
+    if (open_load_popup)
+    {
+        ImGui::OpenPopup("Load Image");
+    }
+    if (ImGui::BeginPopupModal("Load Image",
+                               nullptr,
+                               ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::InputText("Filename", filename_buffer, sizeof(filename_buffer));
+        if (ImGui::Button("Load"))
+        {
+            LoadFromImageFile(filename_buffer);
+            open_load_popup = false;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel"))
+        {
+            open_load_popup = false;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
 
     ImGui::Text("Canvas:");
@@ -101,13 +126,12 @@ void DrawingTool::SaveToImageFile(std::string_view filename)
 {
     const auto canvas_pos = ImGui::GetCursorScreenPos();
 
-    auto *draw_list = ImGui::GetWindowDrawList();
     for (const auto &point : points)
     {
         const auto draw_pos =
             ImVec2(canvas_pos.x + point.x, canvas_pos.y + point.y);
         const auto rounded_pos =
-            ImVec2(static_cast<int>(draw_pos.x), static_cast<int>(draw_pos.y));
+            ImVec2(std::floor(draw_pos.x), std::floor(draw_pos.y));
         AddPixel(rounded_pos, ImColor(255, 255, 255));
     }
 
@@ -136,6 +160,28 @@ void DrawingTool::LoadFromImageFile(std::string_view filename)
 
     // Free the loaded image data
     stbi_image_free(image_data);
+
+    const auto canvas_pos = ImGui::GetCursorScreenPos();
+    points.clear();
+    for (int32_t y = 0; y < canvas_size.y; ++y)
+    {
+        for (int32_t x = 0; x < canvas_size.x; ++x)
+        {
+            const auto offset = (static_cast<int32_t>(canvas_size.y) - y - 1) *
+                                    static_cast<int32_t>(canvas_size.x) * 4 +
+                                x * 4;
+            const auto color = ImColor(image_buffer[offset],
+                                       image_buffer[offset + 1],
+                                       image_buffer[offset + 2],
+                                       image_buffer[offset + 3]);
+
+            if (color != ImColor(0, 0, 0, 0))
+            {
+                const auto point = ImVec2(x - canvas_pos.x, y - canvas_pos.y);
+                points.push_back(point);
+            }
+        }
+    }
 }
 
 void DrawingTool::AddPixel(const ImVec2 &pos, const ImColor &color)
