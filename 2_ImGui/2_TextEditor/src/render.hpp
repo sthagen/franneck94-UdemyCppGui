@@ -15,6 +15,8 @@ public:
     void SaveToFile(std::string_view filename);
     void LoadFromFile(std::string_view filename);
 
+    std::string GetFileExtension(std::string_view filePath);
+
     bool visible;
 
 private:

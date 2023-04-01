@@ -16,12 +16,20 @@
             "default-features": false,
             "features": [
                 "glfw-binding",
-                "opengl3-binding",
-                "win32-binding"
+                "opengl3-binding"
             ]
         },
         {
             "name": "implot"
+        },
+        {
+            "name": "sfml"
+        },
+        {
+            "name": "imgui-sfml"
+        },
+        {
+            "name": "stb"
         }
     ]
 }

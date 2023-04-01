@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.24)
 
 project(
-    "WxHelloWorld"
+    "ImGuiHelloWorld"
     VERSION 1.0.0
     LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -26,14 +26,23 @@ add_clang_format_target()
 include(${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
 find_package(fmt CONFIG REQUIRED)
-
-set(wxWidgets_USE_STATIC 1)
-find_package(wxWidgets CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
+find_package(implot CONFIG REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(Stb REQUIRED)
+find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME}
-    src/main.cc
-    src/frame.cc
+    src/main.cpp
+    src/cycle.cpp
+    src/render.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only)
-target_link_libraries(${PROJECT_NAME} PRIVATE wx::base wx::core wx::aui)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
+target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
+target_link_libraries(${PROJECT_NAME} PRIVATE implot::implot)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
+target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})

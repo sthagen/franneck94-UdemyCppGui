@@ -16,6 +16,10 @@ public:
 
 private:
     void SaveToFile(std::string_view filename);
+    void LoadFromFile(std::string_view filename);
+
+    void ClearCanvas();
+
     void AddPixel(const ImVec2 &pos, const ImColor &color);
     void WriteBMP(std::string_view filename);
 
