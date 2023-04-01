@@ -29,22 +29,23 @@ public:
     };
 
 public:
+    Calendar() = default;
+
     void Draw(std::string_view title);
 
 private:
     void DrawCalendar();
     void DrawAddMeetingWindow();
     void DrawDateCombo(std::string_view label, int *day, int *month, int *year);
+    void DrawMeetingsList();
 
 private:
     int selectedDay = 1;
     int selectedMonth = 1;
     int selectedYear = 2023;
-
     std::chrono::year_month_day selected_date;
 
     bool addMeetingWindowOpen = false;
-    std::string newMeetingName;
     std::map<int, std::map<int, std::vector<Meeting>>> meetings;
 };
 

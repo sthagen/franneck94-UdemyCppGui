@@ -46,6 +46,10 @@ void FileExplorer::Draw(std::string_view label)
             {
                 entryName = "[D] " + entryName;
             }
+            else
+            {
+                entryName = "[F] " + entryName;
+            }
 
             if (ImGui::Selectable(entryName.c_str(), isSelected))
             {

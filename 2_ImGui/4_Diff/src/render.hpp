@@ -13,6 +13,8 @@ public:
 
 private:
     std::vector<std::string> LoadFileContent(std::string_view filePath);
+    void SaveFileContent(std::string_view filePath, const std::vector<std::string>& content);
+
     void CreateDiff();
 
 private:

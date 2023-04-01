@@ -33,6 +33,9 @@ void Calendar::Draw(std::string_view title)
         DrawAddMeetingWindow();
     }
 
+
+    DrawMeetingsList();
+
     ImGui::End();
 }
 
@@ -46,19 +49,20 @@ void Calendar::DrawDateCombo(std::string_view label,
     if (ImGui::BeginCombo(fmt::format("##day{}", label).c_str(),
                           std::to_string(*day).c_str()))
     {
-        for (std::uint32_t d = 1; d <= 31; ++d)
+        for (std::int32_t day_idx = 1; day_idx <= 31; ++day_idx)
         {
             const auto curr_date =
                 std::chrono::year_month_day(std::chrono::year(*year),
                                             std::chrono::month(*month),
-                                            std::chrono::day(d));
+                                            std::chrono::day(day_idx));
 
             if (!curr_date.ok())
                 break;
 
-            if (ImGui::Selectable(std::to_string(d).c_str(), d == *day))
+            if (ImGui::Selectable(std::to_string(day_idx).c_str(),
+                                  day_idx == *day))
             {
-                *day = d;
+                *day = day_idx;
             }
         }
         ImGui::EndCombo();
@@ -68,13 +72,13 @@ void Calendar::DrawDateCombo(std::string_view label,
     ImGui::PushItemWidth(100);
 
     if (ImGui::BeginCombo(fmt::format("##month{}", label).c_str(),
-                          months[*month]))
+                          months[(*month) - 1]))
     {
-        for (std::uint32_t m = 1; m <= 12; ++m)
+        for (std::int32_t month_idx = 1; month_idx <= 12; ++month_idx)
         {
-            if (ImGui::Selectable(months[m - 1], m == *month))
+            if (ImGui::Selectable(months[month_idx - 1], month_idx == *month))
             {
-                *month = m;
+                *month = month_idx;
             }
         }
         ImGui::EndCombo();
@@ -86,7 +90,7 @@ void Calendar::DrawDateCombo(std::string_view label,
     if (ImGui::BeginCombo(fmt::format("##year{}", label).c_str(),
                           std::to_string(*year).c_str()))
     {
-        for (std::uint32_t y = 2023; y <= 2023; ++y)
+        for (std::int32_t y = 2023; y <= 2023; ++y)
         {
             if (ImGui::Selectable(std::to_string(y).c_str(), y == *year))
             {
@@ -97,10 +101,46 @@ void Calendar::DrawDateCombo(std::string_view label,
     }
 }
 
+void Calendar::DrawMeetingsList()
+{
+    if (meetings.contains(
+            static_cast<int>(selected_date.month().operator unsigned())) &&
+        meetings[static_cast<int>(selected_date.month().operator unsigned())]
+            .contains(
+                static_cast<int>(selected_date.day().operator unsigned())))
+    {
+        ImGui::Separator();
+        ImGui::Text("Meetings on %d.%s.%d:",
+                    selectedDay,
+                    months[selectedMonth - 1],
+                    selectedYear);
+
+        const auto &meetingList = meetings[selectedMonth][selectedDay];
+
+        if (meetingList.empty())
+        {
+            ImGui::Text("No meetings scheduled for this day.");
+        }
+        else
+        {
+            for (const auto &meeting : meetingList)
+            {
+                ImGui::BulletText("%s", meeting.name.c_str());
+            }
+        }
+    }
+    else
+    {
+        ImGui::Text("No meetings for that day!");
+    }
+}
+
+
 void Calendar::DrawCalendar()
 {
     ImGui::BeginChild("Calendar",
-                      ImVec2(ImGui::GetContentRegionAvail().x, -1.0f),
+                      ImVec2(ImGui::GetContentRegionAvail().x,
+                             ImGui::GetContentRegionAvail().y - 50.0F),
                       true);
 
     const auto curr_time =
@@ -131,13 +171,13 @@ void Calendar::DrawCalendar()
             {
                 const auto hasMeeting = !meetings[i][j].empty();
                 if (hasMeeting)
-                    textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+                    textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f); // red
             }
 
             if (curr_date == todays_date)
-                textColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+                textColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f); // green
             if (selected_date == curr_date)
-                textColor = ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+                textColor = ImVec4(0.0f, 0.0f, 1.0f, 1.0f); // blue
 
             ImGui::PushStyleColor(ImGuiCol_Text, textColor);
             ImGui::Text(std::to_string(j).c_str());
@@ -160,24 +200,23 @@ void Calendar::DrawCalendar()
 
 void Calendar::DrawAddMeetingWindow()
 {
+    static char newMeetingName[128] = "output.txt";
+
     ImGui::Begin("Add Meeting",
                  &addMeetingWindowOpen,
                  ImGuiWindowFlags_AlwaysAutoResize);
 
-    ImGui::Text("Add meeting to %s %d, %d",
-                months[selectedMonth],
+    ImGui::Text("Add meeting to %d.%s.%d",
                 selectedDay,
+                months[selectedMonth - 1],
                 selectedYear);
-    ImGui::InputText("Meeting Name", &newMeetingName);
+    ImGui::InputText("Meeting Name", newMeetingName, sizeof(newMeetingName));
 
     if (ImGui::Button("Save"))
     {
-        if (!newMeetingName.empty())
-        {
-            const auto newMeeting = Meeting{newMeetingName};
-            meetings[selectedMonth][selectedDay].push_back(newMeeting);
-            newMeetingName.clear();
-        }
+        const auto newMeeting = Meeting{newMeetingName};
+        meetings[selectedMonth][selectedDay].push_back(newMeeting);
+        std::memset(newMeetingName, 0, sizeof(newMeetingName));
         addMeetingWindowOpen = false;
     }
 
