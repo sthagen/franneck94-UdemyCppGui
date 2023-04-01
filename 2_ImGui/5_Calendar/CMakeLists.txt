@@ -40,6 +40,8 @@ add_executable(${PROJECT_NAME}
     src/render.cpp
 )
 
+target_set_warnings(TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS})
+
 target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only)

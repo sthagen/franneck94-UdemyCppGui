@@ -9,6 +9,11 @@
 #include "imgui_stdlib.h"
 #include "implot.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 #include "render.hpp"
 
 
@@ -21,32 +26,36 @@ void DrawingTool::Draw(std::string_view title)
 
     if (ImGui::Button("Save"))
     {
-        SaveToFile("drawing.bmp");
+        SaveToImageFile("drawing.bmp");
     }
 
     ImGui::SameLine();
 
     if (ImGui::Button("Load"))
     {
-        LoadFromFile("drawing.bmp");
-        ClearCanvas();
+        LoadFromImageFile("drawing.bmp");
 
-        auto *draw_list = ImGui::GetWindowDrawList();
+        points.clear();
+
         for (int32_t y = 0; y < canvas_size.y; ++y)
         {
             for (int32_t x = 0; x < canvas_size.x; ++x)
             {
-                int32_t offset = (static_cast<int32_t>(canvas_size.y) - y - 1) *
-                                     static_cast<int32_t>(canvas_size.x) * 4 +
-                                 x * 4;
-                ImColor color(image_buffer[offset],
-                              image_buffer[offset + 1],
-                              image_buffer[offset + 2],
-                              image_buffer[offset + 3]);
-                draw_list->AddRectFilled(
-                    ImVec2(canvas_pos.x + x, canvas_pos.y + y),
-                    ImVec2(canvas_pos.x + x + 1, canvas_pos.y + y + 1),
-                    color);
+                const auto offset =
+                    (static_cast<int32_t>(canvas_size.y) - y - 1) *
+                        static_cast<int32_t>(canvas_size.x) * 4 +
+                    x * 4;
+                const auto color = ImColor(image_buffer[offset],
+                                           image_buffer[offset + 1],
+                                           image_buffer[offset + 2],
+                                           image_buffer[offset + 3]);
+
+                if (color != ImColor(0, 0, 0, 0))
+                {
+                    const auto point =
+                        ImVec2(x - canvas_pos.x, y - canvas_pos.y);
+                    points.push_back(point);
+                }
             }
         }
     }
@@ -88,7 +97,7 @@ void DrawingTool::ClearCanvas()
     points.clear();
 }
 
-void DrawingTool::SaveToFile(std::string_view filename)
+void DrawingTool::SaveToImageFile(std::string_view filename)
 {
     const auto canvas_pos = ImGui::GetCursorScreenPos();
 
@@ -102,54 +111,31 @@ void DrawingTool::SaveToFile(std::string_view filename)
         AddPixel(rounded_pos, ImColor(255, 255, 255));
     }
 
-    WriteBMP(filename);
+    WriteImageFile(filename);
 }
 
-void DrawingTool::LoadFromFile(std::string_view filename)
+void DrawingTool::LoadFromImageFile(std::string_view filename)
 {
-    std::ifstream file(filename.data(), std::ios::in | std::ios::binary);
-    if (!file)
+    int width, height, channels;
+
+    // Load the image data from file
+    auto *image_data =
+        stbi_load(filename.data(), &width, &height, &channels, 4);
+
+    if (!image_data)
     {
-        std::cerr << "Error: Could not open the file for reading!\n";
+        std::cerr << "Error: Could not load the image file!\n";
         return;
     }
-
-    // Read BMP header
-    uint8_t header[54];
-    file.read(reinterpret_cast<char *>(header), 54);
-
-    // Verify signature
-    if (header[0] != 'B' || header[1] != 'M')
-    {
-        std::cerr << "Error: Invalid BMP file!\n";
-        return;
-    }
-
-    int32_t width, height;
-    memcpy(&width, header + 18, 4);
-    memcpy(&height, header + 22, 4);
 
     // Update the canvas size
     canvas_size = ImVec2(static_cast<float>(width), static_cast<float>(height));
 
     // Allocate memory for image_buffer
-    image_buffer.resize(width * height * 4);
+    image_buffer.assign(image_data, image_data + (width * height * 4));
 
-    // Read the image data
-    const auto row_size = ((width * 3 + 3) / 4) * 4;
-    for (int32_t y = height - 1; y >= 0; --y)
-    {
-        for (int32_t x = 0; x < width; ++x)
-        {
-            const auto offset = (y * width + x) * 4;
-            file.read(reinterpret_cast<char *>(&image_buffer[offset]), 3);
-            image_buffer[offset + 3] = 255; // opacity
-        }
-        // Skip padding bytes for 4-byte alignment
-        file.seekg(row_size - width * 3, std::ios::cur);
-    }
-
-    file.close();
+    // Free the loaded image data
+    stbi_image_free(image_data);
 }
 
 void DrawingTool::AddPixel(const ImVec2 &pos, const ImColor &color)
@@ -169,60 +155,13 @@ void DrawingTool::AddPixel(const ImVec2 &pos, const ImColor &color)
     }
 }
 
-void DrawingTool::WriteBMP(std::string_view filename)
+void DrawingTool::WriteImageFile(std::string_view filename)
 {
-    auto file =
-        std::ofstream(filename.data(), std::ios::out | std::ios::binary);
-    if (!file)
-    {
-        std::cerr << "Error: Could not open the file for writing!\n";
-        return;
-    }
-
-    const auto width = static_cast<int32_t>(canvas_size.x);
-    const auto height = static_cast<int32_t>(canvas_size.y);
-    const auto row_size = ((width * 3 + 3) / 4) * 4;
-    const auto bmp_size = 54 + (row_size * height);
-
-    // BMP header
-    uint8_t header[54] = {
-        'B', 'M',                   // Signature
-        0,   0,   0, 0,             // File size
-        0,   0,   0, 0,             // Reserved
-        54,  0,   0, 0,             // Offset to pixel data
-        40,  0,   0, 0,             // DIB header size
-        0,   0,   0, 0,             // Width
-        0,   0,   0, 0,             // Height
-        1,   0,                     // Color planes
-        24,  0,                     // Bits per pixel
-        0,   0,   0, 0,             // Compression method
-        0,   0,   0, 0,             // Image size
-        0,   0,   0, 0, 0, 0, 0, 0, // Resolution (dpi)
-        0,   0,   0, 0, 0, 0, 0, 0, // Number of colors and important colors
-    };
-
-    memcpy(header + 2, &bmp_size, 4);
-    memcpy(header + 18, &width, 4);
-    memcpy(header + 22, &height, 4);
-
-    file.write(reinterpret_cast<char *>(header), 54);
-
-    // Write the image data
-    for (int32_t y = height - 1; y >= 0; --y)
-    {
-        for (int32_t x = 0; x < width; ++x)
-        {
-            int32_t offset = (y * width + x) * 4;
-            file.write(reinterpret_cast<char *>(&image_buffer[offset]), 3);
-        }
-        // Padding for 4-byte alignment
-        for (int32_t pad = 0; pad < row_size - width * 3; ++pad)
-        {
-            file.put(0);
-        }
-    }
-
-    file.close();
+    stbi_write_bmp(filename.data(),
+                   static_cast<int>(canvas_size.x),
+                   static_cast<int>(canvas_size.y),
+                   4,
+                   image_buffer.data());
 }
 
 void render(DrawingTool &drawingTool)
