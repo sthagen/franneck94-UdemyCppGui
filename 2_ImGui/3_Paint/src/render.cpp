@@ -9,7 +9,7 @@
 #include "imgui_stdlib.h"
 #include "implot.h"
 
-#define STBI_ONLY_BMP
+#define STBI_ONLY_PNG
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image.h"
@@ -52,7 +52,6 @@ void WindowClass::Draw(std::string_view title)
                                nullptr,
                                ImGuiWindowFlags_AlwaysAutoResize))
     {
-        ImGui::Text("The file format is BMP!");
         ImGui::InputText("Filename", filename_buffer, sizeof(filename_buffer));
         if (ImGui::Button("Save"))
         {
@@ -151,11 +150,12 @@ void WindowClass::SaveToImageFile(std::string_view filename)
         AddPixel(rounded_pos, color, image_buffer);
     }
 
-    stbi_write_bmp(filename.data(),
+    stbi_write_png(filename.data(),
                    num_rows,
                    num_cols,
                    num_channels,
-                   image_buffer.data());
+                   image_buffer.data(),
+                   num_rows * num_channels);
 }
 
 void WindowClass::LoadFromImageFile(std::string_view filename)
@@ -175,7 +175,8 @@ void WindowClass::LoadFromImageFile(std::string_view filename)
     canvas_size = ImVec2(static_cast<float>(width), static_cast<float>(height));
 
     // Allocate memory for image_buffer
-    image_buffer.assign(image_data, image_data + (width * height * num_channels));
+    image_buffer.assign(image_data,
+                        image_data + (width * height * num_channels));
 
     // Free the loaded image data
     stbi_image_free(image_data);
@@ -185,9 +186,10 @@ void WindowClass::LoadFromImageFile(std::string_view filename)
     {
         for (int32_t x = 0; x < canvas_size.x; ++x)
         {
-            const auto offset = ((static_cast<int32_t>(canvas_size.y) - y - 1) *
-                                     static_cast<int32_t>(canvas_size.x) * num_channels +
-                                 x * num_channels);
+            const auto offset =
+                ((static_cast<int32_t>(canvas_size.y) - y - 1) *
+                     static_cast<int32_t>(canvas_size.x) * num_channels +
+                 x * num_channels);
             const auto color = ImColor(image_buffer[offset],
                                        image_buffer[offset + 1],
                                        image_buffer[offset + 2]);
@@ -211,8 +213,11 @@ void WindowClass::AddPixel(const ImVec2 &pos,
     if (x < 0 && x >= canvas_size.x || y < 0 && y >= canvas_size.y)
         return;
 
-        const auto offset =
-            static_cast<int>((num_cols - y - 1) * num_rows + x) * num_channels;
+    const auto offset =
+        static_cast<int>((num_cols - y - 1) * num_rows + x) * num_channels;
+
+    if (offset > num_rows * num_cols * num_channels)
+        return;
 
     buffer[offset + 0] = static_cast<uint8_t>(color.Value.x);
     buffer[offset + 1] = static_cast<uint8_t>(color.Value.y);

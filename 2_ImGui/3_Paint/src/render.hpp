@@ -32,7 +32,7 @@ private:
 private:
     const std::uint32_t num_rows = 800;
     const std::uint32_t num_cols = 600;
-    const std::uint32_t num_channels = 3;
+    const std::uint32_t num_channels = 4;
     ImVec2 canvas_size;
     std::vector<uint8_t> image_buffer;
 
@@ -44,7 +44,7 @@ private:
 
     bool open_save_popup = false;
     bool open_load_popup = false;
-    char filename_buffer[128] = "test.bmp";
+    char filename_buffer[128] = "test.png";
 
     float border_thickness = 1.5f;
 };
