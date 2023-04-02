@@ -23,7 +23,6 @@ void WindowClass::Draw(std::string_view title)
                  NULL,
                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
 
-    const auto canvas_pos = ImGui::GetCursorScreenPos();
     const auto mouse_pos = ImGui::GetMousePos();
 
     if (ImGui::Button("Save"))
@@ -94,11 +93,12 @@ void WindowClass::Draw(std::string_view title)
         ImGui::EndPopup();
     }
 
+    const auto canvas_pos = ImGui::GetCursorScreenPos();
     const auto button_size = ImVec2(canvas_size.x + border_thickness * 2,
                                     canvas_size.y + border_thickness * 2);
     ImGui::InvisibleButton("canvas", button_size);
-    const auto is_mouse_hovering = ImGui::IsItemHovered();
 
+    const auto is_mouse_hovering = ImGui::IsItemHovered();
     if (is_mouse_hovering && ImGui::IsMouseDown(0))
     {
         const auto point =
@@ -119,9 +119,10 @@ void WindowClass::Draw(std::string_view title)
     }
 
     // Add border around the canvas
-    const auto border_min(canvas_pos.x, canvas_pos.y);
-    const auto border_max(canvas_pos.x + button_size.x - border_thickness,
-                          canvas_pos.y + button_size.y - border_thickness);
+    const auto border_min = ImVec2(canvas_pos.x, canvas_pos.y);
+    const auto border_max =
+        ImVec2(canvas_pos.x + button_size.x - border_thickness,
+               canvas_pos.y + button_size.y - border_thickness);
     draw_list->AddRect(border_min,
                        border_max,
                        IM_COL32(255, 255, 255, 255),
@@ -158,7 +159,6 @@ void WindowClass::LoadFromImageFile(std::string_view filename)
 {
     int width, height, channels;
 
-    // Load the image data from file
     auto *image_data =
         stbi_load(filename.data(), &width, &height, &channels, 4);
 
