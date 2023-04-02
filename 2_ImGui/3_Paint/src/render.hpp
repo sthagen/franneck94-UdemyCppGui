@@ -33,6 +33,8 @@ private:
     bool open_save_popup = false;
     bool open_load_popup = false;
     char filename_buffer[128] = "test.bmp";
+
+    float border_thickness = 1.5f;
 };
 
 

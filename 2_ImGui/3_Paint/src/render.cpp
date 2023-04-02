@@ -19,7 +19,9 @@
 
 void WindowClass::Draw(std::string_view title)
 {
-    ImGui::Begin(title.data(), NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
+    ImGui::Begin(title.data(),
+                 NULL,
+                 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
 
     const auto canvas_pos = ImGui::GetCursorScreenPos();
     const auto mouse_pos = ImGui::GetMousePos();
@@ -92,14 +94,16 @@ void WindowClass::Draw(std::string_view title)
         ImGui::EndPopup();
     }
 
-    ImGui::Text("Canvas:");
-    ImGui::InvisibleButton("canvas", canvas_size);
+    const auto button_size = ImVec2(canvas_size.x + border_thickness * 2,
+                                    canvas_size.y + border_thickness * 2);
+    ImGui::InvisibleButton("canvas", button_size);
     const auto is_mouse_hovering = ImGui::IsItemHovered();
 
     if (is_mouse_hovering && ImGui::IsMouseDown(0))
     {
         const auto point =
-            ImVec2(mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
+            ImVec2(mouse_pos.x - canvas_pos.x - border_thickness,
+                   mouse_pos.y - canvas_pos.y - border_thickness);
         points.push_back(point);
     }
 
@@ -107,11 +111,23 @@ void WindowClass::Draw(std::string_view title)
     for (const auto &point : points)
     {
         draw_list->AddCircleFilled(
-            ImVec2(canvas_pos.x + point.x, canvas_pos.y + point.y),
+            ImVec2(canvas_pos.x + border_thickness + point.x,
+                   canvas_pos.y + border_thickness + point.y),
             2.0f,
             ImColor(255, 255, 255),
             16);
     }
+
+    // Add border around the canvas
+    const auto border_min(canvas_pos.x, canvas_pos.y);
+    const auto border_max(canvas_pos.x + button_size.x - border_thickness,
+                          canvas_pos.y + button_size.y - border_thickness);
+    draw_list->AddRect(border_min,
+                       border_max,
+                       IM_COL32(255, 255, 255, 255),
+                       0.0f,
+                       ImDrawCornerFlags_All,
+                       border_thickness);
 
     ImGui::End();
 }
