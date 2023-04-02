@@ -16,7 +16,9 @@
 
 void WindowClass::Draw(std::string_view title)
 {
-    ImGui::Begin(title.data());
+    ImGui::Begin(title.data(),
+                 NULL,
+                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
 
     ImGui::Text("Select a date:");
     DrawDateCombo("##date", &selectedDay, &selectedMonth, &selectedYear);
@@ -40,9 +42,9 @@ void WindowClass::Draw(std::string_view title)
 }
 
 void WindowClass::DrawDateCombo(std::string_view label,
-                             int *day,
-                             int *month,
-                             int *year)
+                                int *day,
+                                int *month,
+                                int *year)
 {
     ImGui::PushItemWidth(50);
 
@@ -103,11 +105,7 @@ void WindowClass::DrawDateCombo(std::string_view label,
 
 void WindowClass::DrawMeetingsList()
 {
-    if (meetings.contains(
-            static_cast<int>(selected_date.month().operator unsigned())) &&
-        meetings[static_cast<int>(selected_date.month().operator unsigned())]
-            .contains(
-                static_cast<int>(selected_date.day().operator unsigned())))
+    if (meetings.contains(selected_date))
     {
         ImGui::Separator();
         ImGui::Text("Meetings on %d.%s.%d:",
@@ -115,7 +113,7 @@ void WindowClass::DrawMeetingsList()
                     months[selectedMonth - 1],
                     selectedYear);
 
-        const auto &meetingList = meetings[selectedMonth][selectedDay];
+        const auto &meetingList = meetings[selected_date];
 
         if (meetingList.empty())
         {
@@ -147,6 +145,9 @@ void WindowClass::DrawCalendar()
         std::chrono::floor<std::chrono::days>(std::chrono::system_clock::now());
     const auto todays_date = std::chrono::year_month_day{curr_time};
 
+    float originalFontScale = ImGui::GetFontSize();
+    ImGui::SetWindowFontScale(calendarFontScale);
+
     for (std::uint32_t i = 1; i <= 12; ++i)
     {
         for (std::uint32_t j = 1; j <= 31; ++j)
@@ -167,13 +168,8 @@ void WindowClass::DrawCalendar()
 
             ImVec4 textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-            if (meetings.contains(i) && meetings[i].contains(j))
-            {
-                const auto hasMeeting = !meetings[i][j].empty();
-                if (hasMeeting)
-                    textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f); // red
-            }
-
+            if (meetings.contains(curr_date))
+                textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f); // red
             if (curr_date == todays_date)
                 textColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f); // green
             if (selected_date == curr_date)
@@ -189,11 +185,15 @@ void WindowClass::DrawCalendar()
                     std::chrono::year_month_day{std::chrono::year(selectedYear),
                                                 std::chrono::month(i),
                                                 std::chrono::day(j)};
+                UpdateSelectedDateVariables();
             }
 
             ImGui::PopID();
         }
     }
+
+    ImGui::SetWindowFontScale(originalFontScale);
+
     ImGui::EndChild();
 }
 
@@ -215,7 +215,7 @@ void WindowClass::DrawAddMeetingWindow()
     if (ImGui::Button("Save"))
     {
         const auto newMeeting = Meeting{newMeetingName};
-        meetings[selectedMonth][selectedDay].push_back(newMeeting);
+        meetings[selected_date].push_back(newMeeting);
         std::memset(newMeetingName, 0, sizeof(newMeetingName));
         addMeetingWindowOpen = false;
     }
@@ -227,6 +227,14 @@ void WindowClass::DrawAddMeetingWindow()
     }
 
     ImGui::End();
+}
+
+void WindowClass::UpdateSelectedDateVariables()
+{
+    selectedDay = static_cast<int>(selected_date.day().operator unsigned int());
+    selectedMonth =
+        static_cast<int>(selected_date.month().operator unsigned int());
+    selectedYear = static_cast<int>(selected_date.year());
 }
 
 void render(WindowClass &window_class)

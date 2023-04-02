@@ -19,7 +19,9 @@ void WindowClass::Draw(std::string_view title)
     static char loadFilenameBuffer[128] = "output.txt";
     static auto currentFileName = std::string{};
 
-    ImGui::Begin(title.data());
+    ImGui::Begin(title.data(),
+                 NULL,
+                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
 
     const auto ctrlPressed = ImGui::GetIO().KeyCtrl;
     const auto escPressed =

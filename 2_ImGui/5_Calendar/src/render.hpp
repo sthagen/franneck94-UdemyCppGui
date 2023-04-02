@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <cstdint>
 #include <map>
 #include <string_view>
@@ -29,8 +30,6 @@ public:
     };
 
 public:
-    WindowClass() = default;
-
     void Draw(std::string_view title);
 
 private:
@@ -39,6 +38,8 @@ private:
     void DrawDateCombo(std::string_view label, int *day, int *month, int *year);
     void DrawMeetingsList();
 
+    void UpdateSelectedDateVariables();
+
 private:
     int selectedDay = 1;
     int selectedMonth = 1;
@@ -46,7 +47,9 @@ private:
     std::chrono::year_month_day selected_date;
 
     bool addMeetingWindowOpen = false;
-    std::map<int, std::map<int, std::vector<Meeting>>> meetings;
+    std::map<std::chrono::year_month_day, std::vector<Meeting>> meetings;
+
+    float calendarFontScale = 1.25f;
 };
 
 void render(WindowClass &window_class);

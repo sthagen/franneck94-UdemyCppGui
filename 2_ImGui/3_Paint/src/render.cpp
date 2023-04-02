@@ -19,7 +19,7 @@
 
 void WindowClass::Draw(std::string_view title)
 {
-    ImGui::Begin(title.data());
+    ImGui::Begin(title.data(), NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
 
     const auto canvas_pos = ImGui::GetCursorScreenPos();
     const auto mouse_pos = ImGui::GetMousePos();
