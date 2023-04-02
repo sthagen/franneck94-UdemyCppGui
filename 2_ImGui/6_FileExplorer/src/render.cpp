@@ -14,7 +14,7 @@
 
 #include "render.hpp"
 
-void FileExplorer::Draw(std::string_view label)
+void WindowClass::Draw(std::string_view label)
 {
     static auto selectedEntry = fs::path{};
 
@@ -71,14 +71,25 @@ void FileExplorer::Draw(std::string_view label)
 
     if (!selectedEntry.empty())
     {
-        ImGui::Text("Selected file: %s", selectedEntry.string().c_str());
-
-        if (fs::is_regular_file(selectedEntry) && ImGui::Button("Open"))
+        if (fs::is_directory(selectedEntry))
         {
-            openFileWithDefaultEditor(selectedEntry);
+            ImGui::Text("Selected dir: %s", selectedEntry.string().c_str());
+        }
+        else
+        {
+            ImGui::Text("Selected file: %s", selectedEntry.string().c_str());
         }
 
-        ImGui::SameLine();
+        if (fs::is_regular_file(selectedEntry))
+        {
+            if (ImGui::Button("Open"))
+            {
+                openFileWithDefaultEditor(selectedEntry);
+            }
+
+            ImGui::SameLine();
+        }
+
         if (ImGui::Button("Rename"))
         {
             renameDialogOpen = true;
@@ -147,7 +158,7 @@ void FileExplorer::Draw(std::string_view label)
     ImGui::End();
 }
 
-void FileExplorer::openFileWithDefaultEditor(const fs::path &filePath)
+void WindowClass::openFileWithDefaultEditor(const fs::path &filePath)
 {
     auto command = std::string{};
 
@@ -162,7 +173,7 @@ void FileExplorer::openFileWithDefaultEditor(const fs::path &filePath)
     std::system(command.c_str());
 }
 
-bool FileExplorer::renameFile(const fs::path &oldPath, const fs::path &newPath)
+bool WindowClass::renameFile(const fs::path &oldPath, const fs::path &newPath)
 {
     try
     {
@@ -176,7 +187,7 @@ bool FileExplorer::renameFile(const fs::path &oldPath, const fs::path &newPath)
     }
 }
 
-bool FileExplorer::deleteFile(const fs::path &filePath)
+bool WindowClass::deleteFile(const fs::path &filePath)
 {
     try
     {
@@ -190,7 +201,7 @@ bool FileExplorer::deleteFile(const fs::path &filePath)
     }
 }
 
-void render(FileExplorer &file_explorer)
+void render(WindowClass &window_class)
 {
-    file_explorer.Draw("File Explorer Tool");
+    window_class.Draw("File Explorer Tool");
 }

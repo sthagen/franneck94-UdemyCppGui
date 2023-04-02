@@ -1,19 +1,16 @@
 #pragma once
 
-#include <cstdint>
 #include <filesystem>
-#include <map>
 #include <string_view>
-#include <vector>
 
 #include <imgui.h>
 
 namespace fs = std::filesystem;
 
-class FileExplorer
+class WindowClass
 {
 public:
-    FileExplorer() : currentPath(fs::current_path())
+    WindowClass() : currentPath(fs::current_path())
     {
     }
 
@@ -32,4 +29,4 @@ private:
     bool deleteDialogOpen = false;
 };
 
-void render(FileExplorer &file_explorer);
+void render(WindowClass &window_class);

@@ -14,7 +14,7 @@
 
 #include "render.hpp"
 
-void Calendar::Draw(std::string_view title)
+void WindowClass::Draw(std::string_view title)
 {
     ImGui::Begin(title.data());
 
@@ -39,7 +39,7 @@ void Calendar::Draw(std::string_view title)
     ImGui::End();
 }
 
-void Calendar::DrawDateCombo(std::string_view label,
+void WindowClass::DrawDateCombo(std::string_view label,
                              int *day,
                              int *month,
                              int *year)
@@ -101,7 +101,7 @@ void Calendar::DrawDateCombo(std::string_view label,
     }
 }
 
-void Calendar::DrawMeetingsList()
+void WindowClass::DrawMeetingsList()
 {
     if (meetings.contains(
             static_cast<int>(selected_date.month().operator unsigned())) &&
@@ -136,9 +136,9 @@ void Calendar::DrawMeetingsList()
 }
 
 
-void Calendar::DrawCalendar()
+void WindowClass::DrawCalendar()
 {
-    ImGui::BeginChild("Calendar",
+    ImGui::BeginChild("WindowClass",
                       ImVec2(ImGui::GetContentRegionAvail().x,
                              ImGui::GetContentRegionAvail().y - 50.0F),
                       true);
@@ -198,7 +198,7 @@ void Calendar::DrawCalendar()
 }
 
 
-void Calendar::DrawAddMeetingWindow()
+void WindowClass::DrawAddMeetingWindow()
 {
     static char newMeetingName[128] = "output.txt";
 
@@ -229,7 +229,7 @@ void Calendar::DrawAddMeetingWindow()
     ImGui::End();
 }
 
-void render(Calendar &calenar)
+void render(WindowClass &window_class)
 {
-    calenar.Draw("Calendar Tool");
+    window_class.Draw("WindowClass Tool");
 }

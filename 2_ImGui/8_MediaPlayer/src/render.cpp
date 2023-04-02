@@ -12,7 +12,7 @@
 
 #include "render.hpp"
 
-void MediaPlayer::loadFile(const std::string &filename)
+void WindowClass::loadFile(const std::string &filename)
 {
     if (soundBuffer.loadFromFile(filename))
     {
@@ -20,22 +20,22 @@ void MediaPlayer::loadFile(const std::string &filename)
     }
 }
 
-void MediaPlayer::play()
+void WindowClass::play()
 {
     sound.play();
 }
 
-void MediaPlayer::pause()
+void WindowClass::pause()
 {
     sound.pause();
 }
 
-void MediaPlayer::stop()
+void WindowClass::stop()
 {
     sound.stop();
 }
 
-void MediaPlayer::Draw(std::string_view label)
+void WindowClass::Draw(std::string_view label)
 {
     ImGui::Begin(label.data());
 
@@ -57,7 +57,7 @@ void MediaPlayer::Draw(std::string_view label)
     ImGui::End();
 }
 
-void render(MediaPlayer &media_player)
+void render(WindowClass &window_class)
 {
-    media_player.Draw("Media Player");
+    window_class.Draw("Media Player");
 }

@@ -7,7 +7,7 @@
 
 #include <imgui.h>
 
-class Calendar
+class WindowClass
 {
 public:
     static constexpr const char *months[12] = {"January",
@@ -29,7 +29,7 @@ public:
     };
 
 public:
-    Calendar() = default;
+    WindowClass() = default;
 
     void Draw(std::string_view title);
 
@@ -49,4 +49,4 @@ private:
     std::map<int, std::map<int, std::vector<Meeting>>> meetings;
 };
 
-void render(Calendar &calenar);
+void render(WindowClass &window_class);

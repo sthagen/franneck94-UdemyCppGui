@@ -36,7 +36,6 @@ find_package(ImGui-SFML CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/cycle.cpp
     src/render.cpp
 )
 

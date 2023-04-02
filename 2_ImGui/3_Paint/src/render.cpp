@@ -17,7 +17,7 @@
 #include "render.hpp"
 
 
-void DrawingTool::Draw(std::string_view title)
+void WindowClass::Draw(std::string_view title)
 {
     ImGui::Begin(title.data());
 
@@ -116,13 +116,13 @@ void DrawingTool::Draw(std::string_view title)
     ImGui::End();
 }
 
-void DrawingTool::ClearCanvas()
+void WindowClass::ClearCanvas()
 {
     std::fill(image_buffer.begin(), image_buffer.end(), 0);
     points.clear();
 }
 
-void DrawingTool::SaveToImageFile(std::string_view filename)
+void WindowClass::SaveToImageFile(std::string_view filename)
 {
     const auto canvas_pos = ImGui::GetCursorScreenPos();
 
@@ -138,7 +138,7 @@ void DrawingTool::SaveToImageFile(std::string_view filename)
     WriteImageFile(filename);
 }
 
-void DrawingTool::LoadFromImageFile(std::string_view filename)
+void WindowClass::LoadFromImageFile(std::string_view filename)
 {
     int width, height, channels;
 
@@ -184,7 +184,7 @@ void DrawingTool::LoadFromImageFile(std::string_view filename)
     }
 }
 
-void DrawingTool::AddPixel(const ImVec2 &pos, const ImColor &color)
+void WindowClass::AddPixel(const ImVec2 &pos, const ImColor &color)
 {
     const auto x = static_cast<int>(pos.x);
     const auto y = static_cast<int>(pos.y);
@@ -201,7 +201,7 @@ void DrawingTool::AddPixel(const ImVec2 &pos, const ImColor &color)
     }
 }
 
-void DrawingTool::WriteImageFile(std::string_view filename)
+void WindowClass::WriteImageFile(std::string_view filename)
 {
     stbi_write_bmp(filename.data(),
                    static_cast<int>(canvas_size.x),
@@ -210,7 +210,7 @@ void DrawingTool::WriteImageFile(std::string_view filename)
                    image_buffer.data());
 }
 
-void render(DrawingTool &drawingTool)
+void render(WindowClass &window_class)
 {
-    drawingTool.Draw("Drawing Editor");
+    window_class.Draw("Drawing Editor");
 }

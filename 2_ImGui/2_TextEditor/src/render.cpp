@@ -13,12 +13,7 @@
 
 namespace fs = std::filesystem;
 
-TextEditor::TextEditor()
-{
-    textBuffer.reserve(BUFFER_SIZE);
-}
-
-void TextEditor::Draw(std::string_view title)
+void WindowClass::Draw(std::string_view title)
 {
     static char saveFilenameBuffer[128] = "output.txt";
     static char loadFilenameBuffer[128] = "output.txt";
@@ -119,7 +114,8 @@ void TextEditor::Draw(std::string_view title)
                       ImVec2(30, -ImGui::GetFrameHeightWithSpacing()),
                       false,
                       ImGuiWindowFlags_NoScrollbar);
-    int lineCount = std::count(textBuffer.begin(), textBuffer.end(), '\n') + 1;
+    const auto lineCount =
+        std::count(textBuffer.begin(), textBuffer.end(), '\n') + 1;
     for (int i = 1; i <= lineCount; ++i)
     {
         ImGui::Text("%d", i);
@@ -132,7 +128,7 @@ void TextEditor::Draw(std::string_view title)
                         ImGuiInputTextFlags_CtrlEnterForNewLine |
                         ImGuiInputTextFlags_NoHorizontalScroll);
 
-    ImGui::InputTextMultiline("##TextEditor",
+    ImGui::InputTextMultiline("##WindowClass",
                               &textBuffer,
                               ImVec2{1200.0F, 625.0F},
                               flags);
@@ -148,7 +144,7 @@ void TextEditor::Draw(std::string_view title)
     ImGui::End();
 }
 
-std::string TextEditor::GetFileExtension(std::string_view filePath)
+std::string WindowClass::GetFileExtension(std::string_view filePath)
 {
     const auto file_path = fs::path(filePath);
     auto file_extension = file_path.extension().string();
@@ -160,7 +156,7 @@ std::string TextEditor::GetFileExtension(std::string_view filePath)
     return file_extension;
 }
 
-void TextEditor::SaveToFile(std::string_view filename)
+void WindowClass::SaveToFile(std::string_view filename)
 {
     auto outFile = std::ofstream(filename.data());
     if (outFile.is_open())
@@ -174,7 +170,7 @@ void TextEditor::SaveToFile(std::string_view filename)
     }
 }
 
-void TextEditor::LoadFromFile(std::string_view filename)
+void WindowClass::LoadFromFile(std::string_view filename)
 {
     auto inFile = std::ifstream(filename.data());
     if (inFile.is_open())
@@ -190,10 +186,7 @@ void TextEditor::LoadFromFile(std::string_view filename)
     }
 }
 
-void render(TextEditor &textEditor)
+void render(WindowClass &window_class)
 {
-    if (textEditor.visible)
-    {
-        textEditor.Draw("Text Editor");
-    }
+    window_class.Draw("Text Editor");
 }

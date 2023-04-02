@@ -13,7 +13,7 @@
 
 #include "render.hpp"
 
-void FileDiffTool::Draw(std::string_view title)
+void WindowClass::Draw(std::string_view title)
 {
     ImGui::Begin(title.data());
 
@@ -113,7 +113,7 @@ void FileDiffTool::Draw(std::string_view title)
     ImGui::End();
 }
 
-void FileDiffTool::SaveFileContent(std::string_view filePath,
+void WindowClass::SaveFileContent(std::string_view filePath,
                                    const std::vector<std::string> &content)
 {
     auto file = std::ofstream(filePath.data());
@@ -132,7 +132,7 @@ void FileDiffTool::SaveFileContent(std::string_view filePath,
     }
 }
 
-std::vector<std::string> FileDiffTool::LoadFileContent(
+std::vector<std::string> WindowClass::LoadFileContent(
     std::string_view filePath)
 {
     auto content = std::vector<std::string>{};
@@ -155,7 +155,7 @@ std::vector<std::string> FileDiffTool::LoadFileContent(
     return content;
 }
 
-void FileDiffTool::CreateDiff()
+void WindowClass::CreateDiff()
 {
     diffResult1.clear();
     diffResult2.clear();
@@ -179,7 +179,7 @@ void FileDiffTool::CreateDiff()
     }
 }
 
-void render(FileDiffTool &fileDiffTool)
+void render(WindowClass &window_class)
 {
-    fileDiffTool.Draw("File Diff Tool");
+    window_class.Draw("File Diff Tool");
 }

@@ -6,10 +6,10 @@
 
 #include <imgui.h>
 
-class DrawingTool
+class WindowClass
 {
 public:
-    DrawingTool()
+    WindowClass()
         : canvas_size(800, 600),
           image_buffer(static_cast<int>(canvas_size.x) *
                            static_cast<int>(canvas_size.y) * 4,
@@ -36,4 +36,4 @@ private:
 };
 
 
-void render(DrawingTool &drawingTool);
+void render(WindowClass &window_class);

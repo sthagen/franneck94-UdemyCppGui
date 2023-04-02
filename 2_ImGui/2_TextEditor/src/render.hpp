@@ -3,13 +3,16 @@
 #include <cstdint>
 #include <string_view>
 
-class TextEditor
+class WindowClass
 {
 public:
     static const std::size_t BUFFER_SIZE = 1024;
 
 public:
-    TextEditor();
+    WindowClass()
+    {
+        textBuffer.reserve(BUFFER_SIZE);
+    };
 
     void Draw(std::string_view title);
     void SaveToFile(std::string_view filename);
@@ -24,4 +27,4 @@ private:
 };
 
 
-void render(TextEditor &textEditor);
+void render(WindowClass &window_class);

@@ -3,17 +3,19 @@
 #include <cstdint>
 #include <string_view>
 #include <vector>
+#include <string>
 
 #include <imgui.h>
 
-class FileDiffTool
+class WindowClass
 {
 public:
     void Draw(std::string_view title);
 
 private:
     std::vector<std::string> LoadFileContent(std::string_view filePath);
-    void SaveFileContent(std::string_view filePath, const std::vector<std::string>& content);
+    void SaveFileContent(std::string_view filePath,
+                         const std::vector<std::string> &content);
 
     void CreateDiff();
 
@@ -27,4 +29,4 @@ private:
 };
 
 
-void render(FileDiffTool &fileDiffTool);
+void render(WindowClass &window_class);

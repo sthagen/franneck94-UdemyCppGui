@@ -7,7 +7,7 @@
 
 #include <imgui.h>
 
-class AdvancedCalc
+class WindowClass
 {
 public:
     constexpr static const char *function_names[7] =
@@ -25,7 +25,7 @@ public:
     };
 
 public:
-    AdvancedCalc()
+    WindowClass()
     {
         std::memset(user_input, 0, 256);
         selected_functions = {};
@@ -45,4 +45,4 @@ private:
     float x_max;
 };
 
-void render(AdvancedCalc &adv_calc);
+void render(WindowClass &window_class);

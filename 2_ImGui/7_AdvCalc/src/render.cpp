@@ -11,7 +11,7 @@
 
 #include "render.hpp"
 
-void AdvancedCalc::Draw(std::string_view label)
+void WindowClass::Draw(std::string_view label)
 {
     ImGui::Begin(label.data());
 
@@ -93,7 +93,7 @@ void AdvancedCalc::Draw(std::string_view label)
     ImPlot::EndPlot();
 }
 
-double AdvancedCalc::evaluate_function(Function selected_function, double x)
+double WindowClass::evaluate_function(Function selected_function, double x)
 {
     switch (selected_function)
     {
@@ -114,7 +114,7 @@ double AdvancedCalc::evaluate_function(Function selected_function, double x)
     }
 }
 
-void render(AdvancedCalc &adv_calc)
+void render(WindowClass &window_class)
 {
-    adv_calc.Draw("Calculator Tool");
+    window_class.Draw("Calculator Tool");
 }

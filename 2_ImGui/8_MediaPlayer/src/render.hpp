@@ -1,18 +1,14 @@
 #pragma once
 
-#include <cstdint>
 #include <string>
 #include <string_view>
 
 #include <SFML/Audio.hpp>
 #include <imgui.h>
 
-class MediaPlayer
+class WindowClass
 {
 public:
-    MediaPlayer() = default;
-    ~MediaPlayer() = default;
-
     void loadFile(const std::string &filename);
 
     void play();
@@ -26,4 +22,4 @@ private:
     sf::Sound sound;
 };
 
-void render(MediaPlayer &media_player);
+void render(WindowClass &window_class);

@@ -1,14 +1,17 @@
+#include <cstdint>
+#include <filesystem>
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_opengl3_loader.h"
+#include "implot.h"
 
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
 #include <GLFW/glfw3.h>
 
-#include "cycle.hpp"
 #include "render.hpp"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) &&                                 \
@@ -22,6 +25,29 @@ constexpr auto WINDOW_HEIGHT = std::uint32_t{720};
 namespace fs = std::filesystem;
 
 static void glfw_error_callback(int error, const char *description);
+
+void start_cycle()
+{
+    glfwPollEvents();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+}
+
+void end_cycle(GLFWwindow *const window)
+{
+    const auto clear_color =
+        ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
+    int display_w, display_h;
+    glfwGetFramebufferSize(window, &display_w, &display_h);
+    glViewport(0, 0, display_w, display_h);
+    glClearColor(clear_color.x * clear_color.w,
+                 clear_color.y * clear_color.w,
+                 clear_color.z * clear_color.w,
+                 clear_color.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    glfwSwapBuffers(window);
+}
 
 int main(int, char **)
 {
@@ -79,7 +105,20 @@ int main(int, char **)
     style.Colors[ImGuiCol_TableBorderStrong] = ImVec4(1.0, 1.0, 1.0, 1.0);
     style.Colors[ImGuiCol_TableBorderLight] = ImVec4(1.0, 1.0, 1.0, 1.0);
 
-    cycle_function(window);
+    WindowClass window_obj;
+
+    while (!glfwWindowShouldClose(window))
+    {
+        start_cycle();
+
+        ImGui::NewFrame();
+        ImPlot::CreateContext();
+        render(window_obj);
+        ImPlot::DestroyContext();
+        ImGui::Render();
+
+        end_cycle(window);
+    }
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
