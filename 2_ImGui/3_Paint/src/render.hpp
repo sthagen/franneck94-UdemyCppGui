@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <string_view>
-#include <utility>
+#include <tuple>
 #include <vector>
 
 #include <imgui.h>
@@ -10,10 +10,12 @@
 class WindowClass
 {
 public:
+    using PointData = std::tuple<ImVec2, ImColor, float>;
+
+public:
     WindowClass()
         : canvas_size(ImVec2(static_cast<float>(num_rows),
                              static_cast<float>(num_cols))),
-          image_buffer(num_rows * num_cols * num_channels, 0),
           canvas_pos(ImVec2{}){};
     void Draw(std::string_view title);
 
@@ -32,19 +34,17 @@ private:
 private:
     const std::uint32_t num_rows = 800;
     const std::uint32_t num_cols = 600;
-    const std::uint32_t num_channels = 4;
+    const std::uint32_t num_channels = 3;
     ImVec2 canvas_size;
-    std::vector<uint8_t> image_buffer;
 
-    std::vector<std::pair<ImVec2, ImColor>> points;
+    std::vector<PointData> points;
 
     ImVec2 canvas_pos;
 
     ImColor current_draw_color = ImColor(255, 255, 255);
+    float point_draw_size = 2.0f;
 
-    bool open_save_popup = false;
-    bool open_load_popup = false;
-    char filename_buffer[128] = "test.png";
+    char filename_buffer[128] = "test.bin";
 
     float border_thickness = 1.5f;
 };

@@ -9,16 +9,13 @@
 #include "imgui_stdlib.h"
 #include "implot.h"
 
-#define STBI_ONLY_PNG
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image.h"
-#include "stb_image_write.h"
-
 #include "render.hpp"
 
 void WindowClass::Draw(std::string_view title)
 {
+    static bool open_save_popup = false;
+    static bool open_load_popup = false;
+
     ImGui::Begin(title.data(),
                  NULL,
                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
@@ -44,6 +41,10 @@ void WindowClass::Draw(std::string_view title)
 
     DrawColorButtons();
 
+    ImGui::Text("Draw Size");
+    ImGui::SameLine();
+    ImGui::SliderFloat("##draw_size", &point_draw_size, 1.0f, 10.0f, "%.1f");
+
     if (open_save_popup)
     {
         ImGui::OpenPopup("Save Image");
@@ -52,6 +53,7 @@ void WindowClass::Draw(std::string_view title)
                                nullptr,
                                ImGuiWindowFlags_AlwaysAutoResize))
     {
+        ImGui::Text("File extension must be .bin");
         ImGui::InputText("Filename", filename_buffer, sizeof(filename_buffer));
         if (ImGui::Button("Save"))
         {
@@ -105,16 +107,17 @@ void WindowClass::Draw(std::string_view title)
         const auto point =
             ImVec2(mouse_pos.x - canvas_pos.x - border_thickness,
                    mouse_pos.y - canvas_pos.y - border_thickness);
-        points.push_back(std::make_pair(point, current_draw_color));
+        points.push_back(
+            std::make_tuple(point, current_draw_color, point_draw_size));
     }
 
     auto *draw_list = ImGui::GetWindowDrawList();
-    for (const auto &[point, color] : points)
+    for (const auto &[point, color, size] : points)
     {
         draw_list->AddCircleFilled(
             ImVec2(canvas_pos.x + border_thickness + point.x,
                    canvas_pos.y + border_thickness + point.y),
-            2.0f,
+            size,
             color,
             16);
     }
@@ -135,93 +138,61 @@ void WindowClass::Draw(std::string_view title)
 
 void WindowClass::ClearCanvas()
 {
-    std::fill(image_buffer.begin(), image_buffer.end(), 0);
     points.clear();
 }
 
 void WindowClass::SaveToImageFile(std::string_view filename)
 {
-    for (const auto &[point, color] : points)
+    std::ofstream file(filename.data(), std::ios::binary);
+
+    if (!file)
     {
-        const auto draw_pos =
-            ImVec2(canvas_pos.x + point.x, canvas_pos.y + point.y);
-        const auto rounded_pos =
-            ImVec2(std::floor(draw_pos.x), std::floor(draw_pos.y));
-        AddPixel(rounded_pos, color, image_buffer);
+        std::cerr << "Error: Could not open the file for writing!\n";
+        return;
     }
 
-    stbi_write_png(filename.data(),
-                   num_rows,
-                   num_cols,
-                   num_channels,
-                   image_buffer.data(),
-                   num_rows * num_channels);
+    auto point_count = points.size();
+    file.write(reinterpret_cast<char *>(&point_count), sizeof(point_count));
+
+    for (const auto &[point, color, size] : points)
+    {
+        file.write(reinterpret_cast<const char *>(&point), sizeof(point));
+        file.write(reinterpret_cast<const char *>(&color),
+                   sizeof(color));
+        file.write(reinterpret_cast<const char *>(&size), sizeof(size));
+    }
+    file.close();
 }
 
 void WindowClass::LoadFromImageFile(std::string_view filename)
 {
-    int width, height, channels;
+    auto file = std::ifstream(filename.data(), std::ios::binary);
 
-    auto *image_data =
-        stbi_load(filename.data(), &width, &height, &channels, num_channels);
-
-    if (!image_data)
+    if (!file)
     {
-        std::cerr << "Error: Could not load the image file!\n";
+        std::cerr << "Error: Could not open the file for reading!\n";
         return;
     }
 
-    // Update the canvas size
-    canvas_size = ImVec2(static_cast<float>(width), static_cast<float>(height));
+    auto point_count = std::size_t{};
+    file.read(reinterpret_cast<char *>(&point_count), sizeof(point_count));
 
-    // Allocate memory for image_buffer
-    image_buffer.assign(image_data,
-                        image_data + (width * height * num_channels));
+    ClearCanvas();
+    points.reserve(point_count);
 
-    // Free the loaded image data
-    stbi_image_free(image_data);
-
-    points.clear();
-    for (int32_t y = 0; y < canvas_size.y; ++y)
+    for (std::uint32_t i = 0; i < point_count; ++i)
     {
-        for (int32_t x = 0; x < canvas_size.x; ++x)
-        {
-            const auto offset =
-                ((static_cast<int32_t>(canvas_size.y) - y - 1) *
-                     static_cast<int32_t>(canvas_size.x) * num_channels +
-                 x * num_channels);
-            const auto color = ImColor(image_buffer[offset],
-                                       image_buffer[offset + 1],
-                                       image_buffer[offset + 2]);
+        auto point = ImVec2{};
+        auto color = ImColor{};
+        auto size = float{};
 
-            if (color.Value.x != 0 || color.Value.y != 0 || color.Value.z != 0)
-            {
-                const auto point = ImVec2(x - canvas_pos.x, y - canvas_pos.y);
-                points.push_back(std::make_pair(point, color));
-            }
-        }
+        file.read(reinterpret_cast<char *>(&point), sizeof(point));
+        file.read(reinterpret_cast<char *>(&color), sizeof(color));
+        file.read(reinterpret_cast<char *>(&size), sizeof(size));
+
+        points.push_back(std::make_tuple(point, color, size));
     }
-}
-
-void WindowClass::AddPixel(const ImVec2 &pos,
-                           const ImColor &color,
-                           std::vector<uint8_t> &buffer)
-{
-    const auto x = static_cast<int>(pos.x);
-    const auto y = static_cast<int>(pos.y);
-
-    if (x < 0 && x >= canvas_size.x || y < 0 && y >= canvas_size.y)
-        return;
-
-    const auto offset =
-        static_cast<int>((num_cols - y - 1) * num_rows + x) * num_channels;
-
-    if (offset > num_rows * num_cols * num_channels)
-        return;
-
-    buffer[offset + 0] = static_cast<uint8_t>(color.Value.x);
-    buffer[offset + 1] = static_cast<uint8_t>(color.Value.y);
-    buffer[offset + 2] = static_cast<uint8_t>(color.Value.z);
+    file.close();
 }
 
 void WindowClass::DrawColorButtons()
@@ -230,9 +201,13 @@ void WindowClass::DrawColorButtons()
     const auto selected_green = current_draw_color == ImColor(0, 255, 0);
     const auto selected_blue = current_draw_color == ImColor(0, 0, 255);
     const auto selected_white = current_draw_color == ImColor(255, 255, 255);
+    const auto none_preset_color =
+        !selected_red && !selected_green && !selected_blue && !selected_white;
+
+    constexpr auto orange = ImVec4(1.0f, 0.5f, 0.0f, 1.0f);
 
     if (selected_red)
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Button, orange);
     if (ImGui::Button("Red"))
         current_draw_color = ImColor(255, 0, 0);
     if (selected_red)
@@ -241,7 +216,7 @@ void WindowClass::DrawColorButtons()
     ImGui::SameLine();
 
     if (selected_green)
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Button, orange);
     if (ImGui::Button("Green"))
         current_draw_color = ImColor(0, 255, 0);
     if (selected_green)
@@ -250,7 +225,7 @@ void WindowClass::DrawColorButtons()
     ImGui::SameLine();
 
     if (selected_blue)
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Button, orange);
     if (ImGui::Button("Blue"))
         current_draw_color = ImColor(0, 0, 255);
     if (selected_blue)
@@ -259,11 +234,32 @@ void WindowClass::DrawColorButtons()
     ImGui::SameLine();
 
     if (selected_white)
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Button, orange);
     if (ImGui::Button("White"))
         current_draw_color = ImColor(255, 255, 255);
     if (selected_white)
         ImGui::PopStyleColor();
+
+    ImGui::SameLine();
+
+    bool open_color_picker_popup = false;
+    if (none_preset_color)
+        ImGui::PushStyleColor(ImGuiCol_Button, orange);
+    if (ImGui::Button("Choose"))
+        open_color_picker_popup = true;
+    if (none_preset_color)
+        ImGui::PopStyleColor();
+
+    if (open_color_picker_popup)
+        ImGui::OpenPopup("Color Picker");
+
+    if (ImGui::BeginPopup("Color Picker"))
+    {
+        ImGui::ColorPicker4("##picker",
+                            reinterpret_cast<float *>(&current_draw_color),
+                            ImGuiColorEditFlags_NoInputs);
+        ImGui::EndPopup();
+    }
 }
 
 void render(WindowClass &window_class)
