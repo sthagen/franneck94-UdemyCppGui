@@ -18,7 +18,6 @@ void WindowClass::Load()
     engineInitialized = true;
 }
 
-
 void WindowClass::Draw(std::string_view label)
 {
     if (!engineInitialized)
@@ -50,10 +49,16 @@ void WindowClass::Draw(std::string_view label)
                 soundInitialized = false;
             }
 
-            ma_sound_init_from_file(&engine, audioFilePath.c_str(), NULL, NULL, NULL, &sound);
+            ma_sound_init_from_file(&engine,
+                                    audioFilePath.c_str(),
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    &sound);
             ma_sound_start(&sound);
             isPlaying = true;
-        soundInitialized = true;}
+            soundInitialized = true;
+        }
     }
 
     ImGui::End();
