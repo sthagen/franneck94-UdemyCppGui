@@ -11,11 +11,8 @@
 class WindowClass
 {
 public:
-    WindowClass(ma_engine *engine_,
-                ma_result *result_)
-        : engine(engine_), result(result_)
-    {
-    };
+    WindowClass()
+        : engine({}){};
 
     void Draw(std::string_view label);
 
@@ -23,8 +20,15 @@ private:
     void Load();
 
 public:
-    ma_engine *engine = nullptr;
-    ma_result *result = nullptr;
+    ma_engine engine;
+    ma_sound sound;
+
+    bool engineInitialized = false;
+    bool isPlaying = false;
+
+    std::string audioFilePath =
+        ("C:/Users/Jan/Documents/_LocalCoding/UdemyCppGui/2_ImGui/"
+         "8_MediaPlayer/audio/_intro.mp3");
 };
 
 void render(WindowClass &window_class);

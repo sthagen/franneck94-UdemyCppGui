@@ -14,40 +14,36 @@
 
 void WindowClass::Load()
 {
-    *result = ma_engine_init(NULL, engine);
-    if (*result != MA_SUCCESS)
-    {
-        std::cerr << "Failed to initialize audio engine.\n";
-    }
+    ma_engine_init(NULL, &engine);
+    engineInitialized = true;
 }
+
 
 void WindowClass::Draw(std::string_view label)
 {
-    static bool isPlaying = false;
-
-    if (!engine || !result)
-        return;
+    if (!engineInitialized)
+        Load();
 
     ImGui::Begin(label.data());
 
-    if (ImGui::Button(isPlaying ? "Pause" : "Play"))
+    ImGui::Text("Audio File Path:");
+    ImGui::SameLine();
+    ImGui::InputText("##AudioFilePath", &audioFilePath);
+
+    if (ImGui::Button(isPlaying ? "Stop" : "Play"))
     {
         if (isPlaying)
         {
-            ma_engine_stop(engine);
+            ma_engine_stop(&engine);
+            engineInitialized = false;
+            isPlaying = false;
         }
         else
         {
-            Load();
-            ma_engine_play_sound(
-                engine,
-                "C:/Users/Jan/Documents/_LocalCoding/UdemyCppGui/2_ImGui/"
-                "8_MediaPlayer/audio/_intro.mp3",
-                NULL);
+            ma_engine_play_sound(&engine, audioFilePath.data(), NULL);
+            isPlaying = true;
         }
-        isPlaying = !isPlaying;
     }
-
 
     ImGui::End();
 }

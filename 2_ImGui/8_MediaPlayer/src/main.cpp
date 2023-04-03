@@ -109,10 +109,7 @@ int main(int, char **)
     style.Colors[ImGuiCol_TableBorderStrong] = ImVec4(1.0, 1.0, 1.0, 1.0);
     style.Colors[ImGuiCol_TableBorderLight] = ImVec4(1.0, 1.0, 1.0, 1.0);
 
-    ma_engine engine;
-    ma_result result;
-
-    WindowClass window_obj(&engine, &result);
+    WindowClass window_obj;
 
     while (!glfwWindowShouldClose(window))
     {
