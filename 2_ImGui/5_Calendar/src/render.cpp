@@ -41,6 +41,64 @@ void WindowClass::Draw(std::string_view title)
     ImGui::End();
 }
 
+void WindowClass::LoadMeetingsFromFile(const std::string_view filename)
+{
+    auto in = std::ifstream(filename.data(), std::ios::binary);
+
+    if (!in.is_open())
+        return;
+
+    std::uint32_t numMeetings;
+    in.read(reinterpret_cast<char *>(&numMeetings), sizeof(numMeetings));
+
+    for (std::uint32_t i = 0; i < numMeetings; ++i)
+    {
+        auto dateRep = std::chrono::sys_days::rep{};
+        in.read(reinterpret_cast<char *>(&dateRep), sizeof(dateRep));
+
+        auto date =
+            std::chrono::sys_days{std::chrono::duration_cast<std::chrono::days>(
+                std::chrono::duration<std::chrono::sys_days::rep,
+                                      std::ratio<86400>>(dateRep))};
+
+        std::uint32_t numMeetingsOnDate;
+        in.read(reinterpret_cast<char *>(&numMeetingsOnDate),
+                sizeof(numMeetingsOnDate));
+
+        for (std::uint32_t j = 0; j < numMeetingsOnDate; ++j)
+        {
+            Meeting meeting = Meeting::Deserialize(in);
+            meetings[date].push_back(meeting);
+        }
+    }
+}
+
+void WindowClass::SaveMeetingsToFile(std::string_view filename) const
+{
+    auto out = std::ofstream(filename.data(), std::ios::binary);
+
+    const auto numMeetings = static_cast<std::uint32_t>(meetings.size());
+    out.write(reinterpret_cast<const char *>(&numMeetings),
+              sizeof(numMeetings));
+
+    for (const auto &[date, meetingList] : meetings)
+    {
+        auto sysDate = std::chrono::sys_days{date};
+        const auto dateRep = sysDate.time_since_epoch().count();
+        out.write(reinterpret_cast<const char *>(&dateRep), sizeof(dateRep));
+
+        const auto numMeetingsOnDate =
+            static_cast<std::uint32_t>(meetingList.size());
+        out.write(reinterpret_cast<const char *>(&numMeetingsOnDate),
+                  sizeof(numMeetingsOnDate));
+
+        for (const auto &meeting : meetingList)
+        {
+            meeting.Serialize(out);
+        }
+    }
+}
+
 void WindowClass::DrawDateCombo(std::string_view label,
                                 int *day,
                                 int *month,

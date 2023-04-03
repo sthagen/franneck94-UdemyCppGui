@@ -155,6 +155,48 @@ void WindowClass::Draw(std::string_view label)
         }
     }
 
+    // Add input text field for file extension filter
+    static char extensionFilter[16] = "";
+    ImGui::Text("Filter by extension");
+    ImGui::SameLine();
+    ImGui::InputText("###inFilter", extensionFilter, sizeof(extensionFilter));
+
+    auto caseInsensitiveCompare = [](std::string_view s1,
+                                     std::string_view s2) -> bool {
+        return std::equal(s1.begin(),
+                          s1.end(),
+                          s2.begin(),
+                          s2.end(),
+                          [](const char c1, const char c2) {
+                              return (c1 == c2 ||
+                                      std::toupper(c1) == std::toupper(c2));
+                          });
+    };
+
+    int filteredFilesCount = 0;
+    try
+    {
+        for (const auto &entry : fs::directory_iterator(currentPath))
+        {
+            if (!fs::is_regular_file(entry))
+                continue;
+
+            if (caseInsensitiveCompare(entry.path().extension().string(),
+                                       extensionFilter))
+                filteredFilesCount++;
+        }
+
+        ImGui::Separator();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what();
+    }
+
+    ImGui::Text("Number of files with extension \"%s\": %d",
+                extensionFilter,
+                filteredFilesCount);
+
     ImGui::End();
 }
 

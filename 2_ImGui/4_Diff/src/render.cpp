@@ -42,79 +42,99 @@ void WindowClass::Draw(std::string_view title)
         SaveFileContent(file2Path, file2Content);
     }
 
-    ImGui::BeginChild(
-        "Diff",
-        ImVec2(ImGui::GetContentRegionAvail().x * 0.5f - 50.0F, -1.0f),
-        true);
-    for (std::size_t i = 0; i < diffResult1.size(); ++i)
+    ImVec2 childSize =
+        ImVec2(ImGui::GetContentRegionAvail().x * 0.5f - 50.0F, 400.0f);
+    ImVec2 parentChildSize = ImVec2(0.0f, 400.0f);
+
+    ImGui::BeginChild("Parent",
+                      parentChildSize,
+                      true,
+                      ImGuiWindowFlags_HorizontalScrollbar);
+
+    if (ImGui::BeginChild("Diff1", childSize, false))
     {
-        if (!diffResult1[i].empty() || !diffResult2[i].empty())
+        for (std::size_t i = 0; i < diffResult1.size(); ++i)
         {
-            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),
-                               "%s",
-                               diffResult1[i].c_str());
+            if (!diffResult1[i].empty() || !diffResult2[i].empty())
+            {
+                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),
+                                   "%s",
+                                   diffResult1[i].c_str());
+            }
+            else
+            {
+                ImGui::Text("%s", file1Content[i].c_str());
+            }
         }
-        else
-        {
-            ImGui::Text("%s", file1Content[i].c_str());
-        }
+        ImGui::EndChild();
     }
-    ImGui::EndChild();
 
     ImGui::SameLine();
 
-    ImGui::BeginChild("Swap", ImVec2(50.0F, -1.0f), true);
-    for (std::size_t i = 0; i < diffResult1.size(); ++i)
+    if (ImGui::BeginChild("Swap", ImVec2(50.0F, 400.0F), true))
     {
-        if (!diffResult1[i].empty() || !diffResult2[i].empty())
+        for (std::size_t i = 0; i < diffResult1.size(); ++i)
         {
-            if (ImGui::Button("<", ImVec2(10, 18)))
+            if (!diffResult1[i].empty() || !diffResult2[i].empty())
             {
-                file1Content[i] = file2Content[i];
-                CreateDiff();
+                if (ImGui::Button("<", ImVec2(10, 18)))
+                {
+                    file1Content[i] = file2Content[i];
+                    CreateDiff();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button(">", ImVec2(10, 18)))
+                {
+                    file2Content[i] = file1Content[i];
+                    CreateDiff();
+                }
             }
-            ImGui::SameLine();
-            if (ImGui::Button(">", ImVec2(10, 18)))
+            else
             {
-                file2Content[i] = file1Content[i];
-                CreateDiff();
+                ImGui::Dummy(ImVec2(0, 10));
             }
         }
-        else
-        {
-            ImGui::Dummy(ImVec2(0, 10));
-        }
+        ImGui::EndChild();
     }
-    ImGui::EndChild();
 
     ImGui::SameLine();
 
-    ImGui::BeginChild("Diff2",
-                      ImVec2(ImGui::GetContentRegionAvail().x - 50.0F, -1.0f),
-                      true);
-
-    for (std::size_t i = 0; i < diffResult2.size(); ++i)
+    if (ImGui::BeginChild("Diff2", childSize, false))
     {
-        if (!diffResult1[i].empty() || !diffResult2[i].empty())
+        for (std::size_t i = 0; i < diffResult2.size(); ++i)
         {
-            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),
-                               "%s",
-                               diffResult2[i].c_str());
+            if (!diffResult1[i].empty() || !diffResult2[i].empty())
+            {
+                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),
+                                   "%s",
+                                   diffResult2[i].c_str());
+            }
+            else
+            {
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+                                   "%s",
+                                   file2Content[i].c_str());
+            }
         }
-        else
-        {
-            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
-                               "%s",
-                               file2Content[i].c_str());
-        }
+        ImGui::EndChild();
     }
-    ImGui::EndChild();
+
+    ImGui::EndChild(); // End Parent
+
+    auto diffLinesCount = 0;
+    for (const auto &line : diffResult1)
+    {
+        if (!line.empty())
+            ++diffLinesCount;
+    }
+
+    ImGui::Text("Diff lines count: %d", diffLinesCount);
 
     ImGui::End();
 }
 
 void WindowClass::SaveFileContent(std::string_view filePath,
-                                   const std::vector<std::string> &content)
+                                  const std::vector<std::string> &content)
 {
     auto file = std::ofstream(filePath.data());
 
@@ -132,8 +152,7 @@ void WindowClass::SaveFileContent(std::string_view filePath,
     }
 }
 
-std::vector<std::string> WindowClass::LoadFileContent(
-    std::string_view filePath)
+std::vector<std::string> WindowClass::LoadFileContent(std::string_view filePath)
 {
     auto content = std::vector<std::string>{};
     auto file = std::ifstream(filePath.data());

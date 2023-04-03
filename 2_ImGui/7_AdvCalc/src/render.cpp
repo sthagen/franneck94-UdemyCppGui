@@ -13,6 +13,14 @@
 
 void WindowClass::Draw(std::string_view label)
 {
+    static constexpr auto num_points = 10'000;
+    static constexpr auto x_min = -100.0f;
+    static constexpr auto x_max = 100.0f;
+    static const auto step = (std::abs(x_max) + std::abs(x_min)) / num_points;
+
+    static auto xs = std::vector<double>(num_points, 0.0F);
+    static auto ys = std::vector<double>(num_points, 0.0F);
+
     ImGui::Begin(label.data());
 
     for (int i = 1; i < IM_ARRAYSIZE(function_names); ++i)
@@ -28,30 +36,24 @@ void WindowClass::Draw(std::string_view label)
         }
     }
 
-    ImGui::SliderFloat("X min", &x_min, -500.0F, x_max - 1.0F);
-    ImGui::SliderFloat("X max", &x_max, x_min + 1.0F, 500.0F);
     ImGui::End();
+
+    ImGui::Begin("###plotWindow");
 
     if (selected_functions.size() == 0)
     {
-        if (ImPlot::BeginPlot("ScatterPlot"))
-        {
-            ImPlot::EndPlot();
-        }
+        ImPlot::BeginPlot("ScatterPlot",
+                          ImVec2(-1.0F, -1.0F),
+                          ImPlotFlags_NoTitle);
+        ImPlot::EndPlot();
+        ImGui::End();
 
         return;
     }
 
-    const auto step = 0.05;
-    const auto num_points =
-        static_cast<std::size_t>(((x_max - x_min) / step) + 1);
-
-    auto xs = std::vector<double>(num_points, 0.0F);
-    auto ys = std::vector<double>(num_points, 0.0F);
-
-    if (ImPlot::BeginPlot("plot"))
+    if (ImPlot::BeginPlot("###plotPlot"))
     {
-        std::size_t func_idx = 0;
+        ImPlot::SetupAxes("x", "y", ImPlotAxisFlags_None, ImPlotAxisFlags_AutoFit);
 
         for (const auto &func : selected_functions)
         {
@@ -59,38 +61,20 @@ void WindowClass::Draw(std::string_view label)
             for (std::size_t i = 0; i < num_points; ++i)
             {
                 xs[i] = x;
-                const auto selected_function =
-                    func; // Set the current function to evaluate
+                const auto selected_function = func;
                 ys[i] = evaluate_function(selected_function, x);
                 x += step;
-            }
-
-            if (func_idx == 0)
-            {
-                const auto [min_y_it, max_y_it] =
-                    std::minmax_element(ys.begin(), ys.end());
-                const auto min_y = *min_y_it;
-                const auto max_y = *max_y_it;
-
-                ImPlot::SetupAxisLimits(ImAxis_X1,
-                                        x_min,
-                                        x_max,
-                                        ImPlotCond_Once);
-                ImPlot::SetupAxisLimits(ImAxis_Y1,
-                                        min_y - std::abs(min_y * 0.5F),
-                                        max_y + std::abs(max_y * 0.5F),
-                                        ImPlotCond_Once);
             }
 
             ImPlot::PlotLine(function_names[static_cast<std::size_t>(func)],
                              xs.data(),
                              ys.data(),
                              static_cast<int>(xs.size()));
-
-            ++func_idx;
         }
+        ImPlot::EndPlot();
     }
-    ImPlot::EndPlot();
+
+    ImGui::End();
 }
 
 double WindowClass::evaluate_function(Function selected_function, double x)

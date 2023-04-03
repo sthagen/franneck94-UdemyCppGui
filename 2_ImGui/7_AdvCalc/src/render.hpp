@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 #include <set>
 #include <string>
 #include <string_view>
@@ -10,8 +11,8 @@
 class WindowClass
 {
 public:
-    constexpr static const char *function_names[7] =
-        {"unk", "sin(x)", "cos(x)", "tan(x)", "exp(x)", "log(x)", "sqrt(x)"};
+    constexpr static const char *function_names[] =
+        {"unk", "sin(x)", "cos(x)", "exp(x)", "log(x)", "sqrt(x)"};
 
     enum class Function
     {
@@ -25,12 +26,9 @@ public:
     };
 
 public:
-    WindowClass()
+    WindowClass() : selected_functions({})
     {
-        std::memset(user_input, 0, 256);
-        selected_functions = {};
-        x_min = -10.0F;
-        x_max = 10.0F;
+        std::memset(user_input, 0, sizeof(user_input));
     };
 
     void Draw(std::string_view label);
@@ -41,8 +39,6 @@ private:
 private:
     char user_input[256];
     std::set<Function> selected_functions;
-    float x_min;
-    float x_max;
 };
 
 void render(WindowClass &window_class);
