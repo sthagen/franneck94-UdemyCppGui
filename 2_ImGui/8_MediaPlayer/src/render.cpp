@@ -24,6 +24,11 @@ void WindowClass::Draw(std::string_view label)
     if (!engineInitialized)
         Load();
 
+    if (isPlaying && !ma_sound_is_playing(&sound))
+    {
+        isPlaying = false;
+    }
+
     ImGui::Begin(label.data());
 
     ImGui::Text("Audio File Path:");
@@ -34,15 +39,21 @@ void WindowClass::Draw(std::string_view label)
     {
         if (isPlaying)
         {
-            ma_engine_stop(&engine);
-            engineInitialized = false;
+            ma_sound_stop(&sound);
             isPlaying = false;
         }
         else
         {
-            ma_engine_play_sound(&engine, audioFilePath.data(), NULL);
+            if (soundInitialized)
+            {
+                ma_sound_uninit(&sound);
+                soundInitialized = false;
+            }
+
+            ma_sound_init_from_file(&engine, audioFilePath.c_str(), NULL, NULL, NULL, &sound);
+            ma_sound_start(&sound);
             isPlaying = true;
-        }
+        soundInitialized = true;}
     }
 
     ImGui::End();

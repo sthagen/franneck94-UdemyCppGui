@@ -24,6 +24,7 @@ public:
     ma_sound sound;
 
     bool engineInitialized = false;
+    bool soundInitialized = false;
     bool isPlaying = false;
 
     std::string audioFilePath =
