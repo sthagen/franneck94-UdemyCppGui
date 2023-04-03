@@ -3,23 +3,28 @@
 #include <string>
 #include <string_view>
 
-#include <SFML/Audio.hpp>
-#include <imgui.h>
+#include "imgui.h"
+#include "imgui_stdlib.h"
+#include "implot.h"
+#include "miniaudio.h"
 
 class WindowClass
 {
 public:
-    void loadFile(const std::string &filename);
-
-    void play();
-    void pause();
-    void stop();
+    WindowClass(ma_engine *engine_,
+                ma_result *result_)
+        : engine(engine_), result(result_)
+    {
+    };
 
     void Draw(std::string_view label);
 
 private:
-    sf::SoundBuffer soundBuffer;
-    sf::Sound sound;
+    void Load();
+
+public:
+    ma_engine *engine = nullptr;
+    ma_result *result = nullptr;
 };
 
 void render(WindowClass &window_class);

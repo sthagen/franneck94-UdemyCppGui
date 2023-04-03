@@ -8,51 +8,46 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "implot.h"
-#include <imgui-SFML.h>
+#include "miniaudio.h"
 
 #include "render.hpp"
 
-void WindowClass::loadFile(const std::string &filename)
+void WindowClass::Load()
 {
-    if (soundBuffer.loadFromFile(filename))
+    *result = ma_engine_init(NULL, engine);
+    if (*result != MA_SUCCESS)
     {
-        sound.setBuffer(soundBuffer);
+        std::cerr << "Failed to initialize audio engine.\n";
     }
-}
-
-void WindowClass::play()
-{
-    sound.play();
-}
-
-void WindowClass::pause()
-{
-    sound.pause();
-}
-
-void WindowClass::stop()
-{
-    sound.stop();
 }
 
 void WindowClass::Draw(std::string_view label)
 {
+    static bool isPlaying = false;
+
+    if (!engine || !result)
+        return;
+
     ImGui::Begin(label.data());
 
-    if (ImGui::Button("Play"))
+    if (ImGui::Button(isPlaying ? "Pause" : "Play"))
     {
-        play();
+        if (isPlaying)
+        {
+            ma_engine_stop(engine);
+        }
+        else
+        {
+            Load();
+            ma_engine_play_sound(
+                engine,
+                "C:/Users/Jan/Documents/_LocalCoding/UdemyCppGui/2_ImGui/"
+                "8_MediaPlayer/audio/_intro.mp3",
+                NULL);
+        }
+        isPlaying = !isPlaying;
     }
-    ImGui::SameLine();
-    if (ImGui::Button("Pause"))
-    {
-        pause();
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Stop"))
-    {
-        stop();
-    }
+
 
     ImGui::End();
 }

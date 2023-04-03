@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <filesystem>
+#include <iostream>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -11,6 +12,9 @@
 #include <GLES2/gl2.h>
 #endif
 #include <GLFW/glfw3.h>
+
+#define MINIAUDIO_IMPLEMENTATION
+#include "miniaudio.h"
 
 #include "render.hpp"
 
@@ -105,7 +109,10 @@ int main(int, char **)
     style.Colors[ImGuiCol_TableBorderStrong] = ImVec4(1.0, 1.0, 1.0, 1.0);
     style.Colors[ImGuiCol_TableBorderLight] = ImVec4(1.0, 1.0, 1.0, 1.0);
 
-    WindowClass window_obj;
+    ma_engine engine;
+    ma_result result;
+
+    WindowClass window_obj(&engine, &result);
 
     while (!glfwWindowShouldClose(window))
     {
