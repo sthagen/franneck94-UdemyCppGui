@@ -7,11 +7,22 @@
 
 void WindowClass::Draw(std::string_view label)
 {
-    ImGui::Begin(label.data());
+    ImGui::SetNextWindowSize(ImVec2(800.0F, 500.0F));
+    ImGui::SetNextWindowPos(ImVec2(400.0f, 200.0F));
+    ImGui::Begin("MainWindow", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 
-    if (ImGui::Button("ClickMe"))
+    ImGui::SetCursorPos(ImVec2(400.0F, 200.0F));
+    if (ImGui::Button("Click me", ImVec2(100.0, 100.0F)))
     {
-        ImGui::Text("Clicked");
+        ImGui::OpenPopup("Clicked!");
+    }
+
+    bool open = true;
+    if (ImGui::BeginPopupModal("Clicked!", &open))
+    {
+        ImGui::Text("You clicked me!");
+
+        ImGui::EndPopup();
     }
 
     ImGui::End();
