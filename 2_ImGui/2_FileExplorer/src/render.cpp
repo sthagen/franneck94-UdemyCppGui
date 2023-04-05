@@ -1,23 +1,18 @@
-#include <algorithm>
-#include <chrono>
-#include <cstdint>
-#include <fmt/format.h>
-#include <fstream>
+#include <cstdlib>
+#include <exception>
+#include <filesystem>
 #include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
+#include <string_view>
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "implot.h"
+#include <fmt/format.h>
 
 #include "render.hpp"
 
 void WindowClass::Draw(std::string_view label)
 {
-    static auto selectedEntry = fs::path{};
-
     ImGui::Begin(label.data());
 
     if (ImGui::Button("Go Up"))
@@ -34,40 +29,30 @@ void WindowClass::Draw(std::string_view label)
 
     ImGui::Separator();
 
-    try
+    for (const auto &entry : fs::directory_iterator(currentPath))
     {
-        for (const auto &entry : fs::directory_iterator(currentPath))
+        const auto is_selected = entry.path() == selectedEntry;
+        const auto is_directory = entry.is_directory();
+        const auto is_file = entry.is_regular_file();
+        auto entry_name = entry.path().filename().string();
+
+        if (is_directory)
+            entry_name = "[D] " + entry_name;
+        if (is_file)
+            entry_name = "[F] " + entry_name;
+
+        if (ImGui::Selectable(entry_name.c_str(), is_selected))
         {
-            const auto isDirectory = entry.is_directory();
-            const bool isSelected = entry.path() == selectedEntry;
-            auto entryName = entry.path().filename().string();
-
-            if (isDirectory)
+            if (is_directory)
             {
-                entryName = "[D] " + entryName;
-            }
-            else
-            {
-                entryName = "[F] " + entryName;
+                currentPath /= entry.path().filename();
             }
 
-            if (ImGui::Selectable(entryName.c_str(), isSelected))
-            {
-                if (isDirectory)
-                {
-                    currentPath /= entry.path().filename();
-                }
-
-                selectedEntry = entry.path();
-            }
+            selectedEntry = entry.path();
         }
+    }
 
-        ImGui::Separator();
-    }
-    catch (const std::exception &e)
-    {
-        ImGui::TextColored(ImVec4(1, 0, 0, 1), "Error: %s", e.what());
-    }
+    ImGui::Separator();
 
     if (!selectedEntry.empty())
     {
@@ -93,38 +78,43 @@ void WindowClass::Draw(std::string_view label)
         if (ImGui::Button("Rename"))
         {
             renameDialogOpen = true;
-            strncpy(renameBuffer,
-                    selectedEntry.filename().string().c_str(),
-                    sizeof(renameBuffer) - 1);
         }
 
         if (renameDialogOpen)
         {
             ImGui::OpenPopup("Rename File");
         }
+
         if (ImGui::BeginPopupModal("Rename File", &renameDialogOpen))
         {
-            ImGui::Text("New name:");
-            ImGui::InputText("##NewName", renameBuffer, sizeof(renameBuffer));
+            static char buffer_name[512] = {'\0'};
+
+            ImGui::Text("New name: ");
+            ImGui::InputText("###NewName", buffer_name, sizeof(buffer_name));
+
             if (ImGui::Button("Rename"))
             {
-                fs::path newPath = selectedEntry.parent_path() / renameBuffer;
-                if (renameFile(selectedEntry, newPath))
+                auto new_path = selectedEntry.parent_path() / buffer_name;
+                if (renameFile(selectedEntry, new_path))
                 {
-                    selectedEntry = newPath;
                     renameDialogOpen = false;
-                    std::memset(renameBuffer, 0, 1024);
+                    selectedEntry = new_path;
+                    std::memset(buffer_name, 0, sizeof(buffer_name));
                 }
             }
+
             ImGui::SameLine();
+
             if (ImGui::Button("Cancel"))
             {
                 renameDialogOpen = false;
             }
+
             ImGui::EndPopup();
         }
 
         ImGui::SameLine();
+
         if (ImGui::Button("Delete"))
         {
             deleteDialogOpen = true;
@@ -132,84 +122,64 @@ void WindowClass::Draw(std::string_view label)
 
         if (deleteDialogOpen)
         {
-            ImGui::OpenPopup("Confirm Deletion");
+            ImGui::OpenPopup("Delete File");
         }
-        if (ImGui::BeginPopupModal("Confirm Deletion", &deleteDialogOpen))
+
+        if (ImGui::BeginPopupModal("Delete File", &deleteDialogOpen))
         {
             ImGui::Text("Are you sure you want to delete %s?",
                         selectedEntry.filename().string().c_str());
+
             if (ImGui::Button("Yes"))
             {
                 if (deleteFile(selectedEntry))
                 {
                     selectedEntry.clear();
-                    deleteDialogOpen = false;
                 }
+                deleteDialogOpen = false;
             }
+
             ImGui::SameLine();
+
             if (ImGui::Button("No"))
             {
                 deleteDialogOpen = false;
             }
+
             ImGui::EndPopup();
         }
     }
 
-    // Add input text field for file extension filter
-    static char extensionFilter[16] = "";
+    ImGui::SameLine();
+
+    static char extension_filter[16] = {"\0"};
+    auto filtered_file_count = 0;
     ImGui::Text("Filter by extension");
     ImGui::SameLine();
-    ImGui::InputText("###inFilter", extensionFilter, sizeof(extensionFilter));
+    ImGui::InputText("###inFilter", extension_filter, sizeof(extension_filter));
 
-    auto caseInsensitiveCompare = [](std::string_view s1,
-                                     std::string_view s2) -> bool {
-        return std::equal(s1.begin(),
-                          s1.end(),
-                          s2.begin(),
-                          s2.end(),
-                          [](const char c1, const char c2) {
-                              return (c1 == c2 ||
-                                      std::toupper(c1) == std::toupper(c2));
-                          });
-    };
-
-    int filteredFilesCount = 0;
-    try
+    for (const auto &entry : fs::directory_iterator(currentPath))
     {
-        for (const auto &entry : fs::directory_iterator(currentPath))
-        {
-            if (!fs::is_regular_file(entry))
-                continue;
+        if (!fs::is_regular_file(entry))
+            continue;
 
-            if (caseInsensitiveCompare(entry.path().extension().string(),
-                                       extensionFilter))
-                filteredFilesCount++;
-        }
-
-        ImGui::Separator();
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what();
+        if (entry.path().extension().string() == extension_filter)
+            filtered_file_count++;
     }
 
-    ImGui::Text("Number of files with extension \"%s\": %d",
-                extensionFilter,
-                filteredFilesCount);
+    ImGui::Text("Number of files: %d", filtered_file_count);
 
     ImGui::End();
 }
 
 void WindowClass::openFileWithDefaultEditor(const fs::path &filePath)
 {
-    auto command = std::string{};
-
 #ifdef _WIN32
-    command = "start \"\" \"" + filePath.string() + "\"";
+    const auto command = "start \"\" \"" + filePath.string() + "\"";
 #elif __APPLE__
-    command = "open \"" + filePath.string() + "\"";
+    const auto command = "open \"" + filePath.string() + "\"";
 #else
-    command = "xdg-open \"" + filePath.string() + "\"";
+    const auto command = "xdg-open \"" + filePath.string() + "\"";
 #endif
 
     std::system(command.c_str());
@@ -222,23 +192,23 @@ bool WindowClass::renameFile(const fs::path &oldPath, const fs::path &newPath)
         fs::rename(oldPath, newPath);
         return true;
     }
-    catch (const std::filesystem::filesystem_error &e)
+    catch (const std::exception &e)
     {
-        std::cerr << "Error renaming file: " << e.what() << std::endl;
+        std::cerr << e.what() << '\n';
         return false;
     }
 }
 
-bool WindowClass::deleteFile(const fs::path &filePath)
+bool WindowClass::deleteFile(const fs::path &path)
 {
     try
     {
-        fs::remove(filePath);
+        fs::remove(path);
         return true;
     }
-    catch (const std::filesystem::filesystem_error &e)
+    catch (const std::exception &e)
     {
-        std::cerr << "Error deleting file: " << e.what() << std::endl;
+        std::cerr << e.what() << '\n';
         return false;
     }
 }

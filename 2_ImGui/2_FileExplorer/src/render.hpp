@@ -10,21 +10,19 @@ namespace fs = std::filesystem;
 class WindowClass
 {
 public:
-    WindowClass() : currentPath(fs::current_path())
-    {
-    }
+    WindowClass()
+        : currentPath(fs::current_path()), selectedEntry(fs::path{}){};
 
     void Draw(std::string_view label);
 
 private:
     void openFileWithDefaultEditor(const fs::path &filePath);
     bool renameFile(const fs::path &oldPath, const fs::path &newPath);
-    bool deleteFile(const fs::path &filePath);
+    bool deleteFile(const fs::path &path);
 
 private:
     fs::path currentPath;
-    char renameBuffer[1024];
-
+    fs::path selectedEntry;
     bool renameDialogOpen = false;
     bool deleteDialogOpen = false;
 };
