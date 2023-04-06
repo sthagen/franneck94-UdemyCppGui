@@ -43,7 +43,7 @@ void WindowClass::Draw(std::string_view title)
     const auto parent_size = ImVec2(ImGui::GetContentRegionAvail().x, 400.0F);
     const auto child_size = ImVec2(parent_size.x / 2.0F - 40.0F, parent_size.y);
 
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0F, 0.0F));
 
     ImGui::BeginChild("Parent", parent_size, true);
 
@@ -68,18 +68,12 @@ void WindowClass::Draw(std::string_view title)
 
     ImGui::SameLine();
 
-    const auto line_height = ImGui::GetTextLineHeightWithSpacing();
-    const auto button_size = ImVec2(15.0F, line_height);
+    const auto line_heihgt = ImGui::GetTextLineHeightWithSpacing();
+    const auto button_size = ImVec2(15.0F, line_heihgt);
 
-    if (ImGui::BeginChild("Swap",
-                          ImVec2(80.0F, child_size.y),
-                          true,
-                          ImGuiWindowFlags_NoScrollbar))
+    if (ImGui::BeginChild("Swap", ImVec2(80.0F, child_size.y), true))
     {
-
-        const auto max_size = std::max(diffResult1.size(), diffResult2.size());
-
-        for (std::size_t i = 0; i < max_size; i++)
+        for (std::size_t i = 0; i < diffResult1.size(); i++)
         {
             const auto left_label = fmt::format("<##{}", i);
             const auto right_label = fmt::format(">##{}", i);
@@ -88,16 +82,11 @@ void WindowClass::Draw(std::string_view title)
             {
                 if (ImGui::Button(left_label.data(), button_size))
                 {
-                    if (fileContent1.size() > i && fileContent2.size() > i)
-                    {
+                    if (fileContent1.size() > i && fileContent2.size()> i)
                         fileContent1[i] = fileContent2[i];
-                        CreateDiff();
-                    }
                     else if (fileContent2.size() > i)
-                    {
                         fileContent1.push_back(fileContent2[i]);
-                        CreateDiff();
-                    }
+                    CreateDiff();
                 }
 
                 ImGui::SameLine();
@@ -105,22 +94,16 @@ void WindowClass::Draw(std::string_view title)
                 if (ImGui::Button(right_label.data(), button_size))
                 {
                     if (fileContent1.size() > i && fileContent2.size() > i)
-                    {
                         fileContent2[i] = fileContent1[i];
-                        CreateDiff();
-                    }
                     else if (fileContent1.size() > i)
-                    {
                         fileContent2.push_back(fileContent1[i]);
-                        CreateDiff();
-                    }
+                    CreateDiff();
                 }
-
             }
             else
             {
-                const auto cursor_pos = ImGui::GetCursorPos().y;
-                ImGui::SetCursorPosY(cursor_pos + line_height);
+                const auto cursor_pos = ImGui::GetCursorPosY();
+                ImGui::SetCursorPosY(cursor_pos + line_heihgt);
             }
         }
 
@@ -151,6 +134,15 @@ void WindowClass::Draw(std::string_view title)
     ImGui::EndChild();
 
     ImGui::PopStyleVar();
+
+    auto diff_lines_count = 0U;
+    for (const auto &line : diffResult1)
+    {
+        if (!line.empty())
+            ++diff_lines_count;
+    }
+
+    ImGui::Text("Diff lines count: %d", diff_lines_count);
 
     ImGui::End();
 }
