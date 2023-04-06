@@ -1,31 +1,27 @@
 #pragma once
 
-#include <cstdint>
-#include <string_view>
 #include <string>
+#include <string_view>
 
 class WindowClass
 {
 public:
-    static const std::size_t BUFFER_SIZE = 1024;
+    static constexpr auto bufferSize = 1024;
 
 public:
-    WindowClass()
+    WindowClass() : currentFilename({})
     {
-        textBuffer.reserve(BUFFER_SIZE);
-    };
+        textBuffer.reserve(bufferSize);
+    }
 
     void Draw(std::string_view title);
     void SaveToFile(std::string_view filename);
     void LoadFromFile(std::string_view filename);
-
-    std::string GetFileExtension(std::string_view filePath);
-
-    bool visible;
+    std::string GetFileExtension(std::string_view filename);
 
 private:
     std::string textBuffer;
+    std::string currentFilename;
 };
-
 
 void render(WindowClass &window_class);

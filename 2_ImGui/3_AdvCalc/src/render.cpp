@@ -1,5 +1,6 @@
 #include <array>
 #include <cmath>
+#include <set>
 #include <string_view>
 
 #include "imgui.h"
@@ -61,7 +62,8 @@ void WindowClass::Draw(std::string_view label)
             x += x_step;
         }
 
-        const auto plot_label = fmt::format("##function{}", static_cast<int>(function));
+        const auto plot_label =
+            fmt::format("##function{}", static_cast<int>(function));
         ImPlot::PlotLine(plot_label.data(), xs.data(), ys.data(), num_points);
     }
 

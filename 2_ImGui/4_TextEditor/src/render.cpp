@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <sstream>
+#include <string>
 #include <string_view>
 
 #include "imgui.h"
@@ -15,53 +15,49 @@ namespace fs = std::filesystem;
 
 void WindowClass::Draw(std::string_view title)
 {
-    static char saveFilenameBuffer[128] = "output.txt";
-    static char loadFilenameBuffer[128] = "output.txt";
-    static auto currentFileName = std::string{};
+    static constexpr auto input_flags =
+        (ImGuiInputTextFlags_AllowTabInput |
+         ImGuiInputTextFlags_NoHorizontalScroll);
 
-    ImGui::Begin(title.data(),
-                 NULL,
-                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
+    static char saveFilenameBuffer[512] = {"\0"};
+    static char loadFilenameBuffer[512] = {"\0"};
 
-    const auto ctrlPressed = ImGui::GetIO().KeyCtrl;
-    const auto escPressed =
+    const auto ctrl_pressed = ImGui::GetIO().KeyCtrl;
+    const auto esc_pressed =
         ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape));
-    const auto sPressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S));
-    const auto lPressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_L));
+    const auto s_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S));
+    const auto l_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_L));
 
-    // Display the "Save" button
-    if (ImGui::Button("Save"))
-    {
-        // Open the "Save File" popup
-        ImGui::OpenPopup("Save File");
-    }
+    ImGui::Begin(title.data());
 
-    // Check for Ctrl + S key press
-    if (ctrlPressed && sPressed)
+    if (ImGui::Button("Save") || (ctrl_pressed && s_pressed))
     {
         ImGui::OpenPopup("Save File");
     }
 
-    // Display the "Save File" popup
-    if (ImGui::BeginPopupModal("Save File",
-                               nullptr,
-                               ImGuiWindowFlags_AlwaysAutoResize))
+    ImGui::SameLine();
+
+    if (ImGui::Button("Load") || (ctrl_pressed && l_pressed))
     {
-        // Add an input field for the filename
+        ImGui::OpenPopup("Load File");
+    }
+
+    if (ImGui::BeginPopupModal("Save File"))
+    {
         ImGui::InputText("Filename",
                          saveFilenameBuffer,
                          sizeof(saveFilenameBuffer));
 
-        // Display the "Save" button inside the popup
-        if (ImGui::Button("Save", ImVec2(120, 0)))
+        if (ImGui::Button("Save", ImVec2(120.0F, 0.0F)))
         {
             SaveToFile(saveFilenameBuffer);
-            currentFileName = saveFilenameBuffer;
+            currentFilename = saveFilenameBuffer;
             ImGui::CloseCurrentPopup();
         }
 
-        // Display the "Cancel" button inside the popup
-        if (ImGui::Button("Cancel", ImVec2(120, 0)) || escPressed)
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel", ImVec2(120.0F, 0.0F)) || esc_pressed)
         {
             ImGui::CloseCurrentPopup();
         }
@@ -69,41 +65,22 @@ void WindowClass::Draw(std::string_view title)
         ImGui::EndPopup();
     }
 
-    ImGui::SameLine();
-
-    // Display the "Load" button
-    if (ImGui::Button("Load"))
+    if (ImGui::BeginPopupModal("Load File"))
     {
-        // Open the "Load File" popup
-        ImGui::OpenPopup("Load File");
-    }
-
-    // Check for Ctrl + L key press
-    if (ctrlPressed && lPressed)
-    {
-        ImGui::OpenPopup("Load File");
-    }
-
-    // Display the "Load File" popup
-    if (ImGui::BeginPopupModal("Load File",
-                               nullptr,
-                               ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        // Add an input field for the filename
         ImGui::InputText("Filename",
                          loadFilenameBuffer,
                          sizeof(loadFilenameBuffer));
 
-        // Display the "Load" button inside the popup
-        if (ImGui::Button("Load", ImVec2(120, 0)))
+        if (ImGui::Button("Load", ImVec2(120.0F, 0.0F)))
         {
             LoadFromFile(loadFilenameBuffer);
-            currentFileName = loadFilenameBuffer;
+            currentFilename = loadFilenameBuffer;
             ImGui::CloseCurrentPopup();
         }
 
-        // Display the "Cancel" button inside the popup
-        if (ImGui::Button("Cancel", ImVec2(120, 0)) || escPressed)
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel", ImVec2(120.0F, 0.0F)) || esc_pressed)
         {
             ImGui::CloseCurrentPopup();
         }
@@ -111,80 +88,67 @@ void WindowClass::Draw(std::string_view title)
         ImGui::EndPopup();
     }
 
-    // Create a child window for the line numbers
-    ImGui::BeginChild("LineNumbers",
-                      ImVec2(30, -ImGui::GetFrameHeightWithSpacing()),
-                      false,
-                      ImGuiWindowFlags_NoScrollbar);
-    const auto lineCount =
+    ImGui::BeginChild("LineNumbers", ImVec2(30.0F, 625.0F));
+
+    const auto line_count =
         std::count(textBuffer.begin(), textBuffer.end(), '\n') + 1;
-    for (int i = 1; i <= lineCount; ++i)
+
+    for (auto i = 1; i <= line_count; ++i)
     {
         ImGui::Text("%d", i);
     }
+
     ImGui::EndChild();
 
     ImGui::SameLine();
 
-    const auto flags = (ImGuiInputTextFlags_AllowTabInput |
-                        ImGuiInputTextFlags_CtrlEnterForNewLine |
-                        ImGuiInputTextFlags_NoHorizontalScroll);
-
-    ImGui::InputTextMultiline("##WindowClass",
+    ImGui::InputTextMultiline("###inputField",
                               &textBuffer,
-                              ImVec2{1200.0F, 625.0F},
-                              flags);
+                              ImVec2(1200.0F, 625.0F),
+                              input_flags);
 
-    ImGui::SetCursorPosY(ImGui::GetWindowSize().y -
-                         2.0F * ImGui::GetTextLineHeightWithSpacing());
-
-    ImGui::Text("Opened file: %s | File extension: %s",
-                currentFileName.c_str(),
-                GetFileExtension(currentFileName).c_str());
-
+    if (currentFilename.size() > 0)
+    {
+        const auto file_extension = GetFileExtension(currentFilename);
+        ImGui::Text("Opened file %s | File Extension: %s",
+                    currentFilename.data(),
+                    file_extension.data());
+    }
+    else
+        ImGui::Text("No file opened!");
 
     ImGui::End();
 }
 
-std::string WindowClass::GetFileExtension(std::string_view filePath)
+std::string WindowClass::GetFileExtension(std::string_view filename)
 {
-    const auto file_path = fs::path(filePath);
-    auto file_extension = file_path.extension().string();
+    const auto file_path = fs::path(filename);
+    const auto file_extension = file_path.extension().string();
 
-    if (!file_extension.empty() && file_extension[0] == '.')
-    {
-        file_extension.erase(file_extension.begin());
-    }
     return file_extension;
 }
 
 void WindowClass::SaveToFile(std::string_view filename)
 {
-    auto outFile = std::ofstream(filename.data());
-    if (outFile.is_open())
+    auto out = std::ofstream(filename.data());
+
+    if (out.is_open())
     {
-        outFile << textBuffer;
-        outFile.close();
-    }
-    else
-    {
-        std::cerr << "Unable to open file: " << filename << std::endl;
+        out << textBuffer;
+        out.close();
     }
 }
 
 void WindowClass::LoadFromFile(std::string_view filename)
 {
-    auto inFile = std::ifstream(filename.data());
-    if (inFile.is_open())
+    auto in = std::ifstream(filename.data());
+
+    if (in.is_open())
     {
         auto buffer = std::stringstream{};
-        buffer << inFile.rdbuf();
+        buffer << in.rdbuf();
         textBuffer = buffer.str();
-        inFile.close();
-    }
-    else
-    {
-        std::cerr << "Unable to open file: " << filename << std::endl;
+        in.close();
     }
 }
 
