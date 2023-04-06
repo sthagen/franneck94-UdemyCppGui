@@ -1,31 +1,34 @@
 #pragma once
 
-#include <cstdint>
+#include <string>
 #include <string_view>
 #include <vector>
-#include <string>
 
 #include <imgui.h>
 
 class WindowClass
 {
 public:
+    using FileContent = std::vector<std::string>;
+
+public:
     void Draw(std::string_view title);
 
-private:
-    std::vector<std::string> LoadFileContent(std::string_view filePath);
-    void SaveFileContent(std::string_view filePath,
-                         const std::vector<std::string> &content);
+    FileContent LoadFileContent(std::string_view file_path);
+    void SaveFileContent(std::string_view file_path,
+                         const FileContent &content);
 
     void CreateDiff();
 
 private:
-    std::string file1Path = "text1.txt";
-    std::string file2Path = "text2.txt";
-    std::vector<std::string> file1Content;
-    std::vector<std::string> file2Content;
-    std::vector<std::string> diffResult1;
-    std::vector<std::string> diffResult2;
+    std::string filePath1 = "text1.txt";
+    std::string filePath2 = "text2.txt";
+
+    FileContent fileContent1;
+    FileContent fileContent2;
+
+    FileContent diffResult1;
+    FileContent diffResult2;
 };
 
 
