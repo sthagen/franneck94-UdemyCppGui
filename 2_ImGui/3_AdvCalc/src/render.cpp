@@ -1,101 +1,103 @@
-#include <cstdint>
-#include <iostream>
-#include <string>
-#include <vector>
-
-#include <fmt/format.h>
+#include <array>
+#include <cmath>
+#include <string_view>
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "implot.h"
+#include <fmt/format.h>
 
 #include "render.hpp"
 
 void WindowClass::Draw(std::string_view label)
 {
     static constexpr auto num_points = 10'000;
-    static constexpr auto x_min = -100.0f;
-    static constexpr auto x_max = 100.0f;
-    static const auto step = (std::abs(x_max) + std::abs(x_min)) / num_points;
+    static constexpr auto x_min = -100.0;
+    static constexpr auto x_max = 100.0;
+    static const auto x_step = (std::abs(x_max) + std::abs(x_min)) / num_points;
 
-    static auto xs = std::vector<double>(num_points, 0.0F);
-    static auto ys = std::vector<double>(num_points, 0.0F);
+    static auto xs = std::array<double, num_points>{};
+    static auto ys = std::array<double, num_points>{};
 
     ImGui::Begin(label.data());
 
-    for (int i = 1; i < IM_ARRAYSIZE(function_names); ++i)
+    for (const auto func_name : functionNames)
     {
-        Function func = static_cast<Function>(i);
-        bool selected = selected_functions.count(func) > 0;
-        if (ImGui::Checkbox(function_names[i], &selected))
+        const auto curr_function = functionNameMapping(func_name);
+        auto selected = selectedFunctions.contains(curr_function);
+        if (ImGui::Checkbox(func_name.data(), &selected))
         {
             if (selected)
-                selected_functions.insert(func);
+                selectedFunctions.insert(curr_function);
             else
-                selected_functions.erase(func);
+                selectedFunctions.erase(curr_function);
         }
     }
 
     ImGui::End();
 
-    ImGui::Begin("###plotWindow");
+    ImGui::Begin("###PlotWindow");
 
-    if (selected_functions.size() == 0)
+    if (selectedFunctions.size() == 0 ||
+        (selectedFunctions.size() == 1 &&
+         *selectedFunctions.begin() == Function::NONE))
     {
-        ImPlot::BeginPlot("ScatterPlot",
-                          ImVec2(-1.0F, -1.0F),
-                          ImPlotFlags_NoTitle);
+        ImPlot::BeginPlot("###plot", ImVec2(-1.0F, -1.0F), ImPlotFlags_NoTitle);
         ImPlot::EndPlot();
         ImGui::End();
 
         return;
     }
 
-    if (ImPlot::BeginPlot("###plotPlot"))
+    ImPlot::BeginPlot("###plot", ImVec2(-1.0F, -1.0F), ImPlotFlags_NoTitle);
+
+    for (const auto &function : selectedFunctions)
     {
-        ImPlot::SetupAxes("x", "y", ImPlotAxisFlags_None, ImPlotAxisFlags_AutoFit);
-
-        for (const auto &func : selected_functions)
+        auto x = x_min;
+        for (std::size_t i = 0; i < num_points; ++i)
         {
-            double x = x_min;
-            for (std::size_t i = 0; i < num_points; ++i)
-            {
-                xs[i] = x;
-                const auto selected_function = func;
-                ys[i] = evaluate_function(selected_function, x);
-                x += step;
-            }
-
-            ImPlot::PlotLine(function_names[static_cast<std::size_t>(func)],
-                             xs.data(),
-                             ys.data(),
-                             static_cast<int>(xs.size()));
+            xs[i] = x;
+            ys[i] = evaluateFunction(function, x);
+            x += x_step;
         }
-        ImPlot::EndPlot();
+
+        const auto plot_label = fmt::format("##function{}", static_cast<int>(function));
+        ImPlot::PlotLine(plot_label.data(), xs.data(), ys.data(), num_points);
     }
+
+    ImPlot::EndPlot();
 
     ImGui::End();
 }
 
-double WindowClass::evaluate_function(Function selected_function, double x)
+double WindowClass::evaluateFunction(const Function function, const double x)
 {
-    switch (selected_function)
+    switch (function)
     {
     case Function::SIN:
+    {
         return std::sin(x);
+    }
     case Function::COS:
+    {
         return std::cos(x);
-    case Function::TAN:
-        return std::tan(x);
-    case Function::EXP:
-        return std::exp(x);
-    case Function::LOG:
-        return x > 0 ? std::log(x) : 0.0;
-    case Function::SQRT:
-        return x >= 0 ? std::sqrt(x) : 0.0;
+    }
+    case Function::NONE:
     default:
         return 0.0;
     }
+}
+
+WindowClass::Function WindowClass::functionNameMapping(
+    std::string_view function_name)
+{
+    if (std::string_view{"sin(x)"} == function_name)
+        return WindowClass::Function::SIN;
+
+    if (std::string_view{"cos(x)"} == function_name)
+        return WindowClass::Function::COS;
+
+    return WindowClass::Function::NONE;
 }
 
 void render(WindowClass &window_class)
