@@ -13,9 +13,6 @@
 #endif
 #include <GLFW/glfw3.h>
 
-#define MINIAUDIO_IMPLEMENTATION
-#include "miniaudio.h"
-
 #include "render.hpp"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) &&                                 \

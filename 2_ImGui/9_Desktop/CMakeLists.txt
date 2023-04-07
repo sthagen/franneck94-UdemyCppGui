@@ -21,7 +21,7 @@ include(Warnings)
 include(Tools)
 include(ConfigSafeGuards)
 
-add_clang_format_target()
+# add_clang_format_target() # needs python
 
 include(${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
