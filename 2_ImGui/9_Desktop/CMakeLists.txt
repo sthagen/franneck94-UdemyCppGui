@@ -18,10 +18,10 @@ option(ENABLE_CLANG_TIDY "Enable to add clang tidy." ON)
 option(ENABLE_CLANG_FORMAT "Enable to add clang-format." ON)
 
 include(Warnings)
-include(Tools)
+#  include(Tools) # needs clang tidy and clang format
 include(ConfigSafeGuards)
 
-# add_clang_format_target() # needs python
+# # add_clang_format_target() # needs python # needs python
 
 include(${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
