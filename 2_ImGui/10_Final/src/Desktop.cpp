@@ -19,10 +19,14 @@
 
 void Desktop::Draw(std::string_view label, bool *)
 {
+    constexpr static auto flags =
+        ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse;
+    static auto open_taskbar = false;
+
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_Always);
 
-    ImGui::Begin(label.data(), NULL, ImGuiWindowFlags_NoDecoration);
+    ImGui::Begin(label.data(), NULL, flags);
 
     int i = 0;
     for (auto &icon : icons)
@@ -30,6 +34,7 @@ void Desktop::Draw(std::string_view label, bool *)
         icon.Draw();
         ++i;
     }
+
     ImGui::SetNextWindowPos(ImVec2(0, 680), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(1280, 40), ImGuiCond_Always);
 
@@ -42,16 +47,18 @@ void Desktop::Draw(std::string_view label, bool *)
     if (ImGui::Button("All Icons", ImVec2(100, 20)))
     {
         ImGui::OpenPopup("My Programs");
+        open_taskbar = true;
     }
 
-    ShowIconList();
+    if (open_taskbar)
+        ShowIconList(&open_taskbar);
 
     ImGui::End();
 
     ImGui::End();
 }
 
-void Desktop::ShowIconList()
+void Desktop::ShowIconList(bool *open)
 {
     const auto icon_count = static_cast<int>(icons.size());
     const auto selectable_height = ImGui::GetTextLineHeightWithSpacing();
@@ -60,7 +67,7 @@ void Desktop::ShowIconList()
     ImGui::SetNextWindowPos(ImVec2(0, 680 - popup_height), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(200, popup_height), ImGuiCond_Always);
 
-    if (ImGui::BeginPopupModal("My Programs"))
+    if (ImGui::BeginPopupModal("My Programs", open))
     {
         int i = 0;
         for (auto &icon : icons)
@@ -79,13 +86,21 @@ void Desktop::ShowIconList()
 
 void Desktop::Icon::Draw()
 {
+    constexpr static auto flags =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
+
     const auto label_ = fmt::format("Icon Popup Window##{}", label);
+
+    ImGui::SetNextWindowPos(position, ImGuiCond_FirstUseEver);
+    ImGui::Begin(fmt::format("child###{}", label).data(), NULL, flags);
 
     if (ImGui::Button(label.data(), ImVec2(100, 50)) || popup_open)
     {
         popup_open = true;
         base->Draw(label, &popup_open);
     }
+
+    ImGui::End();
 }
 
 void render(Desktop &window_class)

@@ -1,29 +1,78 @@
 #pragma once
 
+#include <chrono>
+#include <cstdint>
+#include <map>
 #include <string>
 #include <string_view>
+#include <vector>
+
+#include <imgui.h>
 
 #include "BaseView.hpp"
 
 class Calender : public BaseView
 {
 public:
-    static constexpr auto bufferSize = 1024;
+    static constexpr const char *months[12] = {"January",
+                                               "February",
+                                               "March",
+                                               "April",
+                                               "May",
+                                               "June",
+                                               "July",
+                                               "August",
+                                               "September",
+                                               "October",
+                                               "November",
+                                               "December"};
+
+    struct Meeting
+    {
+        std::string name;
+
+        void Serialize(std::ostream &out) const
+        {
+            const auto nameLength = static_cast<std::uint32_t>(name.size());
+            out.write(reinterpret_cast<const char *>(&nameLength),
+                      sizeof(nameLength));
+            out.write(name.data(), name.size());
+        }
+
+        static Meeting Deserialize(std::istream &in)
+        {
+            auto meeting = Meeting{};
+            auto nameLength = std::uint32_t{};
+            in.read(reinterpret_cast<char *>(&nameLength), sizeof(nameLength));
+            meeting.name.resize(nameLength);
+            in.read(meeting.name.data(), nameLength);
+            return meeting;
+        }
+    };
 
 public:
-    Calender() : currentFilename({})
-    {
-        textBuffer.reserve(bufferSize);
-    }
     virtual ~Calender() = default;
+    void Draw(std::string_view label, bool *open = NULL) final;
 
-    void Draw(std::string_view title, bool *open = NULL) final;
-
-    void SaveToFile(std::string_view filename);
-    void LoadFromFile(std::string_view filename);
-    std::string GetFileExtension(std::string_view filename);
+    void LoadMeetingsFromFile(const std::string_view filename);
+    void SaveMeetingsToFile(const std::string_view filename) const;
 
 private:
-    std::string textBuffer;
-    std::string currentFilename;
+    void DrawCalendar();
+    void DrawAddMeetingWindow();
+    void DrawDateCombo(std::string_view label, int *day, int *month, int *year);
+    void DrawMeetingsList();
+
+    void UpdateSelectedDateVariables();
+
+private:
+    int selectedDay = 1;
+    int selectedMonth = 1;
+    int selectedYear = 2023;
+    std::chrono::year_month_day selected_date;
+
+    bool addMeetingWindowOpen = false;
+    std::map<std::chrono::year_month_day, std::vector<Meeting>> meetings;
+
+    float calendarFontScale = 1.25f;
 };

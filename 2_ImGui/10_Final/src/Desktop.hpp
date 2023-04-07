@@ -25,7 +25,7 @@ public:
     struct Icon
     {
         Icon(std::string_view label_, BaseView *base_)
-            : label(label_), base(base_){};
+            : label(label_), base(base_), position(0.0F, 0.0F){};
         void Draw();
 
         int clicked_count = 0;
@@ -52,7 +52,7 @@ public:
     virtual ~Desktop() = default;
 
     void Draw(std::string_view label, bool *open = NULL) override;
-    void ShowIconList();
+    void ShowIconList(bool *open);
 
 private:
     AdvCalc adv_calc;
