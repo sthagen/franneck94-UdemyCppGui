@@ -118,7 +118,6 @@ int main(int, char **)
         ImGui::NewFrame();
         ImPlot::CreateContext();
         render(desktop_obj);
-        ImPlot::DestroyContext();
         ImGui::Render();
 
         end_cycle(window);

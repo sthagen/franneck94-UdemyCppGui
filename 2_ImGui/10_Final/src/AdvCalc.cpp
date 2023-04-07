@@ -38,22 +38,19 @@ void AdvCalc::Draw(std::string_view label, bool *open)
         }
     }
 
-    ImGui::End();
-
-    ImGui::Begin("###PlotWindow");
+    ImPlot::BeginPlot("###plot",
+                      ImVec2(-1.0F, 720.0F - ImGui::GetCursorPosY()),
+                      ImPlotFlags_NoTitle);
 
     if (selectedFunctions.size() == 0 ||
         (selectedFunctions.size() == 1 &&
          *selectedFunctions.begin() == Function::NONE))
     {
-        ImPlot::BeginPlot("###plot", ImVec2(-1.0F, -1.0F), ImPlotFlags_NoTitle);
         ImPlot::EndPlot();
         ImGui::End();
 
         return;
     }
-
-    ImPlot::BeginPlot("###plot", ImVec2(-1.0F, -1.0F), ImPlotFlags_NoTitle);
 
     for (const auto &function : selectedFunctions)
     {

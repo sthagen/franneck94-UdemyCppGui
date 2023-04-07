@@ -19,8 +19,9 @@
 
 void Desktop::Draw(std::string_view label, bool *)
 {
-    constexpr static auto flags =
-        ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse;
+    constexpr static auto flags = ImGuiWindowFlags_NoDecoration |
+                                  ImGuiWindowFlags_NoScrollWithMouse |
+                                  ImGuiWindowFlags_NoInputs;
     static auto open_taskbar = false;
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
@@ -92,7 +93,7 @@ void Desktop::Icon::Draw()
     const auto label_ = fmt::format("Icon Popup Window##{}", label);
 
     ImGui::SetNextWindowPos(position, ImGuiCond_FirstUseEver);
-    ImGui::Begin(fmt::format("child###{}", label).data(), NULL, flags);
+    ImGui::Begin(fmt::format("###{}", label).data(), NULL, flags);
 
     if (ImGui::Button(label.data(), ImVec2(100, 50)) || popup_open)
     {
