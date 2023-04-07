@@ -1,3 +1,6 @@
+#define MINIAUDIO_IMPLEMENTATION
+#include "miniaudio.h"
+
 #include <cstdint>
 #include <filesystem>
 #include <iostream>
@@ -13,10 +16,7 @@
 #endif
 #include <GLFW/glfw3.h>
 
-#define MINIAUDIO_IMPLEMENTATION
-#include "miniaudio.h"
-
-#include "render.hpp"
+#include "Desktop.hpp"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) &&                                 \
     !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
@@ -109,7 +109,7 @@ int main(int, char **)
     style.Colors[ImGuiCol_TableBorderStrong] = ImVec4(1.0, 1.0, 1.0, 1.0);
     style.Colors[ImGuiCol_TableBorderLight] = ImVec4(1.0, 1.0, 1.0, 1.0);
 
-    WindowClass window_obj;
+    Desktop desktop_obj;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -117,7 +117,7 @@ int main(int, char **)
 
         ImGui::NewFrame();
         ImPlot::CreateContext();
-        render(window_obj);
+        render(desktop_obj);
         ImPlot::DestroyContext();
         ImGui::Render();
 

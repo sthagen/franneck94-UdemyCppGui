@@ -21,7 +21,7 @@ include(Warnings)
 #  include(Tools) # needs clang tidy and clang format
 include(ConfigSafeGuards)
 
-# add_clang_format_target() # needs python
+# # add_clang_format_target() # needs python # needs python
 
 include(${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
@@ -36,12 +36,19 @@ find_package(ImGui-SFML CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/render.cpp
+    src/Desktop.cpp
+    src/AdvCalc.cpp
+    src/Calender.cpp
+    src/Diff.cpp
+    src/FileExplorer.cpp
+    src/MediaPlayer.cpp
+    src/Paint.cpp
+    src/TextEditor.cpp
 )
 
 target_set_warnings(TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR} src/)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
