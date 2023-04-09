@@ -1,7 +1,6 @@
 #pragma once
 
-#include <random>
-#include <string>
+#include <vector>
 #include <string_view>
 
 #include "imgui.h"
@@ -12,24 +11,26 @@
 class WindowClass
 {
 public:
-    constexpr static auto num_icons = 10;
+    constexpr static auto numIcons = std::uint32_t{10U};
 
     struct Icon
     {
-        Icon(std::string_view label_) : label(label_){};
+        Icon(std::string_view label_) : label(label_), position(ImVec2{}){};
         void Draw();
 
-        int clicked_count = 0;
-        bool popup_open = false;
-        ImVec2 position;
         std::string label;
+        ImVec2 position;
+        bool popupOpen = false;
+        std::uint32_t clickCount = 0;
     };
 
 public:
     WindowClass()
     {
-        for (int i = 0; i < num_icons; ++i)
+        for (std::uint32_t i = 0; i < numIcons; ++i)
+        {
             icons.push_back(Icon{fmt::format("Icon{}", i)});
+        }
     };
 
     void Draw(std::string_view label);

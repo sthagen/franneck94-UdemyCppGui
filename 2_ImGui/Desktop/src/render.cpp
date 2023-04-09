@@ -1,7 +1,4 @@
-#include <cstdint>
-#include <iostream>
-#include <string>
-#include <vector>
+#include <string_view>
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
@@ -12,28 +9,20 @@
 
 void WindowClass::Draw(std::string_view label)
 {
-    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(1280.0F, 680.0F), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F), ImGuiCond_Always);
 
     ImGui::Begin(label.data(), NULL, ImGuiWindowFlags_NoDecoration);
 
-    int i = 0;
     for (auto &icon : icons)
-    {
         icon.Draw();
-        ++i;
-    }
-    // Draw taskbar
-    ImGui::SetNextWindowPos(ImVec2(0, 680), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(1280, 40), ImGuiCond_Always);
 
-    ImGui::Begin("Taskbar",
-                 NULL,
-                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-                     ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
-                     ImGuiWindowFlags_NoScrollWithMouse);
+    ImGui::SetNextWindowSize(ImVec2(0.0F, 680.0F), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(1280.0F, 40.0F), ImGuiCond_Always);
 
-    if (ImGui::Button("All Icons", ImVec2(100, 20)))
+    ImGui::Begin("Taskbar");
+
+    if (ImGui::Button("All Icons", ImVec2(100.0F, 20.0F)))
     {
         ImGui::OpenPopup("My Programs");
     }
@@ -47,24 +36,18 @@ void WindowClass::Draw(std::string_view label)
 
 void WindowClass::ShowIconList()
 {
-    const auto icon_count = static_cast<int>(icons.size());
     const auto selectable_height = ImGui::GetTextLineHeightWithSpacing();
-    const auto popup_height = selectable_height * icon_count + 40.0F;
+    const auto popup_height = selectable_height * numIcons + 40.0F;
 
-    ImGui::SetNextWindowPos(ImVec2(0, 680 - popup_height), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(200, popup_height), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(0.0F, 680.0F - popup_height),
+                             ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(200.0F, popup_height), ImGuiCond_Always);
 
     if (ImGui::BeginPopupModal("My Programs"))
     {
-        int i = 0;
         for (auto &icon : icons)
         {
-            if (ImGui::Selectable(icon.label.data()))
-            {
-                icon.popup_open = true;
-                ImGui::CloseCurrentPopup();
-            }
-            ++i;
+            ImGui::Text("%s", icon.label.data());
         }
 
         ImGui::EndPopup();
@@ -73,35 +56,34 @@ void WindowClass::ShowIconList()
 
 void WindowClass::Icon::Draw()
 {
-    const auto label_ = fmt::format("Icon Popup Window##{}", label);
+    const auto label_popup = fmt::format("Icon Popop Window##{}", label);
 
     ImGui::SetNextWindowPos(position, ImGuiCond_FirstUseEver);
-    ImGui::Begin(label.data(),
-                 nullptr,
-                 (ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse |
-                  ImGuiWindowFlags_AlwaysAutoResize));
-    if (ImGui::Button(label.data(), ImVec2(100, 50)))
+
+    ImGui::Begin(label.data());
+
+    if (ImGui::Button(label.data(), ImVec2(100.0F, 50.0F)))
     {
-        clicked_count++;
+        ++clickCount;
     }
+
     ImGui::End();
 
-    if (clicked_count >= 1 || popup_open)
+    if (clickCount >= 1)
     {
-        ImGui::OpenPopup(label_.data());
-        clicked_count = 0;
-        popup_open = true;
+        ImGui::OpenPopup(label_popup.data());
+        clickCount = 0;
+        popupOpen = true;
     }
 
-    if (ImGui::BeginPopupModal(label_.data(), &popup_open))
+    if (ImGui::BeginPopupModal(label_popup.data(), &popupOpen))
     {
-        // Add your popup window content here
-        ImGui::Text("You opened: %s", label.data());
+        ImGui::Text("Hi");
 
         if (ImGui::Button("Close"))
         {
             ImGui::CloseCurrentPopup();
-            popup_open = false;
+            popupOpen = false;
         }
 
         ImGui::EndPopup();
