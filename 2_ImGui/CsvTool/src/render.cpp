@@ -1,7 +1,7 @@
-#include <cstdint>
 #include <fstream>
-#include <iostream>
 #include <sstream>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "imgui.h"
@@ -16,7 +16,6 @@ void WindowClass::Draw(std::string_view label)
         (ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove |
          ImGuiWindowFlags_NoResize);
 
-    ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F));
     ImGui::SetNextWindowSize(ImVec2(1280.0F, 720.0F));
 
     ImGui::Begin(label.data(), nullptr, window_flags);
@@ -30,115 +29,128 @@ void WindowClass::Draw(std::string_view label)
 
 void WindowClass::DrawSizeButtons()
 {
-    bool userAddedRows = false;
-    bool userDroppedRows = false;
-    bool userAddedCols = false;
-    bool userDroppedCols = false;
-    std::int32_t slider_rows = numRows;
-    std::int32_t slider_cols = numCols;
+    auto user_added_rows = false;
+    auto user_dropped_rows = false;
+    auto user_added_cols = false;
+    auto user_dropped_cols = false;
+
+    auto slider_rows = numRows;
+    auto slider_cols = numCols;
 
     ImGui::Text("Num Rows: ");
     ImGui::SameLine();
-    if (ImGui::SliderInt("##Num Rows", &slider_rows, 0, 30))
+    if (ImGui::SliderInt("##numRows", &slider_rows, 0, 30))
     {
-        userAddedRows = slider_rows > numRows ? true : false;
-        userDroppedRows = !userAddedRows;
+        user_added_rows = slider_rows > numRows ? true : false;
+        user_dropped_rows = !user_dropped_rows;
+
         numRows = slider_rows;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Add Row"))
+    if (ImGui::Button("Add Row") && numRows < 30)
     {
         ++numRows;
-        userAddedRows = true;
+        user_added_rows = true;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Drop Row"))
+    if (ImGui::Button("Drop Row") && numRows > 0)
     {
         --numRows;
-        userDroppedRows = true;
+        user_dropped_rows = true;
     }
 
     ImGui::Text("Num Cols: ");
     ImGui::SameLine();
-    if (ImGui::SliderInt("##Num Cols", &slider_cols, 0, 8))
+    if (ImGui::SliderInt("##numCols", &slider_cols, 0, 8))
     {
-        userAddedCols = slider_cols > numCols ? true : false;
-        userDroppedCols = !userAddedCols;
+        user_added_cols = slider_cols > numCols ? true : false;
+        user_dropped_cols = !user_dropped_cols;
+
         numCols = slider_cols;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Add Col"))
+    if (ImGui::Button("Add Col") && numCols < 8)
     {
-        userAddedCols = true;
         ++numCols;
+        user_added_cols = true;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Drop Col"))
+    if (ImGui::Button("Drop Col") && numCols > 0)
     {
-        userDroppedCols = true;
         --numCols;
+        user_dropped_cols = true;
     }
 
-    if (userAddedRows)
+    if (user_added_rows)
     {
         for (auto row = data.size(); row < numRows; ++row)
         {
-            data.push_back(std::vector<float>(numCols, 0));
+            data.push_back(std::vector<float>(numCols, 0.0F));
         }
     }
-    else if (userAddedCols)
+    else if (user_added_cols)
     {
         for (std::int32_t row = 0; row < numRows; ++row)
         {
-            data[row].push_back({});
+            for (std::int32_t col = data[row].size(); col < numCols; ++col)
+            {
+                data[row].push_back(0.0F);
+            }
+        }
+    }
+    else if (user_dropped_rows)
+    {
+        for (auto row = data.size(); row > numRows; --row)
+        {
+            data.pop_back();
+        }
+    }
+    else if (user_dropped_cols)
+    {
+        for (std::int32_t row = 0; row < numRows; ++row)
+        {
+            for (std::int32_t col = data[row].size(); col > numCols; --col)
+            {
+                data[row].pop_back();
+            }
         }
     }
 }
 
 void WindowClass::DrawIoButtons()
 {
-    static char saveFilenameBuffer[512] = "test.csv";
-    static char loadFilenameBuffer[512] = "test.csv";
+    static char filenameBuffer[512] = "test.csv";
 
     ImGui::Separator();
 
     if (ImGui::Button("Save"))
-    {
         ImGui::OpenPopup("Save File");
-    }
 
     ImGui::SameLine();
 
     if (ImGui::Button("Load"))
-    {
         ImGui::OpenPopup("Load File");
-    }
 
     ImGui::SameLine();
 
     if (ImGui::Button("Clear"))
     {
         data.clear();
-        numCols = 0;
         numRows = 0;
+        numCols = 0;
     }
 
     if (ImGui::BeginPopupModal("Save File"))
     {
-        ImGui::InputText("Filename",
-                         saveFilenameBuffer,
-                         sizeof(saveFilenameBuffer));
+        ImGui::InputText("File", filenameBuffer, sizeof(filenameBuffer));
 
-        if (ImGui::Button("Save", ImVec2(120.0F, 0.0F)))
+        if (ImGui::Button("Save"))
         {
-            SaveToFile(saveFilenameBuffer);
-            currentFilename = saveFilenameBuffer;
+            SaveToFile(filenameBuffer);
             ImGui::CloseCurrentPopup();
         }
-
         ImGui::SameLine();
-
-        if (ImGui::Button("Cancel", ImVec2(120.0F, 0.0F)))
+        if (ImGui::Button("Cancel"))
         {
             ImGui::CloseCurrentPopup();
         }
@@ -148,26 +160,22 @@ void WindowClass::DrawIoButtons()
 
     if (ImGui::BeginPopupModal("Load File"))
     {
-        ImGui::InputText("Filename",
-                         loadFilenameBuffer,
-                         sizeof(loadFilenameBuffer));
+        ImGui::InputText("File", filenameBuffer, sizeof(filenameBuffer));
 
-        if (ImGui::Button("Load", ImVec2(120.0F, 0.0F)))
+        if (ImGui::Button("Load"))
         {
-            LoadFromFile(loadFilenameBuffer);
-            currentFilename = loadFilenameBuffer;
+            LoadFromFile(filenameBuffer);
             ImGui::CloseCurrentPopup();
         }
-
         ImGui::SameLine();
-
-        if (ImGui::Button("Cancel", ImVec2(120.0F, 0.0F)))
+        if (ImGui::Button("Cancel"))
         {
             ImGui::CloseCurrentPopup();
         }
 
         ImGui::EndPopup();
     }
+
     ImGui::Separator();
 }
 
@@ -191,10 +199,10 @@ void WindowClass::DrawTable()
                                 ImGuiTableColumnFlags_WidthFixed,
                                 1280.0F / numCols);
     }
+
     ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
     for (std::int32_t col = 0; col < numCols; ++col)
         PlotCellValue("%c", 'A' + col);
-    ImGui::TableNextRow();
 
     for (std::int32_t row = 0; row < numRows; ++row)
     {
@@ -222,11 +230,16 @@ void WindowClass::DrawTable()
             fmt::format("##{}_{}", row_clicked, col_clicked).data(),
             buffer,
             sizeof(buffer));
+
         if (ImGui::Button("Save"))
         {
-            const auto value = std::stof(buffer);
-            data[row_clicked][col_clicked] = value;
+            data[row_clicked][col_clicked] = std::stof(buffer);
 
+            ImGui::CloseCurrentPopup();
+        }
+
+        if (ImGui::Button("Cancel"))
+        {
             ImGui::CloseCurrentPopup();
         }
 
@@ -236,16 +249,9 @@ void WindowClass::DrawTable()
     ImGui::EndTable();
 }
 
-template <typename T>
-void WindowClass::PlotCellValue(std::string_view formatter, const T &value)
-{
-    ImGui::TableNextColumn();
-    ImGui::Text(formatter.data(), value);
-}
-
 void WindowClass::SaveToFile(std::string_view filename)
 {
-    auto out = std::ofstream(filename.data());
+    auto out = std::ofstream{filename.data()};
 
     if (!out.is_open())
         return;
@@ -257,6 +263,7 @@ void WindowClass::SaveToFile(std::string_view filename)
             out << data[row][col];
             out << ',';
         }
+
         out << '\n';
     }
 
@@ -265,7 +272,7 @@ void WindowClass::SaveToFile(std::string_view filename)
 
 void WindowClass::LoadFromFile(std::string_view filename)
 {
-    auto in = std::ifstream(filename.data());
+    auto in = std::ifstream{filename.data()};
 
     if (!in.is_open())
         return;
@@ -279,8 +286,8 @@ void WindowClass::LoadFromFile(std::string_view filename)
     {
         auto ss = std::istringstream(line);
         auto row = std::vector<float>{};
-
         auto value = std::string{};
+
         while (std::getline(ss, value, ','))
         {
             row.push_back(std::stof(value));
@@ -298,8 +305,13 @@ void WindowClass::LoadFromFile(std::string_view filename)
         numCols = static_cast<std::int32_t>(data[0].size());
     else
         numCols = 0;
+}
 
-    in.close();
+template <typename T>
+void WindowClass::PlotCellValue(std::string_view formatter, const T value)
+{
+    ImGui::TableNextColumn();
+    ImGui::Text(formatter.data(), value);
 }
 
 void render(WindowClass &window_obj)
