@@ -11,8 +11,11 @@
 class WindowClass
 {
 public:
-    WindowClass() : colNames({}), data({}){};
+    WindowClass() : data({}){};
     void Draw(std::string_view label);
+    void DrawSizeButtons();
+    void DrawIoButtons();
+    void DrawTable();
 
     template <typename T>
     void PlotCellValue(std::string_view formatter, const T &value);
@@ -24,7 +27,6 @@ public:
 private:
     std::int32_t numCols = 0;
     std::int32_t numRows = 0;
-    std::vector<char> colNames;
     std::vector<std::vector<float>> data;
     std::string currentFilename;
 };

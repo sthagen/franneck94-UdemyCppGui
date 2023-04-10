@@ -15,23 +15,27 @@ void WindowClass::Draw(std::string_view label)
     constexpr static auto window_flags =
         (ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove |
          ImGuiWindowFlags_NoResize);
-    constexpr static auto table_flags =
-        (ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuter);
 
-    static char saveFilenameBuffer[512] = "test.csv";
-    static char loadFilenameBuffer[512] = "test.csv";
+    ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F));
+    ImGui::SetNextWindowSize(ImVec2(1280.0F, 720.0F));
 
+    ImGui::Begin(label.data(), nullptr, window_flags);
+
+    DrawSizeButtons();
+    DrawIoButtons();
+    DrawTable();
+
+    ImGui::End();
+}
+
+void WindowClass::DrawSizeButtons()
+{
     bool userAddedRows = false;
     bool userDroppedRows = false;
     bool userAddedCols = false;
     bool userDroppedCols = false;
     std::int32_t slider_rows = numRows;
     std::int32_t slider_cols = numCols;
-
-    ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F));
-    ImGui::SetNextWindowSize(ImVec2(1280.0F, 720.0F));
-
-    ImGui::Begin(label.data(), nullptr, window_flags);
 
     ImGui::Text("Num Rows: ");
     ImGui::SameLine();
@@ -89,11 +93,12 @@ void WindowClass::Draw(std::string_view label)
             data[row].push_back({});
         }
     }
+}
 
-    if (userAddedCols || userDroppedCols)
-    {
-        SetColNames();
-    }
+void WindowClass::DrawIoButtons()
+{
+    static char saveFilenameBuffer[512] = "test.csv";
+    static char loadFilenameBuffer[512] = "test.csv";
 
     ImGui::Separator();
 
@@ -114,7 +119,6 @@ void WindowClass::Draw(std::string_view label)
     if (ImGui::Button("Clear"))
     {
         data.clear();
-        colNames.clear();
         numCols = 0;
         numRows = 0;
     }
@@ -165,56 +169,71 @@ void WindowClass::Draw(std::string_view label)
         ImGui::EndPopup();
     }
     ImGui::Separator();
+}
 
-    if (numCols > 0 && ImGui::BeginTable("Table", numCols, table_flags))
+void WindowClass::DrawTable()
+{
+    constexpr static auto table_flags =
+        (ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuter);
+
+    static char buffer[512] = {'\0'};
+    static auto row_clicked = 0;
+    static auto col_clicked = 0;
+
+    if (numCols == 0)
+        return;
+
+    ImGui::BeginTable("Table", numCols, table_flags);
+
+    for (std::int32_t col = 0; col < numCols; ++col)
     {
-        for (const auto col_name : colNames)
-        {
-            ImGui::TableSetupColumn(fmt::format("{}", col_name).data(),
-                                    ImGuiTableColumnFlags_WidthFixed,
-                                    1280.0F / numCols);
-        }
-        ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
-        for (const auto col_name : colNames)
-            PlotCellValue("%c", col_name);
-        ImGui::TableNextRow();
+        ImGui::TableSetupColumn(fmt::format("{}", 'A' + col).data(),
+                                ImGuiTableColumnFlags_WidthFixed,
+                                1280.0F / numCols);
+    }
+    ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+    for (std::int32_t col = 0; col < numCols; ++col)
+        PlotCellValue("%c", 'A' + col);
+    ImGui::TableNextRow();
 
-        static char buffer[512] = {'\0'};
-
-        for (std::int32_t row = 0; row < numRows; ++row)
+    for (std::int32_t row = 0; row < numRows; ++row)
+    {
+        for (std::int32_t col = 0; col < numCols; ++col)
         {
-            for (std::int32_t col = 0; col < numCols; ++col)
+            PlotCellValue("%f", data[row][col]);
+            if (ImGui::IsItemClicked())
             {
-                PlotCellValue("%f", data[row][col]);
-                if (ImGui::IsItemClicked())
-                    ImGui::OpenPopup("Change Value");
-                else if (ImGui::IsItemHovered())
-                    ImGui::SetTooltip("Cell: (%d, %d)", row, col);
-
-                if (ImGui::BeginPopupModal("Change Value"))
-                {
-                    ImGui::InputText(fmt::format("##{}_{}", row, col).data(),
-                                     buffer,
-                                     sizeof(buffer));
-                    if (ImGui::Button("Save"))
-                    {
-                        const auto value = std::stof(buffer);
-                        data[row][col] = value;
-
-                        ImGui::CloseCurrentPopup();
-                    }
-
-                    ImGui::EndPopup();
-                }
+                ImGui::OpenPopup("Change Value");
+                row_clicked = row;
+                col_clicked = col;
             }
-
-            ImGui::TableNextRow();
+            else if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Cell: (%d, %d)", row, col);
+            }
         }
 
-        ImGui::EndTable();
+        ImGui::TableNextRow();
     }
 
-    ImGui::End();
+    if (ImGui::BeginPopupModal("Change Value"))
+    {
+        ImGui::InputText(
+            fmt::format("##{}_{}", row_clicked, col_clicked).data(),
+            buffer,
+            sizeof(buffer));
+        if (ImGui::Button("Save"))
+        {
+            const auto value = std::stof(buffer);
+            data[row_clicked][col_clicked] = value;
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
+    ImGui::EndTable();
 }
 
 template <typename T>
@@ -235,8 +254,7 @@ void WindowClass::SaveToFile(std::string_view filename)
     {
         for (std::int32_t col = 0; col < numCols; ++col)
         {
-            const auto str_data = std::to_string(data[row][col]);
-            out.write(str_data.data(), str_data.size());
+            out << data[row][col];
             out << ',';
         }
         out << '\n';
@@ -280,16 +298,8 @@ void WindowClass::LoadFromFile(std::string_view filename)
         numCols = static_cast<std::int32_t>(data[0].size());
     else
         numCols = 0;
-    SetColNames();
 
     in.close();
-}
-
-void WindowClass::SetColNames()
-{
-    colNames.clear();
-    for (std::int8_t col = 0; col < numCols; ++col)
-        colNames.push_back('A' + col);
 }
 
 void render(WindowClass &window_obj)
