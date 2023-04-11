@@ -16,9 +16,9 @@ class MediaPlayer : public BaseView
 public:
     MediaPlayer()
         : engine({}){};
-    virtual ~MediaPlayer() = default;
+    virtual ~MediaPlayer(){};
 
-    void Draw(std::string_view label, bool *open = NULL) override;
+    void Draw(std::string_view label, bool *open = nullptr) override;
 
 private:
     void Load();
@@ -32,6 +32,5 @@ public:
     bool isPlaying = false;
 
     std::string audioFilePath =
-        ("C:/Users/Jan/Documents/_LocalCoding/UdemyCppGui/2_ImGui/"
-         "8_MediaPlayer/audio/_intro.mp3");
+        ("C:/Users/Jan/Documents/_LocalCoding/UdemyCppGui/2_ImGui/Final/audio/_intro.mp3");
 };

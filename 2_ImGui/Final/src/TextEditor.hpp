@@ -15,9 +15,9 @@ public:
     {
         textBuffer.reserve(bufferSize);
     }
-    virtual ~TextEditor() = default;
+    virtual ~TextEditor(){};
 
-    void Draw(std::string_view title, bool *open = NULL) final;
+    void Draw(std::string_view title, bool *open = nullptr) final;
 
     void SaveToFile(std::string_view filename);
     void LoadFromFile(std::string_view filename);

@@ -26,9 +26,9 @@ public:
 
 public:
     AdvCalc() : selectedFunctions({}){};
-    virtual ~AdvCalc() = default;
+    virtual ~AdvCalc(){};
 
-    void Draw(std::string_view label, bool *open = NULL) override;
+    void Draw(std::string_view label, bool *open = nullptr) override;
     Function functionNameMapping(std::string_view function_name);
     double evaluateFunction(const Function function, const double x);
 

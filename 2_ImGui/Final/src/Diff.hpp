@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <imgui.h>
+#include "implot.h"
 
 #include "BaseView.hpp"
 
@@ -14,9 +15,9 @@ public:
     using FileContent = std::vector<std::string>;
 
 public:
-    virtual ~DiffViewer() = default;
+    virtual ~DiffViewer(){};
 
-    void Draw(std::string_view title, bool *open = NULL) final;
+    void Draw(std::string_view title, bool *open = nullptr) final;
 
     FileContent LoadFileContent(std::string_view file_path);
     void SaveFileContent(std::string_view file_path,

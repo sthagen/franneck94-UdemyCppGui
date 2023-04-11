@@ -4,6 +4,7 @@
 #include <string_view>
 
 #include <imgui.h>
+#include "implot.h"
 
 #include "BaseView.hpp"
 
@@ -14,9 +15,9 @@ class FileExplorer : public BaseView
 public:
     FileExplorer()
         : currentPath(fs::current_path()), selectedEntry(fs::path{}){};
-    virtual ~FileExplorer() = default;
+    virtual ~FileExplorer(){};
 
-    void Draw(std::string_view label, bool *open = NULL) override;
+    void Draw(std::string_view label, bool *open = nullptr) override;
 
 private:
     void openFileWithDefaultEditor(const fs::path &filePath);

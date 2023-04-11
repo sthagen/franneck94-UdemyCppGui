@@ -24,10 +24,10 @@ void Desktop::Draw(std::string_view label, bool *)
                                   ImGuiWindowFlags_NoInputs;
     static auto open_taskbar = false;
 
-    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(mainPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(mainSize, ImGuiCond_Always);
 
-    ImGui::Begin(label.data(), NULL, flags);
+    ImGui::Begin(label.data(), nullptr, flags);
 
     int i = 0;
     for (auto &icon : icons)
@@ -40,7 +40,7 @@ void Desktop::Draw(std::string_view label, bool *)
     ImGui::SetNextWindowSize(ImVec2(1280, 40), ImGuiCond_Always);
 
     ImGui::Begin("Taskbar",
-                 NULL,
+                 nullptr,
                  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
                      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
                      ImGuiWindowFlags_NoScrollWithMouse);
@@ -93,7 +93,7 @@ void Desktop::Icon::Draw()
     const auto label_ = fmt::format("Icon Popup Window##{}", label);
 
     ImGui::SetNextWindowPos(position, ImGuiCond_FirstUseEver);
-    ImGui::Begin(fmt::format("###{}", label).data(), NULL, flags);
+    ImGui::Begin(fmt::format("###{}", label).data(), nullptr, flags);
 
     if (ImGui::Button(label.data(), ImVec2(100, 50)) || popup_open)
     {

@@ -2,12 +2,14 @@
 
 #include <chrono>
 #include <cstdint>
+#include <fstream>
 #include <map>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include <imgui.h>
+#include "implot.h"
 
 #include "BaseView.hpp"
 
@@ -51,8 +53,8 @@ public:
     };
 
 public:
-    virtual ~Calender() = default;
-    void Draw(std::string_view label, bool *open = NULL) final;
+    virtual ~Calender(){};
+    void Draw(std::string_view label, bool *open = nullptr) final;
 
     void LoadMeetingsFromFile(const std::string_view filename);
     void SaveMeetingsToFile(const std::string_view filename) const;

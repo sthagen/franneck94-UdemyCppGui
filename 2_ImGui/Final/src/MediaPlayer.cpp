@@ -15,7 +15,7 @@
 
 void MediaPlayer::Load()
 {
-    ma_engine_init(NULL, &engine);
+    ma_engine_init(nullptr, &engine);
     engineInitialized = true;
 }
 
@@ -29,8 +29,8 @@ void MediaPlayer::Draw(std::string_view label, bool *open)
         isPlaying = false;
     }
 
-    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(mainPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(mainSize, ImGuiCond_Always);
 
     ImGui::Begin(label.data(), open, mainFlags);
 

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <imgui.h>
+#include "implot.h"
 
 #include "BaseView.hpp"
 
@@ -17,9 +18,9 @@ public:
     Paint()
         : points({}), canvasPos({}), currentDrawColor(ImColor(255, 255, 255)),
           pointDrawSize(2.0F){};
-    virtual ~Paint() = default;
+    virtual ~Paint(){};
 
-    void Draw(std::string_view title, bool *open = NULL) final;
+    void Draw(std::string_view title, bool *open = nullptr) final;
 
 private:
     void SaveToImageFile(std::string_view filename);

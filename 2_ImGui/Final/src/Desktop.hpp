@@ -18,6 +18,7 @@
 #include "MediaPlayer.hpp"
 #include "Paint.hpp"
 #include "TextEditor.hpp"
+#include "CsvEditor.hpp"
 
 class Desktop : public BaseView
 {
@@ -38,7 +39,8 @@ public:
 public:
     Desktop()
         : adv_calc({}), calender({}), diff_viewer({}), file_explorer({}),
-          media_player({}), paint({}), text_editor({})
+          media_player({}), paint({}), text_editor({}), csv_editor({}),
+          icons({})
     {
         icons.reserve(7);
         icons.push_back(Icon{"AdvCalc", &adv_calc});
@@ -48,10 +50,11 @@ public:
         icons.push_back(Icon{"MediaPlayer", &media_player});
         icons.push_back(Icon{"Paint", &paint});
         icons.push_back(Icon{"TextEditor", &text_editor});
+        icons.push_back(Icon{"CsvEditor", &csv_editor});
     };
-    virtual ~Desktop() = default;
+    virtual ~Desktop(){};
 
-    void Draw(std::string_view label, bool *open = NULL) override;
+    void Draw(std::string_view label, bool *open = nullptr) override;
     void ShowIconList(bool *open);
 
 private:
@@ -62,6 +65,7 @@ private:
     MediaPlayer media_player;
     Paint paint;
     TextEditor text_editor;
+    CsvEditor csv_editor;
 
     std::vector<Icon> icons;
 };
