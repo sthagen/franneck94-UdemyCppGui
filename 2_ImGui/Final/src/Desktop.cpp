@@ -66,7 +66,6 @@ void Desktop::ShowIconList(bool *open)
 
     if (ImGui::BeginPopupModal("My Programs", open))
     {
-        int i = 0;
         for (auto &icon : icons)
         {
             if (ImGui::Selectable(icon.label.data()))
@@ -74,7 +73,6 @@ void Desktop::ShowIconList(bool *open)
                 icon.popup_open = true;
                 ImGui::CloseCurrentPopup();
             }
-            ++i;
         }
 
         ImGui::EndPopup();

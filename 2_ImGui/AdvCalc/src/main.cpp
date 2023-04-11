@@ -37,7 +37,8 @@ void end_cycle(GLFWwindow *const window)
 {
     const auto clear_color =
         ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
-    int display_w, display_h;
+    int display_w = 0;
+    int display_h = 0;
     glfwGetFramebufferSize(window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
     glClearColor(clear_color.x * clear_color.w,

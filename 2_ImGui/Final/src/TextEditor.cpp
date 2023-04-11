@@ -125,10 +125,7 @@ void TextEditor::Draw(std::string_view label, bool *open)
 
 std::string TextEditor::GetFileExtension(std::string_view filename)
 {
-    const auto file_path = fs::path(filename);
-    const auto file_extension = file_path.extension().string();
-
-    return file_extension;
+    return fs::path(filename).extension().string();
 }
 
 void TextEditor::SaveToFile(std::string_view filename)

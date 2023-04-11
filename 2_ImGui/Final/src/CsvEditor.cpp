@@ -82,7 +82,7 @@ void CsvEditor::DrawSizeButtons()
     {
         for (auto row = data.size(); row < static_cast<std::size_t>(numRows); ++row)
         {
-            data.emplace_back(std::vector<float>(numCols, 0.0F));
+            data.emplace_back(numCols, 0.0F);
         }
     }
     else if (user_added_cols)
@@ -97,7 +97,7 @@ void CsvEditor::DrawSizeButtons()
     }
     else if (user_dropped_rows)
     {
-        for (auto row = data.size(); row > numRows; --row)
+        for (auto row = data.size(); row > static_cast<std::size_t>(numRows); --row)
         {
             data.pop_back();
         }
@@ -106,7 +106,7 @@ void CsvEditor::DrawSizeButtons()
     {
         for (std::int32_t row = 0; row < numRows; ++row)
         {
-            for (auto col = data[row].size(); col > numCols; --col)
+            for (auto col = data[row].size(); col > static_cast<std::size_t>(numCols); --col)
             {
                 data[row].pop_back();
             }

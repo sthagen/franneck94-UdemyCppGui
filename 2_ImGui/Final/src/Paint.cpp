@@ -90,7 +90,7 @@ void Paint::Draw(std::string_view label, bool *open)
     {
         const auto point = ImVec2(mouse_pos.x - canvasPos.x - border_thickness,
                                   mouse_pos.y - canvasPos.y - border_thickness);
-        points.emplace_back(
+        points.push_back(
             std::make_tuple(point, currentDrawColor, pointDrawSize));
     }
 
@@ -163,7 +163,7 @@ void Paint::LoadFromImageFile(std::string_view filename)
         in.read(reinterpret_cast<char *>(&color), sizeof(color));
         in.read(reinterpret_cast<char *>(&size), sizeof(size));
 
-        points.emplace_back(std::make_tuple(point, color, size));
+        points.push_back(std::make_tuple(point, color, size));
     }
 
     in.close();
