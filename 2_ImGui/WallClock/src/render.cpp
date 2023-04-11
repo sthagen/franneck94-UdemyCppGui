@@ -10,45 +10,84 @@
 
 void WindowClass::Draw(std::string_view label)
 {
-    const auto now = std::chrono::system_clock::now();
-    const auto time_now = std::chrono::system_clock::to_time_t(now);
-    const auto time_parts = std::localtime(&time_now);
-
-    const auto hour_angle =
-        (time_parts->tm_hour % 12) * 2.0f * PI / 12.0f - PI / 2.0f;
-    const auto minute_angle =
-        time_parts->tm_min * 2.0f * PI / 60.0f - PI / 2.0f;
-    const auto second_angle =
-        time_parts->tm_sec * 2.0f * PI / 60.0f - PI / 2.0f;
+    ImGui::SetNextWindowSize(ImVec2(1280.0F, 720.0F));
+    ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F));
 
     ImGui::Begin(label.data());
 
     const auto cursor_pos = ImGui::GetCursorScreenPos();
-    const auto center = ImVec2(cursor_pos.x + 50, cursor_pos.y + 50);
+    center = ImVec2(cursor_pos.x + circleRadius, cursor_pos.y + circleRadius);
     ImGui::GetWindowDrawList()->AddCircle(center,
-                                          50.0f,
+                                          circleRadius,
                                           ImGui::GetColorU32(ImGuiCol_Text),
                                           100,
                                           2.0f);
 
     ImGui::SetCursorScreenPos(center);
-    DrawClockHand(30.0f, hour_angle, 3.0f, ImColor(1.0f, 0.0f, 0.0f, 1.0f));
-    DrawClockHand(40.0f, minute_angle, 2.0f, ImColor(0.0f, 1.0f, 0.0f, 1.0f));
-    DrawClockHand(45.0f, second_angle, 1.0f, ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+
+    const auto [hour_theta, minute_theta, second_theta] = GetTheta();
+    DrawClockHand(circleRadius * 0.95F,
+                  hour_theta,
+                  ImColor(1.0f, 0.0f, 0.0f, 1.0f));
+    DrawClockHand(circleRadius * 0.85F,
+                  minute_theta,
+                  ImColor(0.0f, 1.0f, 0.0f, 1.0f));
+    DrawClockHand(circleRadius * 0.75F,
+                  second_theta,
+                  ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+
+    DrawHourStrokes();
+
+    ImGui::SetCursorPosY(ImGui::GetCursorScreenPos().y + 50);
 
     ImGui::End();
 }
 
+std::tuple<float, float, float> WindowClass::GetTheta()
+{
+    const auto now = std::chrono::system_clock::now();
+    const auto time_now = std::chrono::system_clock::to_time_t(now);
+    const auto time_parts = std::localtime(&time_now);
+
+    constexpr auto offset = (PI / 2.0F);
+    const auto seconds = time_parts->tm_sec;
+    const auto minutes = time_parts->tm_min + (seconds / 60.F);
+    const auto hours = (time_parts->tm_hour % 12) + (minutes / 60.0f);
+
+    auto hour_theta = (hours * ((2.0F * PI) / 12.0F)) + offset;
+    auto minute_theta = ((minutes * ((2.0F * PI) / 60.0F)) + offset);
+    auto second_theta = ((seconds * ((2.0F * PI) / 60.0F)) + offset);
+
+    return std::make_tuple(hour_theta, minute_theta, second_theta);
+}
+
 void WindowClass::DrawClockHand(const float radius,
-                                const float angle,
-                                const float thickness,
+                                const float theta,
                                 const ImColor color)
 {
-    const auto center = ImGui::GetCursorScreenPos();
-    const auto end_point = ImVec2(center.x + radius * std::cos(angle),
-                                  center.y - radius * std::sin(angle));
+    const auto c = std::cos(theta);
+    const auto s = std::sin(theta);
+    const auto end_point = ImVec2(center.x - radius * c, center.y - radius * s);
 
-    ImGui::GetWindowDrawList()->AddLine(center, end_point, color, thickness);
+    ImGui::GetWindowDrawList()->AddLine(center, end_point, color, 3.0F);
+}
+
+void WindowClass::DrawHourStrokes()
+{
+    for (std::uint8_t hr = 0; hr < 12; ++hr)
+    {
+        const auto theta = (hr * ((2.0F * PI) / 12.0F)) + (PI / 2.0F);
+        const auto start_point =
+            ImVec2(center.x + (circleRadius * 0.9f) * std::cos(theta),
+                   center.y - (circleRadius * 0.9f) * std::sin(theta));
+        const auto end_point =
+            ImVec2(center.x + circleRadius * std::cos(theta),
+                   center.y - circleRadius * std::sin(theta));
+        ImGui::GetWindowDrawList()->AddLine(start_point,
+                                            end_point,
+                                            ImGui::GetColorU32(ImGuiCol_Text),
+                                            2.0f);
+    }
 }
 
 void render(WindowClass &window_obj)
