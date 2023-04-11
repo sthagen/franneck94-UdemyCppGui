@@ -29,12 +29,8 @@ void Desktop::Draw(std::string_view label, bool *)
 
     ImGui::Begin(label.data(), nullptr, flags);
 
-    int i = 0;
     for (auto &icon : icons)
-    {
         icon.Draw();
-        ++i;
-    }
 
     ImGui::SetNextWindowPos(ImVec2(0, 680), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(1280, 40), ImGuiCond_Always);
@@ -61,7 +57,7 @@ void Desktop::Draw(std::string_view label, bool *)
 
 void Desktop::ShowIconList(bool *open)
 {
-    const auto icon_count = static_cast<int>(icons.size());
+    const auto icon_count = static_cast<float>(icons.size());
     const auto selectable_height = ImGui::GetTextLineHeightWithSpacing();
     const auto popup_height = selectable_height * icon_count + 40.0F;
 

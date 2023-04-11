@@ -49,7 +49,7 @@ void Calender::LoadMeetingsFromFile(const std::string_view filename)
     if (!in.is_open())
         return;
 
-    std::uint32_t numMeetings;
+    auto numMeetings = 0U;
     in.read(reinterpret_cast<char *>(&numMeetings), sizeof(numMeetings));
 
     for (std::uint32_t i = 0; i < numMeetings; ++i)
@@ -62,13 +62,13 @@ void Calender::LoadMeetingsFromFile(const std::string_view filename)
                 std::chrono::duration<std::chrono::sys_days::rep,
                                       std::ratio<86400>>(dateRep))};
 
-        std::uint32_t numMeetingsOnDate;
+        auto numMeetingsOnDate = 0U;
         in.read(reinterpret_cast<char *>(&numMeetingsOnDate),
                 sizeof(numMeetingsOnDate));
 
         for (std::uint32_t j = 0; j < numMeetingsOnDate; ++j)
         {
-            Meeting meeting = Meeting::Deserialize(in);
+            const auto meeting = Meeting::Deserialize(in);
             meetings[date].push_back(meeting);
         }
     }
@@ -204,7 +204,7 @@ void Calender::DrawCalendar()
         std::chrono::floor<std::chrono::days>(std::chrono::system_clock::now());
     const auto todays_date = std::chrono::year_month_day{curr_time};
 
-    float originalFontScale = ImGui::GetFontSize();
+    const auto originalFontScale = ImGui::GetFontSize();
     ImGui::SetWindowFontScale(calendarFontScale);
 
     for (std::uint32_t i = 1; i <= 12; ++i)
@@ -221,7 +221,7 @@ void Calender::DrawCalendar()
             if (j != 1)
                 ImGui::SameLine();
             if (j == 1)
-                ImGui::Text(fmt::format("{:.3}", months[i - 1]).c_str());
+                ImGui::Text("%s", fmt::format("{:.3}", months[i - 1]).c_str());
             ImGui::SameLine();
             ImGui::PushID(j);
 
@@ -235,7 +235,7 @@ void Calender::DrawCalendar()
                 textColor = ImVec4(0.0f, 0.0f, 1.0f, 1.0f); // blue
 
             ImGui::PushStyleColor(ImGuiCol_Text, textColor);
-            ImGui::Text(std::to_string(j).c_str());
+            ImGui::Text("%s", std::to_string(j).c_str());
             ImGui::PopStyleColor();
 
             if (ImGui::IsItemClicked())

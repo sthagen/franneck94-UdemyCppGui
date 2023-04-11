@@ -80,16 +80,16 @@ void CsvEditor::DrawSizeButtons()
 
     if (user_added_rows)
     {
-        for (auto row = data.size(); row < numRows; ++row)
+        for (auto row = data.size(); row < static_cast<std::size_t>(numRows); ++row)
         {
-            data.push_back(std::vector<float>(numCols, 0.0F));
+            data.emplace_back(std::vector<float>(numCols, 0.0F));
         }
     }
     else if (user_added_cols)
     {
         for (std::int32_t row = 0; row < numRows; ++row)
         {
-            for (auto col = data[row].size(); col < numCols; ++col)
+            for (auto col = data[row].size(); col < static_cast<std::size_t>(numCols); ++col)
             {
                 data[row].push_back(0.0F);
             }
@@ -194,7 +194,7 @@ void CsvEditor::DrawTable()
     {
         ImGui::TableSetupColumn(fmt::format("{}", 'A' + col).data(),
                                 ImGuiTableColumnFlags_WidthFixed,
-                                1280.0F / numCols);
+                                1280.0F / static_cast<float>(numCols));
     }
 
     ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
