@@ -21,15 +21,6 @@
         },
         {
             "name": "implot"
-        },
-        {
-            "name": "sfml"
-        },
-        {
-            "name": "imgui-sfml"
-        },
-        {
-            "name": "stb"
         }
     ]
 }

@@ -21,7 +21,7 @@ include(Warnings)
 #  include(Tools) # needs clang tidy and clang format
 include(ConfigSafeGuards)
 
-# # add_clang_format_target() # needs python # needs python
+# add_clang_format_target() # needs python
 
 include(${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
@@ -30,9 +30,6 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(implot CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(Stb REQUIRED)
-find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
-find_package(ImGui-SFML CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
@@ -41,11 +38,10 @@ add_executable(${PROJECT_NAME}
 
 target_set_warnings(TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC src/)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
-target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui sfml-graphics sfml-system sfml-window ImGui-SFML::ImGui-SFML)
+target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
 target_link_libraries(${PROJECT_NAME} PRIVATE implot::implot)
-target_link_libraries(${PROJECT_NAME} PRIVATE sfml-main)
