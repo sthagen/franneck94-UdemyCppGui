@@ -34,6 +34,7 @@ find_package(OpenGL REQUIRED)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/render.cpp
+    src/Clock.cpp
 )
 
 target_set_warnings(TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS})
