@@ -8,6 +8,8 @@
 #include "implot.h"
 #include <fmt/format.h>
 
+#include "Clock.hpp"
+
 class WindowClass
 {
 public:
@@ -38,6 +40,8 @@ public:
 
 private:
     std::vector<Icon> icons;
+
+    Clock clock;
 };
 
 void render(WindowClass &window_class);

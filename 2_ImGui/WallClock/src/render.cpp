@@ -43,20 +43,28 @@ void WindowClass::Draw(std::string_view label)
     ImGui::End();
 }
 
-std::tuple<float, float, float> WindowClass::GetTheta()
+void WindowClass::GetTime()
 {
     const auto now = std::chrono::system_clock::now();
     const auto time_now = std::chrono::system_clock::to_time_t(now);
     const auto time_parts = std::localtime(&time_now);
 
-    constexpr auto offset = (PI / 2.0F);
-    const auto seconds = time_parts->tm_sec;
-    const auto minutes = time_parts->tm_min + (seconds / 60.F);
-    const auto hours = (time_parts->tm_hour % 12) + (minutes / 60.0f);
+    secs = time_parts->tm_sec;
+    mins = time_parts->tm_min;
+    hrs = time_parts->tm_hour;
+}
 
-    auto hour_theta = (hours * ((2.0F * PI) / 12.0F)) + offset;
-    auto minute_theta = ((minutes * ((2.0F * PI) / 60.0F)) + offset);
-    auto second_theta = ((seconds * ((2.0F * PI) / 60.0F)) + offset);
+std::tuple<float, float, float> WindowClass::GetTheta()
+{
+    GetTime();
+
+    const auto seconds_frac = secs;
+    const auto minutes_frac = mins + (secs / 60.F);
+    const auto hours_frac = (hrs % 12) + (mins / 60.0f);
+
+    auto hour_theta = (hours_frac * ((2.0F * PI) / 12.0F)) + offset;
+    auto minute_theta = ((minutes_frac * ((2.0F * PI) / 60.0F)) + offset);
+    auto second_theta = ((seconds_frac * ((2.0F * PI) / 60.0F)) + offset);
 
     return std::make_tuple(hour_theta, minute_theta, second_theta);
 }

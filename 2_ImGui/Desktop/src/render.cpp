@@ -27,9 +27,26 @@ void WindowClass::Draw(std::string_view label)
 
     ImGui::Begin("Taskbar", NULL, window_flags);
 
-    if (ImGui::Button("All Icons", ImVec2(100, 20)))
+    if (ImGui::Button("All Icons", ImVec2(100, 30)))
     {
         ImGui::OpenPopup("My Programs");
+    }
+
+    ImGui::SameLine();
+
+    ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x);
+
+    static bool clock_open = false;
+    clock.GetTime();
+    const auto time = fmt::format("{}:{}", clock.hrs, clock.mins);
+    if (ImGui::Button(time.data(), ImVec2(100, 30)) || clock_open)
+    {
+        clock.Draw("clockWindow");
+        clock_open = true;
+    }
+    if (ImGui::IsMouseClicked(0))
+    {
+        clock_open = false;
     }
 
     ShowIconList();
@@ -45,7 +62,7 @@ void WindowClass::ShowIconList()
     const auto popup_height = selectable_height * numIcons + 40.0F;
 
     ImGui::SetNextWindowPos(ImVec2(0.0F, 680.0F - popup_height),
-                             ImGuiCond_Always);
+                            ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(200.0F, popup_height), ImGuiCond_Always);
 
     if (ImGui::BeginPopupModal("My Programs"))

@@ -6,14 +6,16 @@
 #include "implot.h"
 #include <fmt/format.h>
 
-#include "render.hpp"
+#include "Clock.hpp"
 
-void WindowClass::Draw(std::string_view label)
+void Clock::Draw(std::string_view label)
 {
+    static auto is_open = false;
+
     ImGui::SetNextWindowSize(ImVec2(1280.0F, 720.0F));
     ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F));
 
-    ImGui::Begin(label.data());
+    ImGui::Begin(label.data(), &is_open);
 
     const auto cursor_pos = ImGui::GetCursorScreenPos();
     center = ImVec2(cursor_pos.x + circleRadius, cursor_pos.y + circleRadius);
@@ -43,25 +45,33 @@ void WindowClass::Draw(std::string_view label)
     ImGui::End();
 }
 
-std::tuple<float, float, float> WindowClass::GetTheta()
+void Clock::GetTime()
 {
     const auto now = std::chrono::system_clock::now();
     const auto time_now = std::chrono::system_clock::to_time_t(now);
     const auto time_parts = std::localtime(&time_now);
 
-    constexpr auto offset = (PI / 2.0F);
-    const auto seconds = time_parts->tm_sec;
-    const auto minutes = time_parts->tm_min + (seconds / 60.F);
-    const auto hours = (time_parts->tm_hour % 12) + (minutes / 60.0f);
+    secs = time_parts->tm_sec;
+    mins = time_parts->tm_min;
+    hrs = time_parts->tm_hour;
+}
 
-    auto hour_theta = (hours * ((2.0F * PI) / 12.0F)) + offset;
-    auto minute_theta = ((minutes * ((2.0F * PI) / 60.0F)) + offset);
-    auto second_theta = ((seconds * ((2.0F * PI) / 60.0F)) + offset);
+std::tuple<float, float, float> Clock::GetTheta()
+{
+    GetTime();
+
+    const auto seconds_frac = secs;
+    const auto minutes_frac = mins + (secs / 60.F);
+    const auto hours_frac = (hrs % 12) + (mins / 60.0f);
+
+    auto hour_theta = (hours_frac * ((2.0F * PI) / 12.0F)) + offset;
+    auto minute_theta = ((minutes_frac * ((2.0F * PI) / 60.0F)) + offset);
+    auto second_theta = ((seconds_frac * ((2.0F * PI) / 60.0F)) + offset);
 
     return std::make_tuple(hour_theta, minute_theta, second_theta);
 }
 
-void WindowClass::DrawClockHand(const float radius,
+void Clock::DrawClockHand(const float radius,
                                 const float theta,
                                 const ImColor color)
 {
@@ -72,7 +82,7 @@ void WindowClass::DrawClockHand(const float radius,
     ImGui::GetWindowDrawList()->AddLine(center, end_point, color, 3.0F);
 }
 
-void WindowClass::DrawHourStrokes()
+void Clock::DrawHourStrokes()
 {
     for (std::uint8_t hr = 0; hr < 12; ++hr)
     {
