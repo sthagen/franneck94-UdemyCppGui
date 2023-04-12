@@ -13,12 +13,13 @@
 #include "AdvCalc.hpp"
 #include "BaseView.hpp"
 #include "Calender.hpp"
+#include "Clock.hpp"
+#include "CsvEditor.hpp"
 #include "Diff.hpp"
 #include "FileExplorer.hpp"
 #include "MediaPlayer.hpp"
 #include "Paint.hpp"
 #include "TextEditor.hpp"
-#include "CsvEditor.hpp"
 
 class Desktop : public BaseView
 {
@@ -40,7 +41,7 @@ public:
     Desktop()
         : adv_calc({}), calender({}), diff_viewer({}), file_explorer({}),
           media_player({}), paint({}), text_editor({}), csv_editor({}),
-          icons({})
+          clock({}), icons({})
     {
         icons.reserve(7);
         icons.push_back(Icon{"AdvCalc", &adv_calc});
@@ -66,6 +67,8 @@ private:
     Paint paint;
     TextEditor text_editor;
     CsvEditor csv_editor;
+
+    Clock clock;
 
     std::vector<Icon> icons;
 };

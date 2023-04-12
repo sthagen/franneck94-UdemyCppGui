@@ -47,6 +47,23 @@ void Desktop::Draw(std::string_view label, bool *)
         open_taskbar = true;
     }
 
+    ImGui::SameLine();
+
+    ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x);
+
+    static bool clock_open = false;
+    clock.GetTime();
+    const auto time = fmt::format("{}:{}", clock.hrs, clock.mins);
+    if (ImGui::Button(time.data(), ImVec2(100, 30)) || clock_open)
+    {
+        clock.Draw("clockWindow");
+        clock_open = true;
+    }
+    if (ImGui::IsMouseClicked(0))
+    {
+        clock_open = false;
+    }
+
     if (open_taskbar)
         ShowIconList(&open_taskbar);
 

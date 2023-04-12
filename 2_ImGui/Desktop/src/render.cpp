@@ -13,6 +13,7 @@ void WindowClass::Draw(std::string_view label)
         (ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
          ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
          ImGuiWindowFlags_NoScrollWithMouse);
+    static auto open_taskbar = false;
 
     ImGui::SetNextWindowSize(ImVec2(1280.0F, 680.0F), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F), ImGuiCond_Always);
@@ -30,6 +31,7 @@ void WindowClass::Draw(std::string_view label)
     if (ImGui::Button("All Icons", ImVec2(100, 30)))
     {
         ImGui::OpenPopup("My Programs");
+        open_taskbar = true;
     }
 
     ImGui::SameLine();
@@ -49,14 +51,15 @@ void WindowClass::Draw(std::string_view label)
         clock_open = false;
     }
 
-    ShowIconList();
+    if (open_taskbar)
+        ShowIconList(&open_taskbar);
 
     ImGui::End();
 
     ImGui::End();
 }
 
-void WindowClass::ShowIconList()
+void WindowClass::ShowIconList(bool *open)
 {
     const auto selectable_height = ImGui::GetTextLineHeightWithSpacing();
     const auto popup_height = selectable_height * numIcons + 40.0F;
@@ -65,7 +68,7 @@ void WindowClass::ShowIconList()
                             ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(200.0F, popup_height), ImGuiCond_Always);
 
-    if (ImGui::BeginPopupModal("My Programs"))
+    if (ImGui::BeginPopupModal("My Programs", open))
     {
         for (auto &icon : icons)
         {

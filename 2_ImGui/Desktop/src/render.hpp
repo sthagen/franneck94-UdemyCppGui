@@ -36,7 +36,7 @@ public:
     };
 
     void Draw(std::string_view label);
-    void ShowIconList();
+    void ShowIconList(bool *open = nullptr);
 
 private:
     std::vector<Icon> icons;
