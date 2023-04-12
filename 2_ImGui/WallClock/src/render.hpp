@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstdint>
+#include <numbers>
 #include <string_view>
 #include <tuple>
 
@@ -11,17 +11,19 @@
 class WindowClass
 {
 public:
-    constexpr static auto PI = 3.14159f;
-    constexpr static auto circleRadius = 250.0f;
-    constexpr static auto offset = (PI / 2.0F);
+    constexpr static auto PI = std::numbers::pi_v<float>;
+    constexpr static auto circleRadius = 250.0F;
+    constexpr static auto offset = PI / 2.0F;
 
 public:
     void Draw(std::string_view label);
 
     void DrawClockHand(const float radius,
-                       const float angle,
+                       const float theta,
                        const ImColor color);
-    void DrawHourStrokes();
+
+    void DrawHours();
+    void DrawMinutes();
 
     void GetTime();
     std::tuple<float, float, float> GetTheta();
