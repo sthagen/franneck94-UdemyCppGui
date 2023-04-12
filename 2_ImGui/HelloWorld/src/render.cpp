@@ -79,9 +79,30 @@ void WindowClass::Draw(std::string_view label)
 
     ImGui::Begin("w6");
     static bool act = false;
-    ImGui::RadioButton("rad", act);
+    if (ImGui::RadioButton("rad", act))
+        act = true;
     ImGui::ArrowButton("arr", ImGuiDir_Left);
     ImGui::SmallButton("small");
+    ImGui::End();
+
+    ImGui::Begin("w7");
+    char n[] = "jan";
+    ImGui::Text("From %s", n);
+    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+    {
+        ImGui::SetDragDropPayload("DND_DEMO_CELL", n, sizeof(n));
+        ImGui::EndDragDropSource();
+    }
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const auto *payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
+        {
+            IM_ASSERT(payload->DataSize == sizeof(int));
+            auto *payload_n = (const char *)payload->Data;
+            ImGui::Text("To %s", payload_n);
+        }
+        ImGui::EndDragDropTarget();
+    }
     ImGui::End();
 }
 

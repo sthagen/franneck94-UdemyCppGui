@@ -16,7 +16,6 @@
 - ImGui::CollapsingHeader
 - ImGui::Image
 - ImGui::BeginTabItem
-
 - ImGui::RadioButton
 - ImGui::ArrowButton
 - ImGui::PushButtonRepeat
