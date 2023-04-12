@@ -7,24 +7,81 @@
 
 void WindowClass::Draw(std::string_view label)
 {
-    ImGui::SetNextWindowSize(ImVec2(800.0F, 500.0F));
-    ImGui::SetNextWindowPos(ImVec2(400.0f, 200.0F));
-    ImGui::Begin("MainWindow", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-
-    ImGui::SetCursorPos(ImVec2(400.0F, 200.0F));
-    if (ImGui::Button("Click me", ImVec2(100.0, 100.0F)))
+    ImGui::Begin("w1");
+    if (ImGui::TreeNode("Tabbing"))
     {
-        ImGui::OpenPopup("Clicked!");
+        ImGui::Text(
+            "Use TAB/SHIFT+TAB to cycle through keyboard editable fields.");
+        static char buf[32] = "hello";
+        ImGui::InputText("1", buf, IM_ARRAYSIZE(buf));
+        ImGui::InputText("2", buf, IM_ARRAYSIZE(buf));
+        ImGui::InputText("3", buf, IM_ARRAYSIZE(buf));
+        ImGui::TreePop();
     }
+    ImGui::End();
 
-    bool open = true;
-    if (ImGui::BeginPopupModal("Clicked!", &open))
+    ImGui::Begin("w2");
+    static bool flag1 = false;
+    static bool flag2 = false;
+
+    if (ImGui::BeginMenu("Examples"))
     {
-        ImGui::Text("You clicked me!");
-
-        ImGui::EndPopup();
+        ImGui::MenuItem("Main menu bar", NULL, &flag1);
+        ImGui::MenuItem("Documents", NULL, &flag2);
+        ImGui::EndMenu();
     }
+    ImGui::End();
 
+    ImGui::Begin("w3");
+    if (ImGui::CollapsingHeader("Help"))
+    {
+        ImGui::Text("ABOUT THIS DEMO:");
+    }
+    ImGui::End();
+
+    ImGui::Begin("w4");
+    ImGuiIO &io = ImGui::GetIO();
+    ImTextureID my_tex_id = io.Fonts->TexID;
+    float my_tex_w = (float)io.Fonts->TexWidth;
+    float my_tex_h = (float)io.Fonts->TexHeight;
+    ImGui::Text("%.0fx%.0f", my_tex_w, my_tex_h);
+    ImVec2 pos = ImGui::GetCursorScreenPos();
+    ImVec2 uv_min = ImVec2(0.0f, 0.0f);               // Top-left
+    ImVec2 uv_max = ImVec2(1.0f, 1.0f);               // Lower-right
+    ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // No tint
+    ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
+    ImGui::Image(my_tex_id,
+                 ImVec2(my_tex_w, my_tex_h),
+                 uv_min,
+                 uv_max,
+                 tint_col,
+                 border_col);
+    ImGui::End();
+
+    ImGui::Begin("w5");
+    if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
+    {
+        if (ImGui::BeginTabItem("Sizes1"))
+        {
+            ImGui::SeparatorText("Main1");
+            ImGui::SeparatorText("Main2");
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Sizes2"))
+        {
+            ImGui::SeparatorText("Main1");
+            ImGui::SeparatorText("Main2");
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+    }
+    ImGui::End();
+
+    ImGui::Begin("w6");
+    static bool act = false;
+    ImGui::RadioButton("rad", act);
+    ImGui::ArrowButton("arr", ImGuiDir_Left);
+    ImGui::SmallButton("small");
     ImGui::End();
 }
 
