@@ -1,17 +1,15 @@
 #include <chrono>
-#include <cmath>
-#include <iostream>
+#include <string_view>
+#include <tuple>
 
 #include "imgui.h"
 #include "implot.h"
 #include <fmt/format.h>
 
-#include "Clock.hpp"
+#include "render.hpp"
 
 void Clock::Draw(std::string_view label)
 {
-    static auto is_open = false;
-
     ImGui::SetNextWindowSize(ImVec2(1280.0F, 720.0F));
     ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F));
 

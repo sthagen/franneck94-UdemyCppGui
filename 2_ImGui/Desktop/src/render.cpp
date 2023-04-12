@@ -34,11 +34,14 @@ void WindowClass::Draw(std::string_view label)
         open_taskbar = true;
     }
 
+    if (open_taskbar)
+        ShowIconList(&open_taskbar);
+
     ImGui::SameLine();
 
     ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x);
 
-    static bool clock_open = false;
+    static auto clock_open = false;
     clock.GetTime();
     const auto time = fmt::format("{}:{}", clock.hrs, clock.mins);
     if (ImGui::Button(time.data(), ImVec2(100, 30)) || clock_open)
@@ -46,13 +49,8 @@ void WindowClass::Draw(std::string_view label)
         clock.Draw("clockWindow");
         clock_open = true;
     }
-    if (ImGui::IsMouseClicked(0))
-    {
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         clock_open = false;
-    }
-
-    if (open_taskbar)
-        ShowIconList(&open_taskbar);
 
     ImGui::End();
 
