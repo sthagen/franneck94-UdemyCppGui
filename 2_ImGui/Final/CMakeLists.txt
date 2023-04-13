@@ -43,6 +43,8 @@ add_executable(${PROJECT_NAME}
     src/TextEditor.cpp
     src/CsvEditor.cpp
     src/Clock.cpp
+    src/OtherTopics.cpp
+    src/lodepng.cpp
 )
 
 target_set_warnings(TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS})

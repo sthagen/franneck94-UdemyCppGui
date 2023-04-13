@@ -41,21 +41,11 @@ void WindowClass::Draw(std::string_view label)
 
     ImGui::Begin("w4");
     ImGuiIO &io = ImGui::GetIO();
-    ImTextureID my_tex_id = io.Fonts->TexID;
-    float my_tex_w = (float)io.Fonts->TexWidth;
-    float my_tex_h = (float)io.Fonts->TexHeight;
-    ImGui::Text("%.0fx%.0f", my_tex_w, my_tex_h);
-    ImVec2 pos = ImGui::GetCursorScreenPos();
-    ImVec2 uv_min = ImVec2(0.0f, 0.0f);               // Top-left
-    ImVec2 uv_max = ImVec2(1.0f, 1.0f);               // Lower-right
-    ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // No tint
-    ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
-    ImGui::Image(my_tex_id,
-                 ImVec2(my_tex_w, my_tex_h),
-                 uv_min,
-                 uv_max,
-                 tint_col,
-                 border_col);
+    ImTextureID image_texture = io.Fonts->TexID;
+    const auto my_tex_w = (float)io.Fonts->TexWidth;
+    const auto my_tex_h = (float)io.Fonts->TexHeight;
+    const auto image_size = ImVec2(my_tex_w, my_tex_h);
+    ImGui::Image(image_texture, image_size);
     ImGui::End();
 
     ImGui::Begin("w5");
@@ -83,26 +73,6 @@ void WindowClass::Draw(std::string_view label)
         act = true;
     ImGui::ArrowButton("arr", ImGuiDir_Left);
     ImGui::SmallButton("small");
-    ImGui::End();
-
-    ImGui::Begin("w7");
-    char n[] = "jan";
-    ImGui::Text("From %s", n);
-    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-    {
-        ImGui::SetDragDropPayload("DND_DEMO_CELL", n, sizeof(n));
-        ImGui::EndDragDropSource();
-    }
-    if (ImGui::BeginDragDropTarget())
-    {
-        if (const auto *payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
-        {
-            IM_ASSERT(payload->DataSize == sizeof(int));
-            auto *payload_n = (const char *)payload->Data;
-            ImGui::Text("To %s", payload_n);
-        }
-        ImGui::EndDragDropTarget();
-    }
     ImGui::End();
 }
 

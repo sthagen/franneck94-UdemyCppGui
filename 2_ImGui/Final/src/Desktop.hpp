@@ -7,7 +7,6 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "implot.h"
-#include "miniaudio.h"
 #include <fmt/format.h>
 
 #include "AdvCalc.hpp"
@@ -20,6 +19,7 @@
 #include "MediaPlayer.hpp"
 #include "Paint.hpp"
 #include "TextEditor.hpp"
+#include "OtherTopics.hpp"
 
 class Desktop : public BaseView
 {
@@ -52,6 +52,7 @@ public:
         icons.push_back(Icon{"Paint", &paint});
         icons.push_back(Icon{"TextEditor", &text_editor});
         icons.push_back(Icon{"CsvEditor", &csv_editor});
+        icons.push_back(Icon{"OtherTopics", &other_topics});
     };
     virtual ~Desktop(){};
 
@@ -67,6 +68,7 @@ private:
     Paint paint;
     TextEditor text_editor;
     CsvEditor csv_editor;
+    OtherTopics other_topics;
 
     Clock clock;
 
