@@ -25,7 +25,6 @@ GLuint loadTexture(const char *filename)
         return 0;
     }
 
-
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -50,61 +49,63 @@ GLuint loadTexture(const char *filename)
 void OtherTopics::Draw(std::string_view label, bool *open)
 {
     ImGui::Begin(label.data(), open);
-    if (ImGui::TreeNode("Tabbing"))
-    {
-        ImGui::Text(
-            "Use TAB/SHIFT+TAB to cycle through keyboard editable fields.");
-        static char buf[32] = "hello";
-        ImGui::InputText("1", buf, IM_ARRAYSIZE(buf));
-        ImGui::InputText("2", buf, IM_ARRAYSIZE(buf));
-        ImGui::InputText("3", buf, IM_ARRAYSIZE(buf));
-        ImGui::TreePop();
-    }
 
-    static bool flag1 = false;
-    static bool flag2 = false;
+    // if (ImGui::TreeNode("Tabbing"))
+    // {
+    //     static char buf[32] = "hello";
+    //     ImGui::InputText("1", buf, IM_ARRAYSIZE(buf));
+    //     ImGui::InputText("2", buf, IM_ARRAYSIZE(buf));
+    //     ImGui::InputText("3", buf, IM_ARRAYSIZE(buf));
+    //     ImGui::TreePop();
+    // }
 
-    if (ImGui::BeginMenu("Examples"))
-    {
-        ImGui::MenuItem("Main menu bar", NULL, &flag1);
-        ImGui::MenuItem("Documents", NULL, &flag2);
-        ImGui::EndMenu();
-    }
+    // static bool flag1 = false;
+    // static bool flag2 = false;
 
-    if (ImGui::CollapsingHeader("Help"))
-    {
-        ImGui::Text("ABOUT THIS DEMO:");
-    }
+    // if (ImGui::BeginMenu("Examples"))
+    // {
+    //     ImGui::MenuItem("Main menu bar", NULL, &flag1);
+    //     ImGui::MenuItem("Documents", NULL, &flag2);
+    //     ImGui::EndMenu();
+    // }
 
-    const auto myImageTexture = loadTexture(
-        "C:/Users/Jan/Documents/_LocalCoding/UdemyCppGui/2_ImGui/Final/images/image.png");
-    const auto imageWidth = 100;
-    const auto imageHeight = 100;
-    const auto imageSize =
-        ImVec2(static_cast<float>(imageWidth), static_cast<float>(imageHeight));
-    ImGui::Image(reinterpret_cast<ImTextureID>(myImageTexture), imageSize);
+    // if (ImGui::CollapsingHeader("Help"))
+    // {
+    //     ImGui::Text("1");
+    //     ImGui::Text("2");
+    //     ImGui::Text("3");
+    // }
 
-    if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
-    {
-        if (ImGui::BeginTabItem("Sizes1"))
-        {
-            ImGui::SeparatorText("Main1");
-            ImGui::SeparatorText("Main2");
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Sizes2"))
-        {
-            ImGui::SeparatorText("Main1");
-            ImGui::SeparatorText("Main2");
-            ImGui::EndTabItem();
-        }
-        ImGui::EndTabBar();
-    }
+    // const auto myImageTexture = loadTexture(
+    //     "C:/Users/Jan/Documents/_LocalCoding/UdemyCppGui/2_ImGui/Final/images/image.png");
+    // const auto imageWidth = 100;
+    // const auto imageHeight = 100;
+    // const auto imageSize =
+    //     ImVec2(static_cast<float>(imageWidth), static_cast<float>(imageHeight));
+    // ImGui::Image(reinterpret_cast<ImTextureID>(myImageTexture), imageSize);
+
+    // if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
+    // {
+    //     if (ImGui::BeginTabItem("Sizes1"))
+    //     {
+    //         ImGui::SeparatorText("Main11");
+    //         ImGui::SeparatorText("Main21");
+    //         ImGui::EndTabItem();
+    //     }
+    //     if (ImGui::BeginTabItem("Sizes2"))
+    //     {
+    //         ImGui::SeparatorText("Main12");
+    //         ImGui::SeparatorText("Main22");
+    //         ImGui::EndTabItem();
+    //     }
+    //     ImGui::EndTabBar();
+    // }
 
     static bool act = false;
     if (ImGui::RadioButton("rad", act))
         act = true;
-    ImGui::ArrowButton("arr", ImGuiDir_Left);
+    ImGui::ArrowButton("arr1", ImGuiDir_Left);
+    ImGui::ArrowButton("arr2", ImGuiDir_Right);
     ImGui::SmallButton("small");
 
     ImGui::End();
