@@ -29,9 +29,9 @@ public:
     std::tuple<float, float, float> GetTheta();
 
 public:
-    std::int32_t secs;
-    std::int32_t mins;
-    std::int32_t hrs;
+    std::int32_t secs = 0;
+    std::int32_t mins = 0;
+    std::int32_t hrs = 0;
 
 private:
     ImVec2 center;
