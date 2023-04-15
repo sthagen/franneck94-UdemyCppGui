@@ -27,7 +27,7 @@ public:
     };
 
 public:
-    WindowClass()
+    WindowClass() : clock({})
     {
         for (std::uint32_t i = 0; i < numIcons; ++i)
         {
