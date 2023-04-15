@@ -8,7 +8,7 @@
 #include "implot.h"
 #include <fmt/format.h>
 
-#include "Clock.hpp"
+#include "clock.hpp"
 
 class WindowClass
 {
