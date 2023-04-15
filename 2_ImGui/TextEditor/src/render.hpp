@@ -9,7 +9,7 @@ public:
     static constexpr auto bufferSize = 1024;
 
 public:
-    WindowClass() : currentFilename({})
+    WindowClass() : textBuffer({}), currentFilename({})
     {
         textBuffer.reserve(bufferSize);
     }

@@ -11,8 +11,7 @@
 class WindowClass
 {
 public:
-    WindowClass()
-        : engine({}){};
+    WindowClass() : engine({}), sound({}){};
 
     void Draw(std::string_view label);
 

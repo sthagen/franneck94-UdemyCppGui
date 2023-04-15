@@ -7,7 +7,7 @@
 
 void WindowClass::Draw(std::string_view label)
 {
-    ImGui::Begin("test");
+    ImGui::Begin(label.data());
 
 
     ImGui::End();

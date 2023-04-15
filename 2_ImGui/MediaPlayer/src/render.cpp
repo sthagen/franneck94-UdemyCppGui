@@ -51,7 +51,7 @@ void WindowClass::Draw(std::string_view label)
 
             ma_sound_init_from_file(&engine,
                                     audioFilePath.c_str(),
-                                    NULL,
+                                    0,
                                     NULL,
                                     NULL,
                                     &sound);
