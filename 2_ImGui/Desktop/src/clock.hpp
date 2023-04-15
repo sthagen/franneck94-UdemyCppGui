@@ -34,5 +34,5 @@ public:
     std::int32_t hrs = 0;
 
 private:
-    ImVec2 center;
+    ImVec2 center = ImVec2{};
 };

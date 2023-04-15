@@ -27,8 +27,9 @@ public:
     };
 
 public:
-    WindowClass() : clock({})
+    WindowClass() : icons({}), clock({})
     {
+        icons.reserve(numIcons);
         for (std::uint32_t i = 0; i < numIcons; ++i)
         {
             icons.push_back(Icon{fmt::format("Icon{}", i)});

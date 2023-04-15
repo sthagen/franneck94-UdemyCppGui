@@ -12,6 +12,9 @@ public:
     using FileContent = std::vector<std::string>;
 
 public:
+    WindowClass()
+        : fileContent1({}), fileContent2({}), diffResult1({}),
+          diffResult2({}){};
     void Draw(std::string_view title);
 
     FileContent LoadFileContent(std::string_view file_path);

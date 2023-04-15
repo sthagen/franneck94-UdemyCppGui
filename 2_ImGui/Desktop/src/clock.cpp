@@ -112,9 +112,11 @@ void Clock::GetTime()
 
 std::tuple<float, float, float> Clock::GetTheta()
 {
-    const auto seconds_frac = secs;
-    const auto minutes_frac = mins + (secs / 60.0F);
-    const auto hours_frac = hrs + (mins / 60.0F);
+    const auto seconds_frac = static_cast<float>(secs);
+    const auto minutes_frac =
+        static_cast<float>(mins) + (static_cast<float>(secs) / 60.0F);
+    const auto hours_frac =
+        static_cast<float>(hrs) + (static_cast<float>(mins) / 60.0F);
 
     const auto hour_theta = (hours_frac * ((2.0F * PI) / 12.0F)) + offset;
     const auto minute_theta = (minutes_frac * ((2.0F * PI) / 60.0F)) + offset;
