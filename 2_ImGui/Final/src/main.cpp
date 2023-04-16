@@ -39,8 +39,7 @@ void start_cycle()
 
 void end_cycle(GLFWwindow *const window)
 {
-    const auto clear_color =
-        ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
+    const auto clear_color = ImVec4(0.10F, 0.10F, 0.10F, 1.00f);
     int display_w = 0;
     int display_h = 0;
     glfwGetFramebufferSize(window, &display_w, &display_h);
@@ -105,10 +104,6 @@ int main(int, char **)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
-
-    auto &style = ImGui::GetStyle();
-    style.Colors[ImGuiCol_TableBorderStrong] = ImVec4(1.0, 1.0, 1.0, 1.0);
-    style.Colors[ImGuiCol_TableBorderLight] = ImVec4(1.0, 1.0, 1.0, 1.0);
 
     Desktop desktop_obj;
 
