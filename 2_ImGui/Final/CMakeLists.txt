@@ -23,7 +23,7 @@ include(ConfigSafeGuards)
 
 add_clang_format_target() # needs python # needs python
 
-include(${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake)
+include(C:/Users/Jan/OneDrive/_Coding/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
