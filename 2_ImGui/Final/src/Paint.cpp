@@ -12,7 +12,7 @@
 void Paint::Draw(std::string_view label, bool *open)
 {
     ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
 
     ImGui::Begin(label.data(), open, fullscreenFlags);
 

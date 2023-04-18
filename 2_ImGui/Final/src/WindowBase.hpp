@@ -1,13 +1,11 @@
 #pragma once
 
-#include <algorithm>
 #include <filesystem>
 #include <string_view>
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "implot.h"
-
 #include <SimpleIni.h>
 
 namespace fs = std::filesystem;
@@ -17,12 +15,12 @@ class WindowBase
 public:
     constexpr static auto fullscreenFlags =
         ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse;
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    constexpr static auto rootSize = ImVec2(1280.0F, 720.0F);
     constexpr static auto rootPos = ImVec2(0.0F, 0.0F);
-    constexpr static auto fullscreenSize = ImVec2(1280.0F, 720.0F);
 
 public:
-    WindowBase(){};
+    WindowBase() : ini(CSimpleIniA()){};
     virtual ~WindowBase(){};
 
     void SettingsMenuBar();
@@ -33,7 +31,7 @@ public:
 
 protected:
     void DrawColorsSettings(bool *open = nullptr);
-    static ImGuiStyle DefaultStyleColors();
+    static ImGuiStyle DefaultColorStyle();
 
-    CSimpleIniA ini = CSimpleIniA();
+    CSimpleIniA ini;
 };

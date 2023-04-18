@@ -29,11 +29,9 @@ void TextEditor::Draw(std::string_view label, bool *open)
     const auto l_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_L));
 
     ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
 
     ImGui::Begin(label.data(), open, fullscreenFlags);
-
-    SettingsMenuBar();
 
     if (ImGui::Button("Save") || (ctrl_pressed && s_pressed))
     {

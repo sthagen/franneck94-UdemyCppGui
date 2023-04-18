@@ -1,45 +1,35 @@
-#include <cstdint>
-#include <iostream>
-#include <string>
-#include <vector>
+#include <string_view>
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "implot.h"
 #include <fmt/format.h>
 
-#include "AdvCalc.hpp"
-#include "Calender.hpp"
 #include "Desktop.hpp"
-#include "Diff.hpp"
-#include "FileExplorer.hpp"
-#include "MediaPlayer.hpp"
-#include "Paint.hpp"
-#include "TextEditor.hpp"
 
 void Desktop::Draw(std::string_view label, bool *)
 {
     constexpr static auto flags = ImGuiWindowFlags_NoDecoration |
                                   ImGuiWindowFlags_NoScrollWithMouse |
                                   ImGuiWindowFlags_NoInputs;
+    constexpr static auto button_flags =
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoScrollWithMouse;
     static auto open_taskbar = false;
 
+    ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
     ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
 
-    ImGui::Begin(label.data(), nullptr, flags);
+    ImGui::Begin(label.data(), NULL, flags);
 
     for (auto &icon : icons)
         icon.Draw();
 
-    ImGui::SetNextWindowPos(ImVec2(0, 680), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(1280, 40), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(0.0F, 680.0F), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(1280.0F, 40.0F), ImGuiCond_Always);
 
-    ImGui::Begin("Taskbar",
-                 nullptr,
-                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-                     ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
-                     ImGuiWindowFlags_NoScrollWithMouse);
+    ImGui::Begin("Taskbar", NULL, button_flags);
 
     ImGui::SetCursorPosX(0.0F);
     if (ImGui::Button("All Icons", ImVec2(100.0F, 30.0F)))
@@ -48,14 +38,8 @@ void Desktop::Draw(std::string_view label, bool *)
         open_taskbar = true;
     }
 
-    ImGui::SameLine();
-
-    static auto theme_open = false;
-    if (ImGui::Button("Theme", ImVec2(100.0F, 30.0F)) || theme_open)
-    {
-        theme_open = true;
-        DrawColorsSettings(&theme_open);
-    }
+    if (open_taskbar)
+        ShowIconList(&open_taskbar);
 
     ImGui::SameLine();
 
@@ -69,13 +53,8 @@ void Desktop::Draw(std::string_view label, bool *)
         clock.Draw("clockWindow");
         clock_open = true;
     }
-    if (ImGui::IsMouseClicked(0))
-    {
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         clock_open = false;
-    }
-
-    if (open_taskbar)
-        ShowIconList(&open_taskbar);
 
     ImGui::End();
 
@@ -88,8 +67,9 @@ void Desktop::ShowIconList(bool *open)
     const auto selectable_height = ImGui::GetTextLineHeightWithSpacing();
     const auto popup_height = selectable_height * icon_count + 40.0F;
 
-    ImGui::SetNextWindowPos(ImVec2(0, 680 - popup_height), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(200, popup_height), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(0.0F, 680.0F - popup_height),
+                            ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(200.0F, popup_height), ImGuiCond_Always);
 
     if (ImGui::BeginPopupModal("My Programs", open))
     {
@@ -97,7 +77,7 @@ void Desktop::ShowIconList(bool *open)
         {
             if (ImGui::Selectable(icon.label.data()))
             {
-                icon.popup_open = true;
+                icon.popupOpen = true;
                 ImGui::CloseCurrentPopup();
             }
         }
@@ -111,15 +91,13 @@ void Desktop::Icon::Draw()
     constexpr static auto flags =
         ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
 
-    const auto label_ = fmt::format("Icon Popup Window##{}", label);
-
     ImGui::SetNextWindowPos(position, ImGuiCond_FirstUseEver);
     ImGui::Begin(fmt::format("###{}", label).data(), nullptr, flags);
 
-    if (ImGui::Button(label.data(), ImVec2(100, 50)) || popup_open)
+    if (ImGui::Button(label.data(), ImVec2(100.0F, 50.0F)) || popupOpen)
     {
-        popup_open = true;
-        base->Draw(label, &popup_open);
+        popupOpen = true;
+        base->Draw(label, &popupOpen);
     }
 
     ImGui::End();

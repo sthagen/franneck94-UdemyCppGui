@@ -20,7 +20,7 @@ public:
           pointDrawSize(2.0F){};
     virtual ~Paint(){};
 
-    void Draw(std::string_view title, bool *open = nullptr) final;
+    void Draw(std::string_view label, bool *open = nullptr) final;
 
 private:
     void SaveToImageFile(std::string_view filename);

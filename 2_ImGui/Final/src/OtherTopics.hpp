@@ -7,8 +7,8 @@
 class OtherTopics : public WindowBase
 {
 public:
-    OtherTopics() {};
-    virtual ~OtherTopics(){};
+    OtherTopics(){};
+    ~OtherTopics(){};
 
-    void Draw(std::string_view label, bool *open = nullptr) override;
+    void Draw(std::string_view label, bool *open = nullptr) final;
 };

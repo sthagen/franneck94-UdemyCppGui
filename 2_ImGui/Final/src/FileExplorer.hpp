@@ -17,7 +17,7 @@ public:
         : currentPath(fs::current_path()), selectedEntry(fs::path{}){};
     virtual ~FileExplorer(){};
 
-    void Draw(std::string_view label, bool *open = nullptr) override;
+    void Draw(std::string_view label, bool *open = nullptr) final;
 
 private:
     void openFileWithDefaultEditor(const fs::path &filePath);

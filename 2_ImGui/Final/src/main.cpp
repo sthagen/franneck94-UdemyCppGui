@@ -118,7 +118,7 @@ int main(int, char **)
 
         end_cycle(window);
     }
-    desktop_obj.SaveTheme();
+    // desktop_obj.SaveTheme();
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

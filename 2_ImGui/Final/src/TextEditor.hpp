@@ -17,7 +17,7 @@ public:
     }
     virtual ~TextEditor(){};
 
-    void Draw(std::string_view title, bool *open = nullptr) final;
+    void Draw(std::string_view label, bool *open = nullptr) final;
 
     void SaveToFile(std::string_view filename);
     void LoadFromFile(std::string_view filename);

@@ -13,7 +13,7 @@
 void CsvEditor::Draw(std::string_view label, bool *open)
 {
     ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
 
     ImGui::Begin(label.data(), open, fullscreenFlags);
 
@@ -80,7 +80,8 @@ void CsvEditor::DrawSizeButtons()
 
     if (user_added_rows)
     {
-        for (auto row = data.size(); row < static_cast<std::size_t>(numRows); ++row)
+        for (auto row = data.size(); row < static_cast<std::size_t>(numRows);
+             ++row)
         {
             data.emplace_back(numCols, 0.0F);
         }
@@ -89,7 +90,9 @@ void CsvEditor::DrawSizeButtons()
     {
         for (std::int32_t row = 0; row < numRows; ++row)
         {
-            for (auto col = data[row].size(); col < static_cast<std::size_t>(numCols); ++col)
+            for (auto col = data[row].size();
+                 col < static_cast<std::size_t>(numCols);
+                 ++col)
             {
                 data[row].push_back(0.0F);
             }
@@ -97,7 +100,8 @@ void CsvEditor::DrawSizeButtons()
     }
     else if (user_dropped_rows)
     {
-        for (auto row = data.size(); row > static_cast<std::size_t>(numRows); --row)
+        for (auto row = data.size(); row > static_cast<std::size_t>(numRows);
+             --row)
         {
             data.pop_back();
         }
@@ -106,7 +110,9 @@ void CsvEditor::DrawSizeButtons()
     {
         for (std::int32_t row = 0; row < numRows; ++row)
         {
-            for (auto col = data[row].size(); col > static_cast<std::size_t>(numCols); --col)
+            for (auto col = data[row].size();
+                 col > static_cast<std::size_t>(numCols);
+                 --col)
             {
                 data[row].pop_back();
             }

@@ -48,8 +48,8 @@ GLuint loadTexture(const char *filename)
 
 void OtherTopics::Draw(std::string_view label, bool *open)
 {
-    ImGui::SetNextWindowPos(rootPos);
-    ImGui::SetNextWindowSize(fullscreenSize);
+    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
 
     ImGui::Begin(label.data(), open, fullscreenFlags);
 
@@ -79,8 +79,9 @@ void OtherTopics::Draw(std::string_view label, bool *open)
     //     ImGui::Text("3");
     // }
 
-    const auto myImageTexture = loadTexture(
-        "C:/Users/Jan/OneDrive/_Coding/UdemyCppGui/2_ImGui/Final/images/image.png");
+    const auto myImageTexture =
+        loadTexture("C:/Users/Jan/OneDrive/_Coding/UdemyCppGui/2_ImGui/Final/"
+                    "images/image.png");
     const auto imageWidth = 100;
     const auto imageHeight = 100;
     const auto imageSize =

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <random>
-#include <string>
 #include <string_view>
+#include <vector>
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
@@ -27,25 +26,24 @@ public:
     struct Icon
     {
         Icon(std::string_view label_, WindowBase *base_)
-            : label(label_), base(base_), position(0.0F, 0.0F){};
+            : label(label_), base(base_), position(ImVec2{}){};
         void Draw();
 
-        int clicked_count = 0;
-        bool popup_open = false;
-        ImVec2 position;
         std::string label;
+        ImVec2 position;
+        bool popupOpen = false;
+        std::uint32_t clickCount = 0;
         WindowBase *base = nullptr;
     };
 
 public:
     Desktop()
-        : adv_calc(), calender(), diff_viewer(), file_explorer(),
-          media_player(), paint(), text_editor(), csv_editor(), clock({}),
-          icons({})
+        : icons({}), adv_calc(), calendar(), diff_viewer(), file_explorer(),
+          media_player(), paint(), text_editor(), csv_editor(), clock({})
     {
         icons.reserve(7);
         icons.push_back(Icon{"AdvCalc", &adv_calc});
-        icons.push_back(Icon{"Calender", &calender});
+        icons.push_back(Icon{"Calendar", &calendar});
         icons.push_back(Icon{"DiffViewer", &diff_viewer});
         icons.push_back(Icon{"FileExplorer", &file_explorer});
         icons.push_back(Icon{"MediaPlayer", &media_player});
@@ -53,17 +51,16 @@ public:
         icons.push_back(Icon{"TextEditor", &text_editor});
         icons.push_back(Icon{"CsvEditor", &csv_editor});
         icons.push_back(Icon{"OtherTopics", &other_topics});
-
-        LoadTheme();
     };
-    virtual ~Desktop(){};
 
-    void Draw(std::string_view label, bool *open = nullptr) override;
-    void ShowIconList(bool *open);
+    void Draw(std::string_view label, bool *open = nullptr) final;
+    void ShowIconList(bool *open = nullptr);
 
 private:
+    std::vector<Icon> icons;
+
     AdvCalc adv_calc;
-    Calender calender;
+    Calender calendar;
     DiffViewer diff_viewer;
     FileExplorer file_explorer;
     MediaPlayer media_player;
@@ -73,8 +70,6 @@ private:
     OtherTopics other_topics;
 
     Clock clock;
-
-    std::vector<Icon> icons;
 };
 
 void render(Desktop &window_class);

@@ -8,7 +8,6 @@
 #include "implot.h"
 #include <fmt/format.h>
 
-
 class Clock
 {
 public:
@@ -19,7 +18,7 @@ public:
 public:
     Clock(){};
 
-    void Draw(std::string_view label);
+    void Draw(std::string_view label, bool *open = nullptr);
 
     void DrawClockHand(const float radius,
                        const float angle,

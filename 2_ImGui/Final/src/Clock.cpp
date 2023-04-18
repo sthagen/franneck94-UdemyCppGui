@@ -8,7 +8,7 @@
 
 #include "Clock.hpp"
 
-void Clock::Draw(std::string_view label)
+void Clock::Draw(std::string_view label, bool *)
 {
     static auto is_open = false;
 
