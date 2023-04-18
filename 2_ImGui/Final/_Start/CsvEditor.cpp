@@ -10,12 +10,9 @@
 
 #include "CsvEditor.hpp"
 
-void CsvEditor::Draw(std::string_view label, bool *open)
+void CsvEditor::Draw(std::string_view label)
 {
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
-
-    ImGui::Begin(label.data(), open, fullscreenFlags);
+    ImGui::Begin(label.data());
 
     DrawSizeButtons();
     DrawIoButtons();

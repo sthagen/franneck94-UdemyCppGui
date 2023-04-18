@@ -2,12 +2,12 @@
 
 #include <string_view>
 
-#include "BaseView.hpp"
+#include "WindowBase.hpp"
 
-class OtherTopics : public BaseView
+class OtherTopics : public WindowBase
 {
 public:
-    OtherTopics(){};
+    OtherTopics() {};
     virtual ~OtherTopics(){};
 
     void Draw(std::string_view label, bool *open = nullptr) override;

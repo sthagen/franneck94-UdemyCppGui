@@ -13,7 +13,7 @@
 
 namespace fs = std::filesystem;
 
-void TextEditor::Draw(std::string_view label, bool *open)
+void TextEditor::Draw(std::string_view label)
 {
     static constexpr auto input_flags =
         (ImGuiInputTextFlags_AllowTabInput |
@@ -28,12 +28,7 @@ void TextEditor::Draw(std::string_view label, bool *open)
     const auto s_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S));
     const auto l_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_L));
 
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
-
-    ImGui::Begin(label.data(), open, fullscreenFlags);
-
-    SettingsMenuBar();
+    ImGui::Begin(label.data());
 
     if (ImGui::Button("Save") || (ctrl_pressed && s_pressed))
     {

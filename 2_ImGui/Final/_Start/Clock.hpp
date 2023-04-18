@@ -8,7 +8,6 @@
 #include "implot.h"
 #include <fmt/format.h>
 
-
 class Clock
 {
 public:

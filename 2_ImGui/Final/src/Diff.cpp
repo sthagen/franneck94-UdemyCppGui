@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -13,10 +14,10 @@
 
 void DiffViewer::Draw(std::string_view label, bool *open)
 {
-    ImGui::SetNextWindowPos(mainPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(mainSize, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
 
-    ImGui::Begin(label.data(), open, mainFlags);
+    ImGui::Begin(label.data(), open, fullscreenFlags);
 
     ImGui::InputText("Left", &filePath1);
     ImGui::InputText("Right", &filePath2);

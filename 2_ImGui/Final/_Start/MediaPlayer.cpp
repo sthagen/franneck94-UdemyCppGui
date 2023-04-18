@@ -8,7 +8,6 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "implot.h"
-
 #include "miniaudio.h"
 
 #include "MediaPlayer.hpp"
@@ -19,7 +18,7 @@ void MediaPlayer::InitEngine()
     engineInitialized = true;
 }
 
-void MediaPlayer::Draw(std::string_view label, bool *open)
+void MediaPlayer::Draw(std::string_view label)
 {
     if (!engineInitialized)
         InitEngine();
@@ -29,10 +28,7 @@ void MediaPlayer::Draw(std::string_view label, bool *open)
         isPlaying = false;
     }
 
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
-
-    ImGui::Begin(label.data(), open, fullscreenFlags);
+    ImGui::Begin(label.data());
 
     ImGui::Text("Audio File Path:");
     ImGui::SameLine();

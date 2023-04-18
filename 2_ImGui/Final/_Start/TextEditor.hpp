@@ -3,9 +3,7 @@
 #include <string>
 #include <string_view>
 
-#include "WindowBase.hpp"
-
-class TextEditor : public WindowBase
+class TextEditor
 {
 public:
     static constexpr auto bufferSize = 1024;
@@ -17,7 +15,7 @@ public:
     }
     virtual ~TextEditor(){};
 
-    void Draw(std::string_view title, bool *open = nullptr) final;
+    void Draw(std::string_view title);
 
     void SaveToFile(std::string_view filename);
     void LoadFromFile(std::string_view filename);

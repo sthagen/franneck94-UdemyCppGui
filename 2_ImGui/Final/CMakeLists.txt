@@ -23,7 +23,10 @@ include(ConfigSafeGuards)
 
 add_clang_format_target() # needs python # needs python
 
-include(${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake)
+# set (VCPKG_DIR ${CMAKE_SOURCE_DIR}/external/vcpkg)
+# you can set any other vcpkg installation on your system
+set (VCPKG_DIR ${CMAKE_SOURCE_DIR}/../../../vcpkg)
+include(${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
@@ -31,8 +34,17 @@ find_package(imgui CONFIG REQUIRED)
 find_package(implot CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 
+add_library(external_lib STATIC external/lodepng.cpp)
+target_include_directories(external_lib PUBLIC
+    external/
+)
+target_set_warnings(TARGET external_lib
+    ENABLE OFF
+    AS_ERRORS OFF)
+
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/WindowBase.cpp
     src/Desktop.cpp
     src/AdvCalc.cpp
     src/Calender.cpp
@@ -44,16 +56,25 @@ add_executable(${PROJECT_NAME}
     src/CsvEditor.cpp
     src/Clock.cpp
     src/OtherTopics.cpp
-    src/lodepng.cpp
 )
 
-add_compile_definitions(IMGUI_USER_CONFIG="${CMAKE_SOURCE_DIR}/src/my_imgui_config.h")
+add_compile_definitions(
+    IMGUI_USER_CONFIG="${CMAKE_SOURCE_DIR}/external/my_imgui_config.h"
+)
+add_compile_definitions(NOMINMAX)
 
-target_set_warnings(TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS})
+target_set_warnings(TARGET ${PROJECT_NAME}
+    ENABLE ${ENABLE_WARNINGS}
+    AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS})
 add_clang_tidy_msvc_to_target(${PROJECT_NAME})
 
-target_include_directories(${PROJECT_NAME} PUBLIC src/)
+target_include_directories(${PROJECT_NAME} PUBLIC
+    src
+    external
+    ${SIMPLEINI_INCLUDE_DIRS}
+)
 
+target_link_libraries(${PROJECT_NAME} PRIVATE external_lib)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)

@@ -3,21 +3,19 @@
 #include <filesystem>
 #include <string_view>
 
-#include "implot.h"
 #include <imgui.h>
-
-#include "WindowBase.hpp"
+#include "implot.h"
 
 namespace fs = std::filesystem;
 
-class FileExplorer : public WindowBase
+class FileExplorer
 {
 public:
     FileExplorer()
         : currentPath(fs::current_path()), selectedEntry(fs::path{}){};
     virtual ~FileExplorer(){};
 
-    void Draw(std::string_view label, bool *open = nullptr) override;
+    void Draw(std::string_view label);
 
 private:
     void openFileWithDefaultEditor(const fs::path &filePath);

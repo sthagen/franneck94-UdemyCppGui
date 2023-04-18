@@ -46,12 +46,9 @@ GLuint loadTexture(const char *filename)
     return texture;
 }
 
-void OtherTopics::Draw(std::string_view label, bool *open)
+void OtherTopics::Draw(std::string_view label)
 {
-    ImGui::SetNextWindowPos(rootPos);
-    ImGui::SetNextWindowSize(fullscreenSize);
-
-    ImGui::Begin(label.data(), open, fullscreenFlags);
+    ImGui::Begin(label.data());
 
     // if (ImGui::TreeNode("Tabbing"))
     // {

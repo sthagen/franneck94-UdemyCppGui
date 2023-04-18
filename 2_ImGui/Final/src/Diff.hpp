@@ -4,17 +4,18 @@
 #include <string_view>
 #include <vector>
 
-#include <imgui.h>
 #include "implot.h"
+#include <imgui.h>
 
-#include "BaseView.hpp"
+#include "WindowBase.hpp"
 
-class DiffViewer : public BaseView
+class DiffViewer : public WindowBase
 {
 public:
     using FileContent = std::vector<std::string>;
 
 public:
+    DiffViewer(){};
     virtual ~DiffViewer(){};
 
     void Draw(std::string_view title, bool *open = nullptr) final;

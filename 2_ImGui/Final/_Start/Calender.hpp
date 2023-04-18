@@ -8,12 +8,10 @@
 #include <string_view>
 #include <vector>
 
-#include "implot.h"
 #include <imgui.h>
+#include "implot.h"
 
-#include "WindowBase.hpp"
-
-class Calender : public WindowBase
+class Calender
 {
 public:
     static constexpr const char *months[12] = {"January",
@@ -55,7 +53,7 @@ public:
 public:
     Calender(){};
     virtual ~Calender(){};
-    void Draw(std::string_view label, bool *open = nullptr) final;
+    void Draw(std::string_view label);
 
     void LoadMeetingsFromFile(const std::string_view filename);
     void SaveMeetingsToFile(const std::string_view filename) const;

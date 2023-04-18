@@ -24,8 +24,8 @@ void Desktop::Draw(std::string_view label, bool *)
                                   ImGuiWindowFlags_NoInputs;
     static auto open_taskbar = false;
 
-    ImGui::SetNextWindowPos(mainPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(mainSize, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
 
     ImGui::Begin(label.data(), nullptr, flags);
 
@@ -41,7 +41,8 @@ void Desktop::Draw(std::string_view label, bool *)
                      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
                      ImGuiWindowFlags_NoScrollWithMouse);
 
-    if (ImGui::Button("All Icons", ImVec2(100, 20)))
+    ImGui::SetCursorPosX(0.0F);
+    if (ImGui::Button("All Icons", ImVec2(100.0F, 30.0F)))
     {
         ImGui::OpenPopup("My Programs");
         open_taskbar = true;
@@ -49,12 +50,21 @@ void Desktop::Draw(std::string_view label, bool *)
 
     ImGui::SameLine();
 
-    ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x);
+    static auto theme_open = false;
+    if (ImGui::Button("Theme", ImVec2(100.0F, 30.0F)) || theme_open)
+    {
+        theme_open = true;
+        DrawColorsSettings(&theme_open);
+    }
 
-    static bool clock_open = false;
+    ImGui::SameLine();
+
+    ImGui::SetCursorPosX(fullscreenSize.x - 100.0F);
+
+    static auto clock_open = false;
     clock.GetTime();
     const auto time = fmt::format("{}:{}", clock.hrs, clock.mins);
-    if (ImGui::Button(time.data(), ImVec2(100, 30)) || clock_open)
+    if (ImGui::Button(time.data(), ImVec2(100.0F, 30.0F)) || clock_open)
     {
         clock.Draw("clockWindow");
         clock_open = true;

@@ -10,7 +10,7 @@
 
 #include "AdvCalc.hpp"
 
-void AdvCalc::Draw(std::string_view label, bool *open)
+void AdvCalc::Draw(std::string_view label)
 {
     static constexpr auto num_points = 10'000;
     static constexpr auto x_min = -100.0;
@@ -20,10 +20,7 @@ void AdvCalc::Draw(std::string_view label, bool *open)
     static auto xs = std::array<double, num_points>{};
     static auto ys = std::array<double, num_points>{};
 
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
-
-    ImGui::Begin(label.data(), open, fullscreenFlags);
+    ImGui::Begin(label.data());
 
     for (const auto func_name : functionNames)
     {

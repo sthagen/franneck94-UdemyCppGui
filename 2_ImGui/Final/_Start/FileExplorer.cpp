@@ -11,12 +11,9 @@
 
 #include "FileExplorer.hpp"
 
-void FileExplorer::Draw(std::string_view label, bool *open)
+void FileExplorer::Draw(std::string_view label)
 {
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
-
-    ImGui::Begin(label.data(), open, fullscreenFlags);
+    ImGui::Begin(label.data());
 
     if (ImGui::Button("Go Up"))
     {

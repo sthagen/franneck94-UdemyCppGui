@@ -14,12 +14,9 @@
 
 #include "Calender.hpp"
 
-void Calender::Draw(std::string_view label, bool *open)
+void Calender::Draw(std::string_view label)
 {
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(fullscreenSize, ImGuiCond_Always);
-
-    ImGui::Begin(label.data(), open, fullscreenFlags);
+    ImGui::Begin(label.data());
 
     ImGui::Text("Select a date:");
     DrawDateCombo("##date", &selectedDay, &selectedMonth, &selectedYear);

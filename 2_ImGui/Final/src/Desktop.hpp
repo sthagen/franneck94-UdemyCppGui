@@ -10,23 +10,23 @@
 #include <fmt/format.h>
 
 #include "AdvCalc.hpp"
-#include "BaseView.hpp"
 #include "Calender.hpp"
 #include "Clock.hpp"
 #include "CsvEditor.hpp"
 #include "Diff.hpp"
 #include "FileExplorer.hpp"
 #include "MediaPlayer.hpp"
+#include "OtherTopics.hpp"
 #include "Paint.hpp"
 #include "TextEditor.hpp"
-#include "OtherTopics.hpp"
+#include "WindowBase.hpp"
 
-class Desktop : public BaseView
+class Desktop : public WindowBase
 {
 public:
     struct Icon
     {
-        Icon(std::string_view label_, BaseView *base_)
+        Icon(std::string_view label_, WindowBase *base_)
             : label(label_), base(base_), position(0.0F, 0.0F){};
         void Draw();
 
@@ -34,14 +34,14 @@ public:
         bool popup_open = false;
         ImVec2 position;
         std::string label;
-        BaseView *base = nullptr;
+        WindowBase *base = nullptr;
     };
 
 public:
     Desktop()
-        : adv_calc({}), calender({}), diff_viewer({}), file_explorer({}),
-          media_player({}), paint({}), text_editor({}), csv_editor({}),
-          clock({}), icons({})
+        : adv_calc(), calender(), diff_viewer(), file_explorer(),
+          media_player(), paint(), text_editor(), csv_editor(), clock({}),
+          icons({})
     {
         icons.reserve(7);
         icons.push_back(Icon{"AdvCalc", &adv_calc});
@@ -53,6 +53,8 @@ public:
         icons.push_back(Icon{"TextEditor", &text_editor});
         icons.push_back(Icon{"CsvEditor", &csv_editor});
         icons.push_back(Icon{"OtherTopics", &other_topics});
+
+        LoadTheme();
     };
     virtual ~Desktop(){};
 

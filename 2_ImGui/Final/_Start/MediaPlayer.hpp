@@ -6,18 +6,16 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "implot.h"
-
 #include "miniaudio.h"
 
-#include "WindowBase.hpp"
-
-class MediaPlayer : public WindowBase
+class MediaPlayer
 {
 public:
-    MediaPlayer() : engine({}){};
+    MediaPlayer()
+        : engine({}){};
     virtual ~MediaPlayer(){};
 
-    void Draw(std::string_view label, bool *open = nullptr) override;
+    void Draw(std::string_view label);
 
 private:
     void InitEngine();
@@ -30,6 +28,6 @@ public:
     bool soundInitialized = false;
     bool isPlaying = false;
 
-    std::string audioFilePath = ("C:/Users/Jan/OneDrive/_Coding/UdemyCppGui/"
-                                 "2_ImGui/Final/audio/_intro.mp3");
+    std::string audioFilePath =
+        ("C:/Users/Jan/Documents/_LocalCoding/UdemyCppGui/2_ImGui/Final/audio/_intro.mp3");
 };

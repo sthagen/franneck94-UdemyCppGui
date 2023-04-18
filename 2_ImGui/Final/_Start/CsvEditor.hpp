@@ -6,15 +6,13 @@
 #include "imgui.h"
 #include "implot.h"
 
-#include "WindowBase.hpp"
-
-class CsvEditor : public WindowBase
+class CsvEditor
 {
 public:
     CsvEditor(){};
     virtual ~CsvEditor(){};
 
-    void Draw(std::string_view label, bool *open = nullptr) override;
+    void Draw(std::string_view label);
 
 private:
     void DrawSizeButtons();
