@@ -51,6 +51,8 @@ public:
         icons.push_back(Icon{"TextEditor", &text_editor});
         icons.push_back(Icon{"CsvEditor", &csv_editor});
         icons.push_back(Icon{"OtherTopics", &other_topics});
+
+        LoadTheme();
     };
 
     void Draw(std::string_view label, bool *open = nullptr) final;

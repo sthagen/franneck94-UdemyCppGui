@@ -43,7 +43,16 @@ void Desktop::Draw(std::string_view label, bool *)
 
     ImGui::SameLine();
 
-    ImGui::SetCursorPosX(fullscreenSize.x - 100.0F);
+    static auto theme_open = false;
+    if (ImGui::Button("Theme", ImVec2(100.0F, 30.0F)) || theme_open)
+    {
+        theme_open = true;
+        DrawColorsSettings(&theme_open);
+    }
+
+    ImGui::SameLine();
+
+    ImGui::SetCursorPosX(rootSize.x - 100.0F);
 
     static auto clock_open = false;
     clock.GetTime();
