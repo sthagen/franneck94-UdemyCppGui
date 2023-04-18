@@ -108,8 +108,11 @@ void OtherTopics::Draw(std::string_view label, bool *open)
     ImGui::ArrowButton("arr2", ImGuiDir_Right);
     ImGui::SmallButton("small");
 
-
     DrawColorsSettings();
+
+#ifdef IMGUI_USER_CONFIG
+    std::cout << "IMGUI_USER_CONFIG\n";
+#endif
 
     ImGui::End();
 }
