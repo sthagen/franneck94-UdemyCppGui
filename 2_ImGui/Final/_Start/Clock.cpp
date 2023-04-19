@@ -2,8 +2,8 @@
 #include <cmath>
 #include <iostream>
 
-#include "imgui.h"
-#include "implot.h"
+#include <imgui.h>
+#include <implot.h>
 #include <fmt/format.h>
 
 #include "Clock.hpp"

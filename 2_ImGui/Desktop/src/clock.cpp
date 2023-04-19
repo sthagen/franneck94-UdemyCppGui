@@ -2,8 +2,8 @@
 #include <string_view>
 #include <tuple>
 
-#include "imgui.h"
-#include "implot.h"
+#include <imgui.h>
+#include <implot.h>
 #include <fmt/format.h>
 
 #include "clock.hpp"

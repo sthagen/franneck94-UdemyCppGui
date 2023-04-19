@@ -4,9 +4,9 @@
 #include <iostream>
 #include <string_view>
 
-#include "imgui.h"
+#include <imgui.h>
 #include "imgui_stdlib.h"
-#include "implot.h"
+#include <implot.h>
 #include <fmt/format.h>
 
 #include "FileExplorer.hpp"

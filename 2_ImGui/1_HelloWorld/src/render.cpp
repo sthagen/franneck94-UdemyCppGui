@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "imgui.h"
-#include "implot.h"
+#include <imgui.h>
+#include <implot.h>
 
 #include "render.hpp"
 
