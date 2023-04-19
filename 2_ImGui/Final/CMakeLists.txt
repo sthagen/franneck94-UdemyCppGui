@@ -66,7 +66,7 @@ add_compile_definitions(NOMINMAX)
 target_set_warnings(TARGET ${PROJECT_NAME}
     ENABLE ${ENABLE_WARNINGS}
     AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS})
-add_clang_tidy_msvc_to_target(${PROJECT_NAME})
+# add_clang_tidy_msvc_to_target(${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     src
