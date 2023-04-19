@@ -37,23 +37,20 @@ void SaveColor(CSimpleIniA *ini,
 
 void WindowBase::SettingsMenuBar()
 {
-    static auto settings_open = false;
-
-    if (ImGui::BeginMenu("Settings"))
+    static auto theme_menu_open = false;
+    if (ImGui::BeginMenuBar())
     {
-        ImGui::MenuItem("Sizes & Colors", NULL, &settings_open);
-        ImGui::EndMenu();
+        if (ImGui::BeginMenu("Settings"))
+        {
+            ImGui::MenuItem("Theme", NULL, &theme_menu_open);
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenuBar();
     }
 
-    if (settings_open)
-    {
-        DrawColorsSettings(&settings_open);
-
-        if (!settings_open)
-            SaveTheme();
-    }
-
-    ImGui::Separator();
+    if (theme_menu_open)
+        DrawColorsSettings(&theme_menu_open);
 }
 
 void WindowBase::LoadTheme()

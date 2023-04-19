@@ -1,4 +1,7 @@
+#include <exception>
 #include <iostream>
+#include <string_view>
+#include <tuple>
 
 #include "imgui.h"
 #include "implot.h"
@@ -7,23 +10,21 @@
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
+#include "lodepng.h"
 #include <GLFW/glfw3.h>
+#include <fmt/format.h>
 
 #include "OtherTopics.hpp"
-#include "lodepng.h"
 
-GLuint loadTexture(const char *filename)
+static std::tuple<GLuint, std::uint32_t, std::uint32_t> loadTexture(
+    const char *filename)
 {
     std::vector<unsigned char> data;
-    unsigned width, height;
-    unsigned error = lodepng::decode(data, width, height, filename);
+    std::uint32_t width, height;
+    const auto error = lodepng::decode(data, width, height, filename);
 
     if (error)
-    {
-        std::cerr << "Error loading image: " << filename << " (error " << error
-                  << ": " << lodepng_error_text(error) << ")" << std::endl;
-        return 0;
-    }
+        throw std::exception("Error loading image");
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -42,8 +43,8 @@ GLuint loadTexture(const char *filename)
                  GL_RGBA,
                  GL_UNSIGNED_BYTE,
                  &data[0]);
-    // glGenerateMipmap(GL_TEXTURE_2D);
-    return texture;
+
+    return std::make_tuple(texture, width, height);
 }
 
 void OtherTopics::Draw(std::string_view label, bool *open)
@@ -53,14 +54,14 @@ void OtherTopics::Draw(std::string_view label, bool *open)
 
     ImGui::Begin(label.data(), open, fullscreenFlags);
 
-    // if (ImGui::TreeNode("Tabbing"))
-    // {
-    //     static char buf[32] = "hello";
-    //     ImGui::InputText("1", buf, IM_ARRAYSIZE(buf));
-    //     ImGui::InputText("2", buf, IM_ARRAYSIZE(buf));
-    //     ImGui::InputText("3", buf, IM_ARRAYSIZE(buf));
-    //     ImGui::TreePop();
-    // }
+    if (ImGui::TreeNode("Tabbing"))
+    {
+        static char buf[32] = "hello";
+        ImGui::InputText("1", buf, IM_ARRAYSIZE(buf));
+        ImGui::InputText("2", buf, IM_ARRAYSIZE(buf));
+        ImGui::InputText("3", buf, IM_ARRAYSIZE(buf));
+        ImGui::TreePop();
+    }
 
     // static bool flag1 = false;
     // static bool flag2 = false;
@@ -79,14 +80,12 @@ void OtherTopics::Draw(std::string_view label, bool *open)
     //     ImGui::Text("3");
     // }
 
-    const auto myImageTexture =
-        loadTexture("C:/Users/Jan/OneDrive/_Coding/UdemyCppGui/2_ImGui/Final/"
-                    "images/image.png");
-    const auto imageWidth = 100;
-    const auto imageHeight = 100;
-    const auto imageSize =
-        ImVec2(static_cast<float>(imageWidth), static_cast<float>(imageHeight));
-    ImGui::Image(reinterpret_cast<ImTextureID>(myImageTexture), imageSize);
+    // const auto &[myImageTexture, imageWidth, imageHeight] = loadTexture(
+    //     "C:/Users/Z0014496/Documents/_LocalCoding/UdemyCppGui/2_ImGui/Final/"
+    //     "images/image.png");
+    // const auto imageSize =
+    //     ImVec2(static_cast<float>(imageWidth), static_cast<float>(imageHeight));
+    // ImGui::Image(reinterpret_cast<ImTextureID>(myImageTexture), imageSize);
 
     // if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
     // {

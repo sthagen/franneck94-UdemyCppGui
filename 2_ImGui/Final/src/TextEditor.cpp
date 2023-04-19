@@ -31,7 +31,9 @@ void TextEditor::Draw(std::string_view label, bool *open)
     ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
     ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
 
-    ImGui::Begin(label.data(), open, fullscreenFlags);
+    ImGui::Begin(label.data(), open, fullscreenFlags | ImGuiWindowFlags_MenuBar);
+
+    SettingsMenuBar();
 
     if (ImGui::Button("Save") || (ctrl_pressed && s_pressed))
     {
