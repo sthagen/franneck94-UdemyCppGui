@@ -23,7 +23,10 @@ include(ConfigSafeGuards)
 
 # add_clang_format_target() # needs python
 
-include(${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake)
+set (VCPKG_DIR ${CMAKE_SOURCE_DIR}/external/vcpkg)
+# you can set any other vcpkg installation on your system
+# set (VCPKG_DIR ${CMAKE_SOURCE_DIR}/../../../vcpkg)
+include(${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
@@ -36,7 +39,12 @@ add_executable(${PROJECT_NAME}
     src/render.cpp
 )
 
-target_set_warnings(TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS})
+add_compile_definitions(NOMINMAX)
+
+target_set_warnings(TARGET ${PROJECT_NAME}
+    ENABLE ${ENABLE_WARNINGS}
+    AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS})
+# add_clang_tidy_msvc_to_target(${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${Stb_INCLUDE_DIR} src/)
 
