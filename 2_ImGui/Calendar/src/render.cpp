@@ -63,7 +63,7 @@ void WindowClass::DrawCalender()
                 if (d != 1)
                     ImGui::SameLine();
                 if (d == 1)
-                    ImGui::Text(fmt::format("{:.3}", months[m - 1]).data());
+                    ImGui::Text("%s", fmt::format("{:.3}", months[m - 1]).data());
                 ImGui::SameLine();
 
                 auto textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -76,7 +76,7 @@ void WindowClass::DrawCalender()
                     textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0F);
 
                 ImGui::PushStyleColor(ImGuiCol_Text, textColor);
-                ImGui::Text(std::to_string(d).data());
+                ImGui::Text("%s", std::to_string(d).data());
                 ImGui::PopStyleColor();
 
                 if (ImGui::IsItemClicked())
@@ -284,7 +284,7 @@ void WindowClass::Meeting::Serialize(std::ofstream &out) const
 
     out.write(reinterpret_cast<const char *>(&name_length),
               sizeof(name_length));
-    out.write(name.data(), name.size());
+    out.write(name.data(), static_cast<std::streamsize>(name.size()));
 }
 
 WindowClass::Meeting WindowClass::Meeting::Deserialize(std::ifstream &in)
@@ -294,7 +294,7 @@ WindowClass::Meeting WindowClass::Meeting::Deserialize(std::ifstream &in)
 
     in.read(reinterpret_cast<char *>(&name_length), sizeof(name_length));
     meeting.name.resize(name_length);
-    in.read(meeting.name.data(), name_length);
+    in.read(meeting.name.data(), static_cast<std::streamsize>(name_length));
 
     return meeting;
 }
