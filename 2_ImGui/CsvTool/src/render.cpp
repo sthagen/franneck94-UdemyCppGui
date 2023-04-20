@@ -4,9 +4,9 @@
 #include <string_view>
 #include <vector>
 
+#include <fmt/format.h>
 #include <imgui.h>
 #include <implot.h>
-#include <fmt/format.h>
 
 #include "render.hpp"
 
@@ -16,6 +16,7 @@ void WindowClass::Draw(std::string_view label)
         (ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove |
          ImGuiWindowFlags_NoResize);
 
+    ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F));
     ImGui::SetNextWindowSize(ImVec2(1280.0F, 720.0F));
 
     ImGui::Begin(label.data(), nullptr, window_flags);
@@ -83,7 +84,8 @@ void WindowClass::DrawSizeButtons()
 
     if (user_added_rows)
     {
-        for (auto row = data.size(); row < numRows; ++row)
+        for (auto row = static_cast<std::int32_t>(data.size()); row < numRows;
+             ++row)
         {
             data.push_back(std::vector<float>(numCols, 0.0F));
         }
@@ -92,7 +94,9 @@ void WindowClass::DrawSizeButtons()
     {
         for (std::int32_t row = 0; row < numRows; ++row)
         {
-            for (std::int32_t col = data[row].size(); col < numCols; ++col)
+            for (auto col = static_cast<std::int32_t>(data[row].size());
+                 col < numCols;
+                 ++col)
             {
                 data[row].push_back(0.0F);
             }
@@ -100,7 +104,8 @@ void WindowClass::DrawSizeButtons()
     }
     else if (user_dropped_rows)
     {
-        for (auto row = data.size(); row > numRows; --row)
+        for (auto row = static_cast<std::int32_t>(data.size()); row > numRows;
+             --row)
         {
             data.pop_back();
         }
@@ -109,7 +114,9 @@ void WindowClass::DrawSizeButtons()
     {
         for (std::int32_t row = 0; row < numRows; ++row)
         {
-            for (std::int32_t col = data[row].size(); col > numCols; --col)
+            for (auto col = static_cast<std::int32_t>(data[row].size());
+                 col > numCols;
+                 --col)
             {
                 data[row].pop_back();
             }
@@ -197,7 +204,7 @@ void WindowClass::DrawTable()
     {
         ImGui::TableSetupColumn(fmt::format("{}", 'A' + col).data(),
                                 ImGuiTableColumnFlags_WidthFixed,
-                                1280.0F / numCols);
+                                1280.0F / static_cast<float>(numCols));
     }
 
     ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
