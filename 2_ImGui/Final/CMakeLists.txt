@@ -23,9 +23,9 @@ include(ConfigSafeGuards)
 
 # add_clang_format_target() # needs python
 
-# set (VCPKG_DIR ${CMAKE_SOURCE_DIR}/external/vcpkg)
+set (VCPKG_DIR ${CMAKE_SOURCE_DIR}/external/vcpkg)
 # you can set any other vcpkg installation on your system
-set (VCPKG_DIR ${CMAKE_SOURCE_DIR}/../../../vcpkg)
+# set (VCPKG_DIR ${CMAKE_SOURCE_DIR}/../../../vcpkg)
 include(${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake)
 
 find_package(fmt CONFIG REQUIRED)
@@ -45,6 +45,7 @@ target_set_warnings(TARGET external_lib
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/WindowBase.cpp
+    src/UiHelpers.cpp
     src/Desktop.cpp
     src/AdvCalc.cpp
     src/Calender.cpp
