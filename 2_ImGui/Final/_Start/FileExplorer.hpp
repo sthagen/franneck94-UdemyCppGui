@@ -4,7 +4,7 @@
 #include <string_view>
 
 #include <imgui.h>
-#include "implot.h"
+#include <implot.h>
 
 namespace fs = std::filesystem;
 

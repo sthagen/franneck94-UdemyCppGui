@@ -3,9 +3,9 @@
 #include <string>
 #include <string_view>
 
-#include "imgui.h"
+#include <imgui.h>
 #include "imgui_stdlib.h"
-#include "implot.h"
+#include <implot.h>
 #include "miniaudio.h"
 
 class WindowClass

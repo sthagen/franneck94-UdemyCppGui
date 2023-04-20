@@ -4,7 +4,7 @@
 #include <string_view>
 #include <vector>
 
-#include "implot.h"
+#include <implot.h>
 #include <imgui.h>
 
 #include "WindowBase.hpp"

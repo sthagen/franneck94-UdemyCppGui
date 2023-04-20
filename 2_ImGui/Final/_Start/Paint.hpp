@@ -5,7 +5,7 @@
 #include <vector>
 
 #include <imgui.h>
-#include "implot.h"
+#include <implot.h>
 
 class Paint
 {

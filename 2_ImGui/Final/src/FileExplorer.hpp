@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string_view>
 
-#include "implot.h"
+#include <implot.h>
 #include <imgui.h>
 
 #include "WindowBase.hpp"
