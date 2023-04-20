@@ -4,9 +4,9 @@
 #include <tuple>
 
 #include <imgui.h>
-#include <implot.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <implot.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
@@ -24,7 +24,7 @@ static std::tuple<GLuint, std::uint32_t, std::uint32_t> loadTexture(
     const auto error = lodepng::decode(data, width, height, filename);
 
     if (error)
-        throw std::exception("Error loading image");
+        throw "Error loading image";
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -47,6 +47,15 @@ static std::tuple<GLuint, std::uint32_t, std::uint32_t> loadTexture(
     return std::make_tuple(texture, width, height);
 }
 
+static void LoadAndDisplayImage(std::string_view image_filepath)
+{
+    const auto &[myImageTexture, imageWidth, imageHeight] =
+        loadTexture(image_filepath.data());
+    const auto imageSize =
+        ImVec2(static_cast<float>(imageWidth), static_cast<float>(imageHeight));
+    ImGui::Image(reinterpret_cast<ImTextureID>(myImageTexture), imageSize);
+}
+
 void Desktop::Draw(std::string_view label, bool *)
 {
     constexpr static auto flags = ImGuiWindowFlags_NoDecoration |
@@ -64,12 +73,9 @@ void Desktop::Draw(std::string_view label, bool *)
     ImGui::Begin(label.data(), NULL, flags);
 
     ImGui::SetCursorPos(ImVec2(0.0F, 0.0F));
-    const auto &[myImageTexture, imageWidth, imageHeight] =
-        loadTexture("C:/Users/Z0014496/Documents/_LocalCoding/UdemyCppGui/"
-                    "2_ImGui/Final/images/bg.png");
-    const auto imageSize =
-        ImVec2(static_cast<float>(imageWidth), static_cast<float>(imageHeight));
-    ImGui::Image(reinterpret_cast<ImTextureID>(myImageTexture), imageSize);
+    const auto image_filepath =
+        fmt::format("{}{}", PROJECT_PATH, "/images/bg.png");
+    LoadAndDisplayImage(image_filepath);
     ImGui::SetCursorPos(ImVec2(0.0F, 0.0F));
 
     for (auto &icon : icons)

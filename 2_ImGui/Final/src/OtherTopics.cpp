@@ -24,7 +24,7 @@ static std::tuple<GLuint, std::uint32_t, std::uint32_t> loadTexture(
     const auto error = lodepng::decode(data, width, height, filename);
 
     if (error)
-        throw std::exception("Error loading image");
+        throw "Error loading image";
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -47,6 +47,15 @@ static std::tuple<GLuint, std::uint32_t, std::uint32_t> loadTexture(
     return std::make_tuple(texture, width, height);
 }
 
+static void LoadAndDisplayImage(std::string_view image_filepath)
+{
+    const auto &[myImageTexture, imageWidth, imageHeight] =
+        loadTexture(image_filepath.data());
+    const auto imageSize =
+        ImVec2(static_cast<float>(imageWidth), static_cast<float>(imageHeight));
+    ImGui::Image(reinterpret_cast<ImTextureID>(myImageTexture), imageSize);
+}
+
 void OtherTopics::Draw(std::string_view label, bool *open)
 {
     ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
@@ -63,46 +72,33 @@ void OtherTopics::Draw(std::string_view label, bool *open)
         ImGui::TreePop();
     }
 
-    // static bool flag1 = false;
-    // static bool flag2 = false;
+    if (ImGui::CollapsingHeader("Help"))
+    {
+        ImGui::Text("1");
+        ImGui::Text("2");
+        ImGui::Text("3");
+    }
 
-    // if (ImGui::BeginMenu("Examples"))
-    // {
-    //     ImGui::MenuItem("Main menu bar", NULL, &flag1);
-    //     ImGui::MenuItem("Documents", NULL, &flag2);
-    //     ImGui::EndMenu();
-    // }
+    const auto image_filepath =
+        fmt::format("{}{}", PROJECT_PATH, "/images/image.png");
+    LoadAndDisplayImage(image_filepath);
 
-    // if (ImGui::CollapsingHeader("Help"))
-    // {
-    //     ImGui::Text("1");
-    //     ImGui::Text("2");
-    //     ImGui::Text("3");
-    // }
-
-    // const auto &[myImageTexture, imageWidth, imageHeight] = loadTexture(
-    //     "C:/Users/Z0014496/Documents/_LocalCoding/UdemyCppGui/2_ImGui/Final/"
-    //     "images/image.png");
-    // const auto imageSize =
-    //     ImVec2(static_cast<float>(imageWidth), static_cast<float>(imageHeight));
-    // ImGui::Image(reinterpret_cast<ImTextureID>(myImageTexture), imageSize);
-
-    // if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
-    // {
-    //     if (ImGui::BeginTabItem("Sizes1"))
-    //     {
-    //         ImGui::SeparatorText("Main11");
-    //         ImGui::SeparatorText("Main21");
-    //         ImGui::EndTabItem();
-    //     }
-    //     if (ImGui::BeginTabItem("Sizes2"))
-    //     {
-    //         ImGui::SeparatorText("Main12");
-    //         ImGui::SeparatorText("Main22");
-    //         ImGui::EndTabItem();
-    //     }
-    //     ImGui::EndTabBar();
-    // }
+    if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
+    {
+        if (ImGui::BeginTabItem("Sizes1"))
+        {
+            ImGui::SeparatorText("Main11");
+            ImGui::SeparatorText("Main21");
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Sizes2"))
+        {
+            ImGui::SeparatorText("Main12");
+            ImGui::SeparatorText("Main22");
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+    }
 
     ImGui::End();
 }
