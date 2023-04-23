@@ -33,10 +33,6 @@ void OtherTopics::Draw(std::string_view label, bool *open)
         ImGui::Text("3");
     }
 
-    const auto image_filepath =
-        fmt::format("{}{}", PROJECT_PATH, "/images/image.png");
-    LoadAndDisplayImage(image_filepath);
-
     if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
     {
         if (ImGui::BeginTabItem("Sizes1"))

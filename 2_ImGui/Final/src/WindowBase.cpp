@@ -2,10 +2,9 @@
 #include <fstream>
 #include <iostream>
 
-#include <imgui.h>
-#include "imgui_stdlib.h"
-#include <implot.h>
 #include <SimpleIni.h>
+#include <imgui.h>
+#include <implot.h>
 
 #include "WindowBase.hpp"
 
