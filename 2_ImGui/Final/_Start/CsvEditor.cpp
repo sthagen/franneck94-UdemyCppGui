@@ -4,9 +4,9 @@
 #include <string_view>
 #include <vector>
 
+#include <fmt/format.h>
 #include <imgui.h>
 #include <implot.h>
-#include <fmt/format.h>
 
 #include "CsvEditor.hpp"
 
@@ -77,7 +77,8 @@ void CsvEditor::DrawSizeButtons()
 
     if (user_added_rows)
     {
-        for (auto row = data.size(); row < static_cast<std::size_t>(numRows); ++row)
+        for (auto row = data.size(); row < static_cast<std::size_t>(numRows);
+             ++row)
         {
             data.emplace_back(numCols, 0.0F);
         }
@@ -86,7 +87,9 @@ void CsvEditor::DrawSizeButtons()
     {
         for (std::int32_t row = 0; row < numRows; ++row)
         {
-            for (auto col = data[row].size(); col < static_cast<std::size_t>(numCols); ++col)
+            for (auto col = data[row].size();
+                 col < static_cast<std::size_t>(numCols);
+                 ++col)
             {
                 data[row].push_back(0.0F);
             }
@@ -94,7 +97,8 @@ void CsvEditor::DrawSizeButtons()
     }
     else if (user_dropped_rows)
     {
-        for (auto row = data.size(); row > static_cast<std::size_t>(numRows); --row)
+        for (auto row = data.size(); row > static_cast<std::size_t>(numRows);
+             --row)
         {
             data.pop_back();
         }
@@ -103,7 +107,9 @@ void CsvEditor::DrawSizeButtons()
     {
         for (std::int32_t row = 0; row < numRows; ++row)
         {
-            for (auto col = data[row].size(); col > static_cast<std::size_t>(numCols); --col)
+            for (auto col = data[row].size();
+                 col > static_cast<std::size_t>(numCols);
+                 --col)
             {
                 data[row].pop_back();
             }

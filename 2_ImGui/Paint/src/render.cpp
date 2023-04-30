@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <imgui.h>
-#include "imgui_stdlib.h"
+
 #include <implot.h>
 
 #include "render.hpp"
@@ -222,7 +222,8 @@ void WindowClass::DrawColorButtons()
         ImGui::OpenPopup("Color Picker");
     if (ImGui::BeginPopup("Color Picker"))
     {
-        ImGui::ColorPicker3("##picker", reinterpret_cast<float *>(&currentDrawColor));
+        ImGui::ColorPicker3("##picker",
+                            reinterpret_cast<float *>(&currentDrawColor));
         ImGui::EndPopup();
     }
     if (none_preset_color)

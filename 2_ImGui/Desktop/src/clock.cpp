@@ -2,9 +2,9 @@
 #include <string_view>
 #include <tuple>
 
+#include <fmt/format.h>
 #include <imgui.h>
 #include <implot.h>
-#include <fmt/format.h>
 
 #include "clock.hpp"
 
@@ -49,8 +49,8 @@ void Clock::Draw(std::string_view label)
 }
 
 void Clock::DrawClockHand(const float radius,
-                                const float theta,
-                                const ImColor color)
+                          const float theta,
+                          const ImColor color)
 {
     const auto c = std::cos(theta); // x
     const auto s = std::sin(theta); // y

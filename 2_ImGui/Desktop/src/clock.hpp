@@ -4,9 +4,9 @@
 #include <string_view>
 #include <tuple>
 
+#include <fmt/format.h>
 #include <imgui.h>
 #include <implot.h>
-#include <fmt/format.h>
 
 class Clock
 {

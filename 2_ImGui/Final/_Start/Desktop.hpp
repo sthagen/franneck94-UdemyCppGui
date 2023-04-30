@@ -1,12 +1,12 @@
 #pragma once
 
-#include <vector>
 #include <string_view>
+#include <vector>
 
 #include <imgui.h>
-#include "imgui_stdlib.h"
-#include <implot.h>
+
 #include <fmt/format.h>
+#include <implot.h>
 
 #include "Clock.hpp"
 

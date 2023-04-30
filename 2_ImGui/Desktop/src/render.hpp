@@ -1,18 +1,25 @@
 #pragma once
 
-#include <vector>
 #include <string_view>
+#include <vector>
 
 #include <imgui.h>
-#include "imgui_stdlib.h"
-#include <implot.h>
+
 #include <fmt/format.h>
+#include <implot.h>
 
 #include "clock.hpp"
 
 class WindowClass
 {
 public:
+    constexpr static auto windowFlags =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoTitleBar;
+    constexpr static auto windowSize = ImVec2(1280.0F, 720.0F);
+    constexpr static auto windowPos = ImVec2(0.0F, 0.0F);
+
     constexpr static auto numIcons = std::uint32_t{10U};
 
     struct Icon
@@ -37,6 +44,9 @@ public:
     };
 
     void Draw(std::string_view label);
+    void DrawDesktop(std::string_view label);
+    void DrawTaskbar();
+
     void ShowIconList(bool *open = nullptr);
 
 private:

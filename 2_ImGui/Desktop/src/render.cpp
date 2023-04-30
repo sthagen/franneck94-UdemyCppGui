@@ -1,32 +1,40 @@
 #include <string_view>
 
-#include <imgui.h>
-#include "imgui_stdlib.h"
-#include <implot.h>
 #include <fmt/format.h>
+#include <imgui.h>
+#include <implot.h>
 
 #include "render.hpp"
 
 void WindowClass::Draw(std::string_view label)
 {
-    constexpr auto window_flags =
-        (ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-         ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
-         ImGuiWindowFlags_NoScrollWithMouse);
-    static auto open_taskbar = false;
+    DrawDesktop(label);
+    DrawTaskbar();
+}
 
-    ImGui::SetNextWindowSize(ImVec2(1280.0F, 680.0F), ImGuiCond_Always);
-    ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F), ImGuiCond_Always);
+void WindowClass::DrawDesktop(std::string_view label)
+{
+    ImGui::SetNextWindowSize(windowSize);
+    ImGui::SetNextWindowPos(windowPos);
 
-    ImGui::Begin(label.data(), NULL, window_flags);
+    ImGui::Begin(label.data(),
+                 nullptr,
+                 windowFlags | ImGuiWindowFlags_NoInputs);
 
     for (auto &icon : icons)
         icon.Draw();
 
+    ImGui::End();
+}
+
+void WindowClass::DrawTaskbar()
+{
+    static auto open_taskbar = false;
+
     ImGui::SetNextWindowPos(ImVec2(0.0F, 680.0F), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(1280.0F, 40.0F), ImGuiCond_Always);
 
-    ImGui::Begin("Taskbar", NULL, window_flags);
+    ImGui::Begin("Taskbar", NULL, windowFlags);
 
     if (ImGui::Button("All Icons", ImVec2(100, 30)))
     {
@@ -49,10 +57,8 @@ void WindowClass::Draw(std::string_view label)
         clock.Draw("clockWindow");
         clock_open = true;
     }
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+    if (clock_open && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         clock_open = false;
-
-    ImGui::End();
 
     ImGui::End();
 }
@@ -83,13 +89,19 @@ void WindowClass::ShowIconList(bool *open)
 
 void WindowClass::Icon::Draw()
 {
+    constexpr static auto button_size = ImVec2(100.0F, 50.0F);
     const auto label_popup = fmt::format("Icon Popop Window##{}", label);
 
     ImGui::SetNextWindowPos(position, ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(
+        ImVec2(button_size.x + 35.0F, button_size.y + 35.0F),
+        ImGuiCond_FirstUseEver);
+    ImGui::Begin(label.data(),
+                 nullptr,
+                 (ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
+                  ImGuiWindowFlags_NoResize));
 
-    ImGui::Begin(label.data());
-
-    if (ImGui::Button(label.data(), ImVec2(100.0F, 50.0F)))
+    if (ImGui::Button(label.data(), button_size))
     {
         ++clickCount;
     }

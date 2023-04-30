@@ -6,9 +6,9 @@
 #include <fmt/format.h>
 
 #include <imgui.h>
-#include "imgui_stdlib.h"
-#include <implot.h>
+
 #include "miniaudio.h"
+#include <implot.h>
 
 #include "render.hpp"
 

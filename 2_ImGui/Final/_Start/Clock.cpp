@@ -2,9 +2,9 @@
 #include <cmath>
 #include <iostream>
 
+#include <fmt/format.h>
 #include <imgui.h>
 #include <implot.h>
-#include <fmt/format.h>
 
 #include "Clock.hpp"
 
@@ -72,8 +72,8 @@ std::tuple<float, float, float> Clock::GetTheta()
 }
 
 void Clock::DrawClockHand(const float radius,
-                                const float theta,
-                                const ImColor color)
+                          const float theta,
+                          const ImColor color)
 {
     const auto c = std::cos(theta);
     const auto s = std::sin(theta);

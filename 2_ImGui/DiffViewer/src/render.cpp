@@ -5,9 +5,9 @@
 #include <vector>
 
 #include <imgui.h>
-#include "imgui_stdlib.h"
-#include <implot.h>
+
 #include <fmt/format.h>
+#include <implot.h>
 
 #include "render.hpp"
 
@@ -82,7 +82,7 @@ void WindowClass::Draw(std::string_view label)
             {
                 if (ImGui::Button(left_label.data(), button_size))
                 {
-                    if (fileContent1.size() > i && fileContent2.size()> i)
+                    if (fileContent1.size() > i && fileContent2.size() > i)
                         fileContent1[i] = fileContent2[i];
                     else if (fileContent2.size() > i)
                         fileContent1.push_back(fileContent2[i]);

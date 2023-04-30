@@ -1,9 +1,9 @@
 #include <iostream>
 
 #include <imgui.h>
-#include <implot.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <implot.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
@@ -76,8 +76,9 @@ void OtherTopics::Draw(std::string_view label)
     //     ImGui::Text("3");
     // }
 
-    const auto myImageTexture = loadTexture(
-        "C:/Users/Jan/OneDrive/_Coding/UdemyCppGui/2_ImGui/Final/images/image.png");
+    const auto myImageTexture =
+        loadTexture("C:/Users/Jan/OneDrive/_Coding/UdemyCppGui/2_ImGui/Final/"
+                    "images/image.png");
     const auto imageWidth = 100;
     const auto imageHeight = 100;
     const auto imageSize =

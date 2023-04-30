@@ -6,7 +6,7 @@
 #include <string_view>
 
 #include <imgui.h>
-#include "imgui_stdlib.h"
+
 #include <implot.h>
 
 #include "TextEditor.hpp"
@@ -31,7 +31,9 @@ void TextEditor::Draw(std::string_view label, bool *open)
     ImGui::SetNextWindowPos(mainWindowPos, ImGuiCond_Always);
     ImGui::SetNextWindowSize(mainWindowSize, ImGuiCond_Always);
 
-    ImGui::Begin(label.data(), open, mainWindowFlags | ImGuiWindowFlags_MenuBar);
+    ImGui::Begin(label.data(),
+                 open,
+                 mainWindowFlags | ImGuiWindowFlags_MenuBar);
 
     SettingsMenuBar();
 
