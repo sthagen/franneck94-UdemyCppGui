@@ -5,9 +5,9 @@
 #include <string_view>
 #include <vector>
 
-#include <imgui.h>
-
 #include <fmt/format.h>
+#include <imgui.h>
+#include <imgui_stdlib.h>
 #include <implot.h>
 
 #include "Diff.hpp"

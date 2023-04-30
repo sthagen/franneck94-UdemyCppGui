@@ -56,6 +56,11 @@ public:
     };
 
     void Draw(std::string_view label, bool *open = nullptr) final;
+    void DrawBackground();
+    void DrawDesktop();
+    void DrawTaskbar();
+
+
     void ShowIconList(bool *open = nullptr);
 
 private:

@@ -12,28 +12,44 @@
 
 void Desktop::Draw(std::string_view label, bool *)
 {
-    constexpr static auto flags = ImGuiWindowFlags_NoDecoration |
-                                  ImGuiWindowFlags_NoScrollWithMouse |
-                                  ImGuiWindowFlags_NoInputs;
-    constexpr static auto button_flags =
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoScrollWithMouse;
-    static auto open_taskbar = false;
+    ImGui::SetNextWindowSize(mainWindowSize);
+    ImGui::SetNextWindowPos(mainWindowPos);
 
-    ImGui::SetNextWindowSize(mainWindowSize, ImGuiCond_Always);
-    ImGui::SetNextWindowPos(mainWindowPos, ImGuiCond_Always);
+    ImGui::Begin(label.data(),
+                 nullptr,
+                 (mainWindowFlags | ImGuiWindowFlags_NoInputs |
+                  ImGuiWindowFlags_NoTitleBar));
 
-    ImGui::Begin(label.data(), NULL, flags);
+    DrawBackground();
+    DrawDesktop();
+    DrawTaskbar();
 
+    ImGui::End();
+}
+
+void Desktop::DrawBackground()
+{
     ImGui::SetCursorPos(ImVec2(0.0F, 0.0F));
     const auto image_filepath =
         fmt::format("{}{}", PROJECT_PATH, "/images/bg.png");
     LoadAndDisplayImage(image_filepath);
     ImGui::SetCursorPos(ImVec2(0.0F, 0.0F));
+}
 
+void Desktop::DrawDesktop()
+{
     for (auto &icon : icons)
         icon.Draw();
+}
+
+void Desktop::DrawTaskbar()
+{
+    constexpr static auto button_flags =
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoScrollWithMouse;
+
+    static auto open_taskbar = false;
 
     ImGui::SetNextWindowPos(ImVec2(0.0F, 680.0F), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(1280.0F, 40.0F), ImGuiCond_Always);
@@ -73,8 +89,6 @@ void Desktop::Draw(std::string_view label, bool *)
     }
     if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         clock_open = false;
-
-    ImGui::End();
 
     ImGui::End();
 }

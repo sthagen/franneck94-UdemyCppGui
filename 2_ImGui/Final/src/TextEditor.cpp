@@ -5,8 +5,9 @@
 #include <string>
 #include <string_view>
 
+#include <fmt/format.h>
 #include <imgui.h>
-
+#include <imgui_stdlib.h>
 #include <implot.h>
 
 #include "TextEditor.hpp"
