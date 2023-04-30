@@ -3,9 +3,8 @@
 #include <set>
 #include <string_view>
 
-#include <imgui.h>
-
 #include <fmt/format.h>
+#include <imgui.h>
 #include <implot.h>
 
 #include "render.hpp"

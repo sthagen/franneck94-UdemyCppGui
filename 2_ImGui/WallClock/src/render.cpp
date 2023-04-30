@@ -10,16 +10,16 @@
 
 void WindowClass::Draw(std::string_view label)
 {
-    constexpr static auto mainWindowFlags =
+    constexpr static auto main_window_flags =
         ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
-    constexpr static auto mainWindowSize = ImVec2(1280.0F, 720.0F);
-    constexpr static auto mainWindowPos = ImVec2(0.0F, 0.0F);
+    constexpr static auto main_window_size = ImVec2(1280.0F, 720.0F);
+    constexpr static auto main_window_pos = ImVec2(0.0F, 0.0F);
 
-    ImGui::SetNextWindowSize(ImVec2(1280.0F, 720.0F));
-    ImGui::SetNextWindowPos(ImVec2(0.0F, 0.0F));
+    ImGui::SetNextWindowSize(main_window_size);
+    ImGui::SetNextWindowPos(main_window_pos);
 
-    ImGui::Begin(label.data(), nullptr, mainWindowFlags);
+    ImGui::Begin(label.data(), nullptr, main_window_flags);
 
     const auto cursor_pos = ImGui::GetCursorScreenPos();
     center = ImVec2(cursor_pos.x + circleRadius, cursor_pos.y + circleRadius);

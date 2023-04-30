@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <fmt/format.h>
 #include <imgui.h>
 #include <implot.h>
 

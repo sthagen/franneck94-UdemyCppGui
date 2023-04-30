@@ -5,8 +5,8 @@
 #include <string>
 #include <string_view>
 
+#include <fmt/format.h>
 #include <imgui.h>
-
 #include <implot.h>
 
 #include "render.hpp"

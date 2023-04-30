@@ -4,16 +4,24 @@
 #include <string_view>
 #include <vector>
 
-#include <imgui.h>
-
 #include <fmt/format.h>
+#include <imgui.h>
 #include <implot.h>
 
 #include "render.hpp"
 
 void WindowClass::Draw(std::string_view label)
 {
-    ImGui::Begin(label.data());
+    constexpr static auto main_window_flags =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    constexpr static auto main_window_size = ImVec2(1280.0F, 720.0F);
+    constexpr static auto main_window_pos = ImVec2(0.0F, 0.0F);
+
+    ImGui::SetNextWindowSize(main_window_size);
+    ImGui::SetNextWindowPos(main_window_pos);
+
+    ImGui::Begin(label.data(), nullptr, main_window_flags);
 
     ImGui::InputText("Left", &filePath1);
     ImGui::InputText("Right", &filePath2);

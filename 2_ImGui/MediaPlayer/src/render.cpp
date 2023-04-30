@@ -3,11 +3,9 @@
 #include <string>
 #include <vector>
 
-#include <fmt/format.h>
-
-#include <imgui.h>
-
 #include "miniaudio.h"
+#include <fmt/format.h>
+#include <imgui.h>
 #include <implot.h>
 
 #include "render.hpp"
