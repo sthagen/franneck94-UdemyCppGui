@@ -17,6 +17,8 @@ public:
           pointDrawSize(2.0F){};
 
     void Draw(std::string_view label);
+    void DrawMenu();
+    void DrawCanvas();
 
 private:
     void SaveToImageFile(std::string_view filename);

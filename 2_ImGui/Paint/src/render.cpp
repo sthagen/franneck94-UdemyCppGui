@@ -11,11 +11,25 @@
 
 void WindowClass::Draw(std::string_view label)
 {
-    static constexpr auto flags = ImGuiWindowFlags_NoCollapse |
-                                  ImGuiWindowFlags_NoMove |
-                                  ImGuiWindowFlags_NoResize;
-    ImGui::Begin(label.data(), NULL, flags);
+    constexpr static auto window_flags =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    constexpr static auto window_size = ImVec2(1280.0F, 720.0F);
+    constexpr static auto window_pos = ImVec2(0.0F, 0.0F);
 
+    ImGui::SetNextWindowSize(window_size);
+    ImGui::SetNextWindowPos(window_pos);
+
+    ImGui::Begin(label.data(), nullptr, window_flags);
+
+    DrawMenu();
+    DrawCanvas();
+
+    ImGui::End();
+}
+
+void WindowClass::DrawMenu()
+{
     if (ImGui::Button("Save"))
     {
         ImGui::OpenPopup("Save Image");
@@ -38,7 +52,9 @@ void WindowClass::Draw(std::string_view label)
 
     ImGui::Text("Draw size");
     ImGui::SameLine();
+    ImGui::PushItemWidth(canvasSize.x - ImGui::GetCursorPosX());
     ImGui::SliderFloat("##drawSize", &pointDrawSize, 1.0F, 10.0F);
+    ImGui::PopItemWidth();
 
     if (ImGui::BeginPopupModal("Save Image"))
     {
@@ -77,7 +93,10 @@ void WindowClass::Draw(std::string_view label)
 
         ImGui::EndPopup();
     }
+}
 
+void WindowClass::DrawCanvas()
+{
     canvasPos = ImGui::GetCursorScreenPos();
     const auto border_thickness = 1.5F;
     const auto button_size = ImVec2(canvasSize.x + 2.0F * border_thickness,
@@ -115,8 +134,6 @@ void WindowClass::Draw(std::string_view label)
                        0.0F,
                        ImDrawCornerFlags_All,
                        border_thickness);
-
-    ImGui::End();
 }
 
 void WindowClass::SaveToImageFile(std::string_view filename)
