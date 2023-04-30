@@ -18,7 +18,7 @@ public:
     DiffViewer(){};
     virtual ~DiffViewer(){};
 
-    void Draw(std::string_view title, bool *open = nullptr) final;
+    void Draw(std::string_view label, bool *open = nullptr) final;
 
     FileContent LoadFileContent(std::string_view file_path);
     void SaveFileContent(std::string_view file_path,

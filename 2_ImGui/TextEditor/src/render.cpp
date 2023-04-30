@@ -13,7 +13,7 @@
 
 namespace fs = std::filesystem;
 
-void WindowClass::Draw(std::string_view title)
+void WindowClass::Draw(std::string_view label)
 {
     static constexpr auto input_flags =
         (ImGuiInputTextFlags_AllowTabInput |
@@ -28,7 +28,7 @@ void WindowClass::Draw(std::string_view title)
     const auto s_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S));
     const auto l_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_L));
 
-    ImGui::Begin(title.data());
+    ImGui::Begin(label.data());
 
     if (ImGui::Button("Save") || (ctrl_pressed && s_pressed))
     {

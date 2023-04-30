@@ -11,9 +11,9 @@
 
 #include "render.hpp"
 
-void WindowClass::Draw(std::string_view title)
+void WindowClass::Draw(std::string_view label)
 {
-    ImGui::Begin(title.data());
+    ImGui::Begin(label.data());
 
     ImGui::InputText("Left", &filePath1);
     ImGui::InputText("Right", &filePath2);

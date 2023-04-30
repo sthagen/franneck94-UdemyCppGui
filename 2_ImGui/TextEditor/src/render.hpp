@@ -14,7 +14,7 @@ public:
         textBuffer.reserve(bufferSize);
     }
 
-    void Draw(std::string_view title);
+    void Draw(std::string_view label);
     void SaveToFile(std::string_view filename);
     void LoadFromFile(std::string_view filename);
     std::string GetFileExtension(std::string_view filename);

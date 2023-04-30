@@ -16,7 +16,7 @@ public:
         : points({}), canvasPos({}), currentDrawColor(ImColor(255, 255, 255)),
           pointDrawSize(2.0F){};
 
-    void Draw(std::string_view title);
+    void Draw(std::string_view label);
 
 private:
     void SaveToImageFile(std::string_view filename);

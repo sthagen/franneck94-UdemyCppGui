@@ -36,7 +36,7 @@ public:
     };
 
 public:
-    void Draw(std::string_view title);
+    void Draw(std::string_view label);
 
     void LoadMeetingsFromFile(std::string_view filename);
     void SaveMeetingsToFile(std::string_view filename) const;

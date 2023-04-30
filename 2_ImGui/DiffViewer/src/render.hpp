@@ -15,7 +15,7 @@ public:
     WindowClass()
         : fileContent1({}), fileContent2({}), diffResult1({}),
           diffResult2({}){};
-    void Draw(std::string_view title);
+    void Draw(std::string_view label);
 
     FileContent LoadFileContent(std::string_view file_path);
     void SaveFileContent(std::string_view file_path,

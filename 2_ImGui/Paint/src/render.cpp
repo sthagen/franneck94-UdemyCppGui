@@ -9,12 +9,12 @@
 
 #include "render.hpp"
 
-void WindowClass::Draw(std::string_view title)
+void WindowClass::Draw(std::string_view label)
 {
     static constexpr auto flags = ImGuiWindowFlags_NoCollapse |
                                   ImGuiWindowFlags_NoMove |
                                   ImGuiWindowFlags_NoResize;
-    ImGui::Begin(title.data(), NULL, flags);
+    ImGui::Begin(label.data(), NULL, flags);
 
     if (ImGui::Button("Save"))
     {
