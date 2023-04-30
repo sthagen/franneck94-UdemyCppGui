@@ -26,9 +26,10 @@ void WindowClass::Draw(std::string_view label)
     DrawMenu();
     ImGui::Separator();
     DrawContent();
+    ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 100.0F);
     ImGui::Separator();
     DrawActions();
-    ImGui::SameLine();
+    ImGui::Separator();
     DrawFilter();
 
     ImGui::End();
@@ -77,80 +78,86 @@ void WindowClass::DrawContent()
 
 void WindowClass::DrawActions()
 {
-    if (!selectedEntry.empty())
+    if (fs::is_directory(selectedEntry))
+        ImGui::Text("Selected dir: %s", selectedEntry.string().c_str());
+    else if (fs::is_regular_file(selectedEntry))
+        ImGui::Text("Selected file: %s", selectedEntry.string().c_str());
+    else
     {
-        if (fs::is_directory(selectedEntry))
-            ImGui::Text("Selected dir: %s", selectedEntry.string().c_str());
-        else
-            ImGui::Text("Selected file: %s", selectedEntry.string().c_str());
+        ImGui::Text("Selected file: n/a");
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha,
+                            ImGui::GetStyle().Alpha * 0.0f);
+        ImGui::Button("Non-clickable button");
+        ImGui::PopStyleVar();
+        return;
+    }
 
-        if (fs::is_regular_file(selectedEntry))
-        {
-            if (ImGui::Button("Open"))
-                openFileWithDefaultEditor(selectedEntry);
+    if (fs::is_regular_file(selectedEntry))
+    {
+        if (ImGui::Button("Open"))
+            openFileWithDefaultEditor(selectedEntry);
 
-            ImGui::SameLine();
-        }
+        ImGui::SameLine();
+    }
+
+    if (ImGui::Button("Rename"))
+        renameDialogOpen = true;
+
+    if (renameDialogOpen)
+        ImGui::OpenPopup("Rename File");
+
+    if (ImGui::BeginPopupModal("Rename File", &renameDialogOpen))
+    {
+        static char buffer_name[512] = {'\0'};
+
+        ImGui::Text("New name: ");
+        ImGui::InputText("###NewName", buffer_name, sizeof(buffer_name));
 
         if (ImGui::Button("Rename"))
-            renameDialogOpen = true;
-
-        if (renameDialogOpen)
-            ImGui::OpenPopup("Rename File");
-
-        if (ImGui::BeginPopupModal("Rename File", &renameDialogOpen))
         {
-            static char buffer_name[512] = {'\0'};
-
-            ImGui::Text("New name: ");
-            ImGui::InputText("###NewName", buffer_name, sizeof(buffer_name));
-
-            if (ImGui::Button("Rename"))
+            auto new_path = selectedEntry.parent_path() / buffer_name;
+            if (renameFile(selectedEntry, new_path))
             {
-                auto new_path = selectedEntry.parent_path() / buffer_name;
-                if (renameFile(selectedEntry, new_path))
-                {
-                    renameDialogOpen = false;
-                    selectedEntry = new_path;
-                    std::memset(buffer_name, 0, sizeof(buffer_name));
-                }
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Cancel"))
                 renameDialogOpen = false;
-
-            ImGui::EndPopup();
+                selectedEntry = new_path;
+                std::memset(buffer_name, 0, sizeof(buffer_name));
+            }
         }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Delete"))
-            deleteDialogOpen = true;
+        if (ImGui::Button("Cancel"))
+            renameDialogOpen = false;
 
-        if (deleteDialogOpen)
-            ImGui::OpenPopup("Delete File");
+        ImGui::EndPopup();
+    }
 
-        if (ImGui::BeginPopupModal("Delete File", &deleteDialogOpen))
+    ImGui::SameLine();
+
+    if (ImGui::Button("Delete"))
+        deleteDialogOpen = true;
+
+    if (deleteDialogOpen)
+        ImGui::OpenPopup("Delete File");
+
+    if (ImGui::BeginPopupModal("Delete File", &deleteDialogOpen))
+    {
+        ImGui::Text("Are you sure you want to delete %s?",
+                    selectedEntry.filename().string().c_str());
+
+        if (ImGui::Button("Yes"))
         {
-            ImGui::Text("Are you sure you want to delete %s?",
-                        selectedEntry.filename().string().c_str());
-
-            if (ImGui::Button("Yes"))
-            {
-                if (deleteFile(selectedEntry))
-                    selectedEntry.clear();
-                deleteDialogOpen = false;
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("No"))
-                deleteDialogOpen = false;
-
-            ImGui::EndPopup();
+            if (deleteFile(selectedEntry))
+                selectedEntry.clear();
+            deleteDialogOpen = false;
         }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("No"))
+            deleteDialogOpen = false;
+
+        ImGui::EndPopup();
     }
 }
 
