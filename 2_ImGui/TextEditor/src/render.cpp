@@ -20,8 +20,8 @@ void WindowClass::Draw(std::string_view label)
         (ImGuiInputTextFlags_AllowTabInput |
          ImGuiInputTextFlags_NoHorizontalScroll);
 
-    static char saveFilenameBuffer[512] = {"\0"};
-    static char loadFilenameBuffer[512] = {"\0"};
+    static char saveFilenameBuffer[512] = "text.txt";
+    static char loadFilenameBuffer[512] = "text.txt";
 
     const auto ctrl_pressed = ImGui::GetIO().KeyCtrl;
     const auto esc_pressed =
