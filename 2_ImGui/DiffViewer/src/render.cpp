@@ -6,6 +6,7 @@
 
 #include <fmt/format.h>
 #include <imgui.h>
+#include <imgui_stdlib.h>
 #include <implot.h>
 
 #include "render.hpp"
@@ -23,8 +24,23 @@ void WindowClass::Draw(std::string_view label)
 
     ImGui::Begin(label.data(), nullptr, main_window_flags);
 
-    ImGui::InputText("Left", &filePath1);
+    DrawSelection();
+    DrawDiffView();
+    DrawStats();
+
+    ImGui::End();
+}
+
+void WindowClass::DrawSelection()
+{
+    ImGui::InputText(" Left", &filePath1);
+    ImGui::SameLine();
+    if (ImGui::Button("Save###Left"))
+        SaveFileContent(filePath1, fileContent1);
     ImGui::InputText("Right", &filePath2);
+    ImGui::SameLine();
+    if (ImGui::Button("Save###Right"))
+        SaveFileContent(filePath2, fileContent2);
 
     if (ImGui::Button("Compare"))
     {
@@ -33,22 +49,11 @@ void WindowClass::Draw(std::string_view label)
 
         CreateDiff();
     }
+}
 
-    ImGui::Text("%s", filePath1.data());
-    ImGui::SameLine();
-    if (ImGui::Button("Save###Left"))
-    {
-        SaveFileContent(filePath1, fileContent1);
-    }
-    ImGui::SameLine();
-    ImGui::Text("%s", filePath2.data());
-    ImGui::SameLine();
-    if (ImGui::Button("Save###Right"))
-    {
-        SaveFileContent(filePath2, fileContent2);
-    }
-
-    const auto parent_size = ImVec2(ImGui::GetContentRegionAvail().x, 400.0F);
+void WindowClass::DrawDiffView()
+{
+    const auto parent_size = ImVec2(ImGui::GetContentRegionAvail().x, 500.0F);
     const auto child_size = ImVec2(parent_size.x / 2.0F - 40.0F, parent_size.y);
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0F, 0.0F));
@@ -142,7 +147,10 @@ void WindowClass::Draw(std::string_view label)
     ImGui::EndChild();
 
     ImGui::PopStyleVar();
+}
 
+void WindowClass::DrawStats()
+{
     auto diff_lines_count = 0U;
     for (const auto &line : diffResult1)
     {
@@ -150,9 +158,9 @@ void WindowClass::Draw(std::string_view label)
             ++diff_lines_count;
     }
 
+    ImGui::SetCursorPosY(ImGui::GetWindowHeight() - ImGui::GetFontSize() -
+                         ImGui::GetStyle().FramePadding.y);
     ImGui::Text("Diff lines count: %d", diff_lines_count);
-
-    ImGui::End();
 }
 
 WindowClass::FileContent WindowClass::LoadFileContent(
