@@ -28,10 +28,10 @@ void TextEditor::Draw(std::string_view label, bool *open)
     const auto s_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S));
     const auto l_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_L));
 
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(mainWindowPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(mainWindowSize, ImGuiCond_Always);
 
-    ImGui::Begin(label.data(), open, fullscreenFlags | ImGuiWindowFlags_MenuBar);
+    ImGui::Begin(label.data(), open, mainWindowFlags | ImGuiWindowFlags_MenuBar);
 
     SettingsMenuBar();
 

@@ -21,8 +21,8 @@ void Desktop::Draw(std::string_view label, bool *)
         ImGuiWindowFlags_NoScrollWithMouse;
     static auto open_taskbar = false;
 
-    ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(mainWindowSize, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(mainWindowPos, ImGuiCond_Always);
 
     ImGui::Begin(label.data(), NULL, flags);
 
@@ -61,7 +61,7 @@ void Desktop::Draw(std::string_view label, bool *)
 
     ImGui::SameLine();
 
-    ImGui::SetCursorPosX(rootSize.x - 100.0F);
+    ImGui::SetCursorPosX(mainWindowSize.x - 100.0F);
 
     static auto clock_open = false;
     clock.GetTime();

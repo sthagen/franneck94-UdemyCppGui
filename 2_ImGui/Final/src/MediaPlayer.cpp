@@ -28,10 +28,10 @@ void MediaPlayer::Draw(std::string_view label, bool *open)
         isPlaying = false;
     }
 
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(mainWindowPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(mainWindowSize, ImGuiCond_Always);
 
-    ImGui::Begin(label.data(), open, fullscreenFlags);
+    ImGui::Begin(label.data(), open, mainWindowFlags);
 
     ImGui::Text("Audio File Path:");
     ImGui::SameLine();

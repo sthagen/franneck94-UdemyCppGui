@@ -12,10 +12,10 @@
 
 void OtherTopics::Draw(std::string_view label, bool *open)
 {
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(mainWindowPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(mainWindowSize, ImGuiCond_Always);
 
-    ImGui::Begin(label.data(), open, fullscreenFlags);
+    ImGui::Begin(label.data(), open, mainWindowFlags);
 
     if (ImGui::TreeNode("Tabbing"))
     {

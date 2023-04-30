@@ -20,10 +20,10 @@ void AdvCalc::Draw(std::string_view label, bool *open)
     static auto xs = std::array<double, num_points>{};
     static auto ys = std::array<double, num_points>{};
 
-    ImGui::SetNextWindowPos(rootPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(rootSize, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(mainWindowPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(mainWindowSize, ImGuiCond_Always);
 
-    ImGui::Begin(label.data(), open, fullscreenFlags);
+    ImGui::Begin(label.data(), open, mainWindowFlags);
 
     for (const auto func_name : functionNames)
     {

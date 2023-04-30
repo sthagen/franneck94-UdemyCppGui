@@ -201,10 +201,10 @@ void WindowBase::SaveTheme()
 
 void WindowBase::DrawColorsSettings(bool *open)
 {
-    ImGui::SetNextWindowPos(rootPos);
-    ImGui::SetNextWindowSize(rootSize);
+    ImGui::SetNextWindowPos(mainWindowPos);
+    ImGui::SetNextWindowSize(mainWindowSize);
 
-    ImGui::Begin("Settings", open, fullscreenFlags);
+    ImGui::Begin("Settings", open, mainWindowFlags);
 
     ImGuiStyle &style = ImGui::GetStyle();
     ImGui::SliderFloat("Global Alpha", &style.Alpha, 0.2f, 1.0f, "%.2f");
