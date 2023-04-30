@@ -149,7 +149,11 @@ void WindowClass::DrawIoButtons()
         numCols = 0;
     }
 
-    if (ImGui::BeginPopupModal("Save File"))
+    ImGui::SetNextWindowSize(popUpSize);
+    ImGui::SetNextWindowPos(
+        ImVec2(ImGui::GetIO().DisplaySize.x / 2.0F - popUpSize.x / 2.0F,
+               ImGui::GetIO().DisplaySize.y / 2.0F - popUpSize.y / 2.0F));
+    if (ImGui::BeginPopupModal("Save File", nullptr, popUpFlags))
     {
         ImGui::InputText("File", filenameBuffer, sizeof(filenameBuffer));
 
@@ -167,7 +171,11 @@ void WindowClass::DrawIoButtons()
         ImGui::EndPopup();
     }
 
-    if (ImGui::BeginPopupModal("Load File"))
+    ImGui::SetNextWindowSize(popUpSize);
+    ImGui::SetNextWindowPos(
+        ImVec2(ImGui::GetIO().DisplaySize.x / 2.0F - popUpSize.x / 2.0F,
+               ImGui::GetIO().DisplaySize.y / 2.0F - popUpSize.y / 2.0F));
+    if (ImGui::BeginPopupModal("Load File", nullptr, popUpFlags))
     {
         ImGui::InputText("File", filenameBuffer, sizeof(filenameBuffer));
 
@@ -233,7 +241,11 @@ void WindowClass::DrawTable()
         ImGui::TableNextRow();
     }
 
-    if (ImGui::BeginPopupModal("Change Value"))
+    ImGui::SetNextWindowSize(popUpSize);
+    ImGui::SetNextWindowPos(
+        ImVec2(ImGui::GetIO().DisplaySize.x / 2.0F - popUpSize.x / 2.0F,
+               ImGui::GetIO().DisplaySize.y / 2.0F - popUpSize.y / 2.0F));
+    if (ImGui::BeginPopupModal("Change Value", nullptr, popUpFlags))
     {
         ImGui::InputText(
             fmt::format("##{}_{}", row_clicked, col_clicked).data(),
@@ -246,7 +258,7 @@ void WindowClass::DrawTable()
 
             ImGui::CloseCurrentPopup();
         }
-
+        ImGui::SameLine();
         if (ImGui::Button("Cancel"))
         {
             ImGui::CloseCurrentPopup();
