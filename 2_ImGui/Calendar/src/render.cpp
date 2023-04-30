@@ -1,10 +1,12 @@
+#include <algorithm>
 #include <chrono>
+#include <map>
 #include <string_view>
+#include <vector>
 
-#include <imgui.h>
-#include "imgui_stdlib.h"
-#include <implot.h>
 #include <fmt/format.h>
+#include <imgui.h>
+#include <implot.h>
 
 #include "render.hpp"
 
@@ -21,32 +23,23 @@ void WindowClass::Draw(std::string_view label)
 
     ImGui::Begin(label.data(), nullptr, mainWindowFlags);
 
-    ImGui::Text("Select a date:");
     DrawDateCombo();
-
-    if (ImGui::Button("Add Meeting"))
-    {
-        addMeetingWindowOpen = true;
-    }
-
+    ImGui::Separator();
     DrawCalender();
+    ImGui::Separator();
+    DrawMeetingList();
 
     if (addMeetingWindowOpen)
-    {
         DrawAddMeetingWindow();
-    }
-
-    DrawMeetingList();
 
     ImGui::End();
 }
 
 void WindowClass::DrawCalender()
 {
-    const auto child_size = ImVec2(ImGui::GetContentRegionAvail().x,
-                                   ImGui::GetContentRegionAvail().y - 50.0F);
+    const auto child_size = ImVec2(ImGui::GetContentRegionAvail().x, 400.0F);
 
-    ImGui::BeginChild("###calender", child_size, true);
+    ImGui::BeginChild("###calender", child_size, false);
 
     const auto original_font_size = ImGui::GetFontSize();
     ImGui::SetWindowFontScale(calenderFontSize);
@@ -55,44 +48,42 @@ void WindowClass::DrawCalender()
         std::chrono::floor<std::chrono::days>(std::chrono::system_clock::now());
     const auto todays_date = std::chrono::year_month_day(curr_time);
 
-    for (std::int32_t y = 2023; y <= 2023; y++)
+    const auto y = selectedYear;
+    for (std::int32_t m = 1; m <= 12; m++)
     {
-        for (std::int32_t m = 1; m <= 12; m++)
+        for (std::int32_t d = 1; d <= 31; d++)
         {
-            for (std::int32_t d = 1; d <= 31; d++)
-            {
-                const auto curr_date =
-                    std::chrono::year_month_day(std::chrono::year(y),
-                                                std::chrono::month(m),
-                                                std::chrono::day(d));
+            const auto curr_date =
+                std::chrono::year_month_day(std::chrono::year(y),
+                                            std::chrono::month(m),
+                                            std::chrono::day(d));
 
-                if (!curr_date.ok())
-                    break;
+            if (!curr_date.ok())
+                break;
 
-                if (d != 1)
-                    ImGui::SameLine();
-                if (d == 1)
-                    ImGui::Text("%s", fmt::format("{:.3}", months[m - 1]).data());
+            if (d != 1)
                 ImGui::SameLine();
+            if (d == 1)
+                ImGui::Text("%s", fmt::format("{:.3}", months[m - 1]).data());
+            ImGui::SameLine();
 
-                auto textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+            auto textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-                if (curr_date == todays_date)
-                    textColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0F);
-                else if (curr_date == selectedDate)
-                    textColor = ImVec4(0.0f, 0.0f, 1.0f, 1.0F);
-                else if (meetings.contains(curr_date))
-                    textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0F);
+            if (curr_date == todays_date)
+                textColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0F);
+            else if (curr_date == selectedDate)
+                textColor = ImVec4(0.0f, 0.0f, 1.0f, 1.0F);
+            else if (meetings.contains(curr_date))
+                textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0F);
 
-                ImGui::PushStyleColor(ImGuiCol_Text, textColor);
-                ImGui::Text("%s", std::to_string(d).data());
-                ImGui::PopStyleColor();
+            ImGui::PushStyleColor(ImGuiCol_Text, textColor);
+            ImGui::Text("%s", std::to_string(d).data());
+            ImGui::PopStyleColor();
 
-                if (ImGui::IsItemClicked())
-                {
-                    selectedDate = curr_date;
-                    UpdateSelectedDateVariables();
-                }
+            if (ImGui::IsItemClicked())
+            {
+                selectedDate = curr_date;
+                UpdateSelectedDateVariables();
             }
         }
     }
@@ -112,9 +103,18 @@ void WindowClass::UpdateSelectedDateVariables()
 
 void WindowClass::DrawAddMeetingWindow()
 {
+    constexpr static auto mainWindowFlags =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    constexpr static auto popUpSize = ImVec2(300.0F, 100.0F);
+
     static char meeting_name_buffer[128] = "...";
 
-    ImGui::Begin("Add Meeting", &addMeetingWindowOpen);
+    ImGui::SetNextWindowSize(popUpSize);
+    ImGui::SetNextWindowPos(
+        ImVec2(ImGui::GetIO().DisplaySize.x / 2.0F - popUpSize.x / 2.0F,
+               ImGui::GetIO().DisplaySize.y / 2.0F - popUpSize.y / 2.0F));
+    ImGui::Begin("###addMeeting", &addMeetingWindowOpen, mainWindowFlags);
 
     ImGui::Text("Add meeting to %d.%s.%d",
                 selectedDay,
@@ -166,11 +166,19 @@ void WindowClass::DrawMeetingList()
     for (const auto &meeting : meetings[selectedDate])
     {
         ImGui::BulletText("%s", meeting.name.data());
+
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+        {
+            std::erase(meetings[selectedDate], meeting);
+            return;
+        }
     }
 }
 
 void WindowClass::DrawDateCombo()
 {
+    ImGui::Text("Select a date:");
+
     ImGui::PushItemWidth(50);
 
     if (ImGui::BeginCombo("##day", std::to_string(selectedDay).data()))
@@ -189,6 +197,7 @@ void WindowClass::DrawDateCombo()
                                   day_idx == selectedDay))
             {
                 selectedDay = day_idx;
+                selectedDate = curr_date;
             }
         }
 
@@ -206,6 +215,10 @@ void WindowClass::DrawDateCombo()
                                   month_idx == selectedMonth))
             {
                 selectedMonth = month_idx;
+                selectedDate =
+                    std::chrono::year_month_day(std::chrono::year(selectedYear),
+                                                std::chrono::month(month_idx),
+                                                std::chrono::day(selectedDay));
             }
         }
 
@@ -217,17 +230,26 @@ void WindowClass::DrawDateCombo()
 
     if (ImGui::BeginCombo("##year", std::to_string(selectedYear).data()))
     {
-        for (std::int32_t year_idx = 2023; year_idx <= 2023; ++year_idx)
+        for (std::int32_t year_idx = minYear; year_idx <= maxYear; ++year_idx)
         {
-            if (ImGui::Selectable(std::to_string(year_idx).data(),
-                                  year_idx == selectedYear))
+            const auto is_selected = (year_idx == selectedYear);
+            if (ImGui::Selectable(std::to_string(year_idx).data(), is_selected))
             {
                 selectedYear = year_idx;
+                selectedDate = std::chrono::year_month_day(
+                    std::chrono::year(year_idx),
+                    std::chrono::month(selectedMonth),
+                    std::chrono::day(selectedDay));
             }
+            if (is_selected)
+                ImGui::SetScrollHereY();
         }
 
         ImGui::EndCombo();
     }
+
+    if (ImGui::Button("Add Meeting"))
+        addMeetingWindowOpen = true;
 }
 
 void WindowClass::SaveMeetingsToFile(std::string_view filename) const
@@ -250,9 +272,7 @@ void WindowClass::SaveMeetingsToFile(std::string_view filename) const
                   sizeof(num_meetings_on_date));
 
         for (const auto &meeting : meeting_vec)
-        {
             meeting.Serialize(out);
-        }
     }
 
     out.close();

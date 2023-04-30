@@ -2,6 +2,7 @@
 
 #include <array>
 #include <chrono>
+#include <compare>
 #include <fstream>
 #include <map>
 #include <string_view>
@@ -26,6 +27,8 @@ public:
         "November",
         "December",
     };
+    static constexpr auto minYear = 2000U;
+    static constexpr auto maxYear = 2038U;
 
     struct Meeting
     {
@@ -33,6 +36,11 @@ public:
 
         void Serialize(std::ofstream &out) const;
         static Meeting Deserialize(std::ifstream &in);
+
+        constexpr bool operator==(const Meeting &other) const
+        {
+            return name == other.name;
+        }
     };
 
 public:
@@ -55,7 +63,7 @@ private:
 
     bool addMeetingWindowOpen = false;
 
-    float calenderFontSize = 1.35f;
+    float calenderFontSize = 2.00f;
 
     std::map<std::chrono::year_month_day, std::vector<Meeting>> meetings;
 };
