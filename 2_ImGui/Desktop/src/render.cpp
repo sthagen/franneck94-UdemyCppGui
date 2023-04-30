@@ -8,12 +8,6 @@
 
 void WindowClass::Draw(std::string_view label)
 {
-    DrawDesktop(label);
-    DrawTaskbar();
-}
-
-void WindowClass::DrawDesktop(std::string_view label)
-{
     ImGui::SetNextWindowSize(windowSize);
     ImGui::SetNextWindowPos(windowPos);
 
@@ -21,10 +15,16 @@ void WindowClass::DrawDesktop(std::string_view label)
                  nullptr,
                  windowFlags | ImGuiWindowFlags_NoInputs);
 
-    for (auto &icon : icons)
-        icon.Draw();
+    DrawDesktop();
+    DrawTaskbar();
 
     ImGui::End();
+}
+
+void WindowClass::DrawDesktop()
+{
+    for (auto &icon : icons)
+        icon.Draw();
 }
 
 void WindowClass::DrawTaskbar()
@@ -70,9 +70,9 @@ void WindowClass::ShowIconList(bool *open)
 
     ImGui::SetNextWindowPos(ImVec2(0.0F, 680.0F - popup_height),
                             ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(200.0F, popup_height), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(100.0F, popup_height), ImGuiCond_Always);
 
-    if (ImGui::BeginPopupModal("My Programs", open))
+    if (ImGui::BeginPopupModal("My Programs", open, ImGuiWindowFlags_NoResize))
     {
         for (auto &icon : icons)
         {
@@ -81,6 +81,12 @@ void WindowClass::ShowIconList(bool *open)
                 icon.popupOpen = true;
                 ImGui::CloseCurrentPopup();
             }
+        }
+
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
+            !ImGui::IsWindowHovered())
+        {
+            ImGui::CloseCurrentPopup();
         }
 
         ImGui::EndPopup();

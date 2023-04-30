@@ -44,7 +44,7 @@ public:
     };
 
     void Draw(std::string_view label);
-    void DrawDesktop(std::string_view label);
+    void DrawDesktop();
     void DrawTaskbar();
 
     void ShowIconList(bool *open = nullptr);
