@@ -12,8 +12,30 @@
 
 void WindowClass::Draw(std::string_view label)
 {
-    ImGui::Begin(label.data());
+    constexpr static auto main_window_flags =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    constexpr static auto main_window_size = ImVec2(1280.0F, 720.0F);
+    constexpr static auto main_window_pos = ImVec2(0.0F, 0.0F);
 
+    ImGui::SetNextWindowSize(main_window_size);
+    ImGui::SetNextWindowPos(main_window_pos);
+
+    ImGui::Begin(label.data(), nullptr, main_window_flags);
+
+    DrawMenu();
+    ImGui::Separator();
+    DrawContent();
+    ImGui::Separator();
+    DrawActions();
+    ImGui::SameLine();
+    DrawFilter();
+
+    ImGui::End();
+}
+
+void WindowClass::DrawMenu()
+{
     if (ImGui::Button("Go Up"))
     {
         if (currentPath.has_parent_path())
@@ -25,9 +47,10 @@ void WindowClass::Draw(std::string_view label)
     ImGui::SameLine();
 
     ImGui::Text("Current directory: %s", currentPath.string().c_str());
+}
 
-    ImGui::Separator();
-
+void WindowClass::DrawContent()
+{
     for (const auto &entry : fs::directory_iterator(currentPath))
     {
         const auto is_selected = entry.path() == selectedEntry;
@@ -50,39 +73,30 @@ void WindowClass::Draw(std::string_view label)
             selectedEntry = entry.path();
         }
     }
+}
 
-    ImGui::Separator();
-
+void WindowClass::DrawActions()
+{
     if (!selectedEntry.empty())
     {
         if (fs::is_directory(selectedEntry))
-        {
             ImGui::Text("Selected dir: %s", selectedEntry.string().c_str());
-        }
         else
-        {
             ImGui::Text("Selected file: %s", selectedEntry.string().c_str());
-        }
 
         if (fs::is_regular_file(selectedEntry))
         {
             if (ImGui::Button("Open"))
-            {
                 openFileWithDefaultEditor(selectedEntry);
-            }
 
             ImGui::SameLine();
         }
 
         if (ImGui::Button("Rename"))
-        {
             renameDialogOpen = true;
-        }
 
         if (renameDialogOpen)
-        {
             ImGui::OpenPopup("Rename File");
-        }
 
         if (ImGui::BeginPopupModal("Rename File", &renameDialogOpen))
         {
@@ -105,9 +119,7 @@ void WindowClass::Draw(std::string_view label)
             ImGui::SameLine();
 
             if (ImGui::Button("Cancel"))
-            {
                 renameDialogOpen = false;
-            }
 
             ImGui::EndPopup();
         }
@@ -115,14 +127,10 @@ void WindowClass::Draw(std::string_view label)
         ImGui::SameLine();
 
         if (ImGui::Button("Delete"))
-        {
             deleteDialogOpen = true;
-        }
 
         if (deleteDialogOpen)
-        {
             ImGui::OpenPopup("Delete File");
-        }
 
         if (ImGui::BeginPopupModal("Delete File", &deleteDialogOpen))
         {
@@ -132,30 +140,31 @@ void WindowClass::Draw(std::string_view label)
             if (ImGui::Button("Yes"))
             {
                 if (deleteFile(selectedEntry))
-                {
                     selectedEntry.clear();
-                }
                 deleteDialogOpen = false;
             }
 
             ImGui::SameLine();
 
             if (ImGui::Button("No"))
-            {
                 deleteDialogOpen = false;
-            }
 
             ImGui::EndPopup();
         }
     }
+}
 
-    ImGui::SameLine();
-
+void WindowClass::DrawFilter()
+{
     static char extension_filter[16] = {"\0"};
+
     auto filtered_file_count = 0;
     ImGui::Text("Filter by extension");
     ImGui::SameLine();
     ImGui::InputText("###inFilter", extension_filter, sizeof(extension_filter));
+
+    if (std::strlen(extension_filter))
+        return;
 
     for (const auto &entry : fs::directory_iterator(currentPath))
     {
@@ -167,8 +176,6 @@ void WindowClass::Draw(std::string_view label)
     }
 
     ImGui::Text("Number of files: %d", filtered_file_count);
-
-    ImGui::End();
 }
 
 void WindowClass::openFileWithDefaultEditor(const fs::path &filePath)

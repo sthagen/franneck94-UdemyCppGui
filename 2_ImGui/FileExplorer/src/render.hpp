@@ -14,6 +14,10 @@ public:
         : currentPath(fs::current_path()), selectedEntry(fs::path{}){};
 
     void Draw(std::string_view label);
+    void DrawMenu();
+    void DrawContent();
+    void DrawActions();
+    void DrawFilter();
 
 private:
     void openFileWithDefaultEditor(const fs::path &filePath);
