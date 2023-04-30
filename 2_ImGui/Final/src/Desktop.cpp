@@ -101,15 +101,16 @@ void Desktop::ShowIconList(bool *open)
 
     ImGui::SetNextWindowPos(ImVec2(0.0F, 680.0F - popup_height),
                             ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(200.0F, popup_height), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(100.0F, popup_height), ImGuiCond_Always);
 
-    if (ImGui::BeginPopupModal("My Programs", open))
+    if (ImGui::BeginPopupModal("My Programs", open, ImGuiWindowFlags_NoResize))
     {
         for (auto &icon : icons)
         {
             if (ImGui::Selectable(icon.label.data()))
             {
                 icon.popupOpen = true;
+                icon.base->Draw(icon.label, &icon.popupOpen);
                 ImGui::CloseCurrentPopup();
             }
         }
