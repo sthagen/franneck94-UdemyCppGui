@@ -83,12 +83,6 @@ void WindowClass::ShowIconList(bool *open)
             }
         }
 
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
-            !ImGui::IsWindowHovered())
-        {
-            ImGui::CloseCurrentPopup();
-        }
-
         ImGui::EndPopup();
     }
 }
