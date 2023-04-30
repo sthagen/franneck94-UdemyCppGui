@@ -7,6 +7,7 @@
 
 #include <fmt/format.h>
 #include <imgui.h>
+#include <imgui_stdlib.h>
 #include <implot.h>
 
 #include "render.hpp"
@@ -28,7 +29,16 @@ void WindowClass::Draw(std::string_view label)
     const auto s_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S));
     const auto l_pressed = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_L));
 
-    ImGui::Begin(label.data());
+    constexpr static auto window_flags =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    constexpr static auto window_size = ImVec2(1280.0F, 720.0F);
+    constexpr static auto window_pos = ImVec2(0.0F, 0.0F);
+
+    ImGui::SetNextWindowSize(window_size);
+    ImGui::SetNextWindowPos(window_pos);
+
+    ImGui::Begin(label.data(), nullptr, window_flags);
 
     if (ImGui::Button("Save") || (ctrl_pressed && s_pressed))
     {
