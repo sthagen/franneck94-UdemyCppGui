@@ -170,7 +170,7 @@ void WindowClass::DrawFilter()
     ImGui::SameLine();
     ImGui::InputText("###inFilter", extension_filter, sizeof(extension_filter));
 
-    if (std::strlen(extension_filter))
+    if (std::strlen(extension_filter) == 0)
         return;
 
     for (const auto &entry : fs::directory_iterator(currentPath))
