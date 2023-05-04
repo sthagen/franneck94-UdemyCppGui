@@ -56,7 +56,11 @@ void WindowClass::DrawMenu()
     ImGui::SliderFloat("##drawSize", &pointDrawSize, 1.0F, 10.0F);
     ImGui::PopItemWidth();
 
-    if (ImGui::BeginPopupModal("Save Image"))
+    ImGui::SetNextWindowSize(popUpSize);
+    ImGui::SetNextWindowPos(
+        ImVec2(ImGui::GetIO().DisplaySize.x / 2.0F - popUpSize.x / 2.0F,
+               ImGui::GetIO().DisplaySize.y / 2.0F - popUpSize.y / 2.0F));
+    if (ImGui::BeginPopupModal("Save Image", nullptr, popUpFlags))
     {
         ImGui::InputText("Filename", filenameBuffer, sizeof(filenameBuffer));
         if (ImGui::Button("Save"))
@@ -75,7 +79,11 @@ void WindowClass::DrawMenu()
         ImGui::EndPopup();
     }
 
-    if (ImGui::BeginPopupModal("Load Image"))
+    ImGui::SetNextWindowSize(popUpSize);
+    ImGui::SetNextWindowPos(
+        ImVec2(ImGui::GetIO().DisplaySize.x / 2.0F - popUpSize.x / 2.0F,
+               ImGui::GetIO().DisplaySize.y / 2.0F - popUpSize.y / 2.0F));
+    if (ImGui::BeginPopupModal("Load Image", nullptr, popUpFlags))
     {
         ImGui::InputText("Filename", filenameBuffer, sizeof(filenameBuffer));
         if (ImGui::Button("Load"))
