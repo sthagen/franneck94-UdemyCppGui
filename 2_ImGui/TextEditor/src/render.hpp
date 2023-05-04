@@ -22,6 +22,11 @@ public:
 private:
     std::string textBuffer;
     std::string currentFilename;
+
+    constexpr static auto popUpFlags =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    constexpr static auto popUpSize = ImVec2(300.0F, 100.0F);
 };
 
 void render(WindowClass &window_class);

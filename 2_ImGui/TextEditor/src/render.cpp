@@ -52,7 +52,11 @@ void WindowClass::Draw(std::string_view label)
         ImGui::OpenPopup("Load File");
     }
 
-    if (ImGui::BeginPopupModal("Save File"))
+    ImGui::SetNextWindowSize(popUpSize);
+    ImGui::SetNextWindowPos(
+        ImVec2(ImGui::GetIO().DisplaySize.x / 2.0F - popUpSize.x / 2.0F,
+               ImGui::GetIO().DisplaySize.y / 2.0F - popUpSize.y / 2.0F));
+    if (ImGui::BeginPopupModal("Save File", nullptr, popUpFlags))
     {
         ImGui::InputText("Filename",
                          saveFilenameBuffer,
@@ -75,7 +79,11 @@ void WindowClass::Draw(std::string_view label)
         ImGui::EndPopup();
     }
 
-    if (ImGui::BeginPopupModal("Load File"))
+    ImGui::SetNextWindowSize(popUpSize);
+    ImGui::SetNextWindowPos(
+        ImVec2(ImGui::GetIO().DisplaySize.x / 2.0F - popUpSize.x / 2.0F,
+               ImGui::GetIO().DisplaySize.y / 2.0F - popUpSize.y / 2.0F));
+    if (ImGui::BeginPopupModal("Load File", nullptr, popUpFlags))
     {
         ImGui::InputText("Filename",
                          loadFilenameBuffer,
