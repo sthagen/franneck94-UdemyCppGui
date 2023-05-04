@@ -19,7 +19,16 @@ void WindowClass::Draw(std::string_view label)
     static auto xs = std::array<double, num_points>{};
     static auto ys = std::array<double, num_points>{};
 
-    ImGui::Begin(label.data());
+    constexpr static auto window_flags =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    constexpr static auto window_size = ImVec2(1280.0F, 720.0F);
+    constexpr static auto window_pos = ImVec2(0.0F, 0.0F);
+
+    ImGui::SetNextWindowSize(window_size);
+    ImGui::SetNextWindowPos(window_pos);
+
+    ImGui::Begin(label.data(), nullptr, window_flags);
 
     for (const auto func_name : functionNames)
     {
@@ -33,10 +42,6 @@ void WindowClass::Draw(std::string_view label)
                 selectedFunctions.erase(curr_function);
         }
     }
-
-    ImGui::End();
-
-    ImGui::Begin("###PlotWindow");
 
     if (selectedFunctions.size() == 0 ||
         (selectedFunctions.size() == 1 &&
