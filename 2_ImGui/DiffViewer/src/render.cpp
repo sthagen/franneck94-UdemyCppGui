@@ -159,7 +159,7 @@ void WindowClass::DrawStats()
     }
 
     ImGui::SetCursorPosY(ImGui::GetWindowHeight() - ImGui::GetFontSize() -
-                         ImGui::GetStyle().FramePadding.y);
+                         ImGui::GetStyle().FramePadding.y * 5.0F);
     ImGui::Text("Diff lines count: %d", diff_lines_count);
 }
 
